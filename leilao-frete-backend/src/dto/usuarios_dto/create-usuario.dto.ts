@@ -3,6 +3,6 @@ export class CreateUsuarioDto {
     usuario: string;
     senha: string;
     email: string;
-    img_perfil: string;
+    img_perfil: Buffer;
   }
   
