@@ -18,4 +18,9 @@ export class WhatsappController {
     })
     return this.whatsappService.senderAll(numeros);
   }
+
+  @Get('statusServidor')
+  async getStatus() {
+    return this.whatsappService.getStatus();
+  }
 }

@@ -15,7 +15,6 @@ export class LoggerService {
         }),
       ),
       transports: [
-        new winston.transports.Console(), // Log para o console
         new winston.transports.File({
           filename: 'logs/error.log',
           level: 'error',

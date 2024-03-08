@@ -11,6 +11,10 @@ class BackService {
     deleteUser(idUser){ return api_leilao.delete('/users/' + idUser); }
     getUser(user){return api_leilao.get('/users/user/' + user); }
 
+    //Serviços de whatsapp
+    senderAll(){ return api_leilao.get('/whatsapp/all');}
+    statusServidor(){ return api_leilao.get('/whatsapp/statusServidor');}
+
     //Serviços de tipo_user
     listTipoUser(){ return api_leilao.get('/tipo-users/'); }
     listTipoUserById(idTipoUser){ return api_leilao.get('/tipo-users/' + idTipoUser); }

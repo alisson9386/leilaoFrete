@@ -10,6 +10,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Cookies from 'js-cookie';
 import logo from '../assets/img/logo.png';
 import { BsPersonCircle, BsFillGearFill, BsDashCircle, BsTruck, BsFillPersonPlusFill, BsClipboard2Fill } from "react-icons/bs";
+import AppServices from '../service/app-service'
 
 const Toast = Swal.mixin({
     toast: true,
@@ -38,10 +39,11 @@ class NavbarComponent extends Component {
             nome:'',
             setor_user:'',
             imgPerfil:'',
+            whatsappStatus: false
         }
     }
     
-    componentDidMount(){
+    async componentDidMount(){
         const token = Cookies.get('token');
         const myDecodedToken = decodeToken(token);
         const isMyTokenExpired = isExpired(token);
@@ -53,7 +55,11 @@ class NavbarComponent extends Component {
             this.setState({usuario: myDecodedToken.user.usuario});
             this.setState({nome: myDecodedToken.user.nome});
             this.setState({setor_user: myDecodedToken.user.setor_user});
-            console.log(myDecodedToken)
+            const whatsappStatus = await AppServices.statusServidor();
+            console.log(whatsappStatus.data)
+            if (whatsappStatus.data != null) {
+                this.setState({ whatsappStatus: whatsappStatus.data });
+            }
 
         }
     }
@@ -85,7 +91,7 @@ class NavbarComponent extends Component {
                         <Nav className="me-auto">
                         <NavDropdown title={
                             // eslint-disable-next-line
-                            <Navbar.Text> Bem vindo, <a href=''>{this.state.usuario}</a>
+                            <Navbar.Text> Bem vindo, {this.state.usuario}
                             </Navbar.Text>
                         }>
                             <NavDropdown.Item href="/perfil"><BsPersonCircle/>  Meu perfil</NavDropdown.Item>

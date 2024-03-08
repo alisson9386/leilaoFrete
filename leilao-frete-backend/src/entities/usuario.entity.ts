@@ -17,9 +17,6 @@ export class Usuario {
   @Column()
   email: string;
 
-  @Column({ type: 'blob' })
-  img_perfil: Buffer;
-
   @Column()
   tipo_user: number;
 

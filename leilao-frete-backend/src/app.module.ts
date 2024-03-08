@@ -15,6 +15,8 @@ import { WhatsAppModule } from './module/whatsapp.module';
 import { WhatsAppService } from './service/whatsapp.service';
 import { FreteirosService } from './service/freteiros.service';
 import { Freteiro } from './entities/freteiro.entity';
+import { TipoUsersModule } from './module/tipo-users.module';
+import { TipoUser } from './entities/tipo-user.entity';
 
 @Module({
   imports: [
@@ -31,12 +33,13 @@ import { Freteiro } from './entities/freteiro.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_DATABASE,
-      entities: [Usuario, Freteiro],
+      entities: [Usuario, Freteiro, TipoUser],
       synchronize: false,
     }),
     UsuariosModule,
     FreteirosModule,
     WhatsAppModule,
+    TipoUsersModule,
   ],
   controllers: [AppController],
   providers: [
