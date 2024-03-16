@@ -95,7 +95,6 @@ class PerfilComponent extends Component {
                 this.setState({ usuario: myDecodedToken.user.usuario });
                 this.setState({ nome: myDecodedToken.user.nome });
                 this.setState({ email: myDecodedToken.user.email });
-                console.log(myDecodedToken.user)
                 const responseTipoUser = await AppServices.listTipoUser();
                 if (responseTipoUser.data != null) {
                     this.setState({ tipoUsuarios: responseTipoUser.data });

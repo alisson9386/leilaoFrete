@@ -8,6 +8,7 @@ import NavbarComponent from './components/NavbarComponent';
 import HomeComponent from './components/HomeComponent';
 import PerfilComponent from './components/PerfilComponent';
 import Layout from './components/Layout';
+import StatusWhatsappComponent from './components/admin/StatusWhatsapp';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
 								<Layout>
 									<Route path="/index" component={HomeComponent}/>
 									<Route path="/perfil" component={PerfilComponent}/>
+									<Route path="/statusWhatsapp" component={StatusWhatsappComponent}/>
 								</Layout>
 								</Switch>
               </Route>
