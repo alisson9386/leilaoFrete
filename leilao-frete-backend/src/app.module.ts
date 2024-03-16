@@ -59,6 +59,7 @@ export class AppModule {
         { path: 'users', method: RequestMethod.POST },
         { path: 'users/user/:user', method: RequestMethod.GET },
         { path: 'users/:id', method: RequestMethod.PATCH },
+        { path: 'whatsapp/statusServidor', method: RequestMethod.GET}
       )
       .forRoutes('*');
   }

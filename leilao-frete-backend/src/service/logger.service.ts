@@ -7,7 +7,7 @@ export class LoggerService {
 
   constructor() {
     this.logger = winston.createLogger({
-      level: 'info',
+      level: 'error',
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.printf(({ timestamp, level, message }) => {

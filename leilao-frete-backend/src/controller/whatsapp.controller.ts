@@ -23,4 +23,5 @@ export class WhatsappController {
   async getStatus() {
     return this.whatsappService.getStatus();
   }
+
 }

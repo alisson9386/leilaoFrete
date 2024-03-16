@@ -5,8 +5,8 @@ import * as QrCode from 'qrcode-terminal';
 @Injectable()
 export class WhatsAppService {
   private client: Client;
-  private qrCodeGenerated: boolean = false;
-  private statusServidor: boolean = false;
+  private statusServidor: boolean;
+  private qrcode: string;
 
   constructor() {
     const options: ClientOptions = {
@@ -14,6 +14,8 @@ export class WhatsAppService {
     };
     this.client = new Client(options);
     this.initialize();
+    this.qrcode = '';
+    this.statusServidor = false;
   }
 
   senderAll(variosNumeros: any[]){
@@ -26,18 +28,16 @@ export class WhatsAppService {
   }
 
   getStatus(){
-    return this.statusServidor;
+    let data =[this.statusServidor, this.qrcode];
+    return data;
   }
-  
 
-  private initialize() {
+
+  initialize() {
     this.client.on('qr', async (qrCode) => {
-      if (!this.qrCodeGenerated) {
-        // Lógica para exibir o QR code
-        QrCode.generate(qrCode, { small: true });
-        console.log('QR Code recebido, faça o scan:');
-        this.qrCodeGenerated = true;
-      }
+        this.qrcode = qrCode;
+        //QrCode.generate(qrCode, { small: true });
+        //console.log('QR Code recebido, faça o scan:');
     });
 
     this.client.on('ready', () => {
@@ -47,11 +47,18 @@ export class WhatsAppService {
 
     this.client.on('disconnected', () => {
       console.log('Cliente WhatsApp desconectado!');
-      this.statusServidor = false; // Emitir evento quando o WhatsApp Web estiver desconectado
+      this.statusServidor = false;
+
+      setTimeout(() => {
+        console.log('Tentando reconectar...');
+        this.client.initialize().catch(error => {
+          console.error('Falha ao tentar reconectar:', error);
+          this.client.initialize();
+        });
+     }, 5000);
     });
 
     this.client.on('message', async (msg) => {
-      // Verificar se a mensagem é do número específico desejado
       const desiredNumber = '553192178417@c.us'; // Número de telefone desejado
       if (msg.from === desiredNumber) {
           console.log(`Mensagem recebida do número ${desiredNumber}: ${msg.body}`);
