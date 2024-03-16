@@ -1,5 +1,6 @@
 import './App.css';
-import './assets/style.scss'
+//import './assets/style.scss'
+import './index.css';
 import history from './history';
 import { Switch, Router, Route } from 'react-router-dom';
 import LoginComponent from './components/LoginComponent';

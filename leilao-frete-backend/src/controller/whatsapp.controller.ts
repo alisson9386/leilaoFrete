@@ -1,19 +1,19 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { FreteirosService } from 'src/service/freteiros.service';
+import { ProprietarioService } from 'src/service/proprietario.service';
 import { WhatsAppService } from '../service/whatsapp.service';
 
 @Controller('whatsapp')
 export class WhatsappController {
   constructor(
     private readonly whatsappService: WhatsAppService,
-    private readonly freteirosService: FreteirosService,
+    private readonly proprietarioService: ProprietarioService,
     ) {}
 
   @Get('all')
   async senderAll() {
-    var freteiros = await this.freteirosService.findAll();
+    var proprietarioService = await this.proprietarioService.findAll();
     let numeros = [];
-    freteiros.map((freteiro) => {
+    proprietarioService.map((freteiro) => {
       if(freteiro.tel_whatsapp) numeros.push(freteiro.tel_whatsapp)
     })
     return this.whatsappService.senderAll(numeros);

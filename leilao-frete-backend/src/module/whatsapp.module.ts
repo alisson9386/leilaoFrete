@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { WhatsAppService } from '../service/whatsapp.service';
 import { WhatsappController } from '../controller/whatsapp.controller';
-import { FreteirosService } from 'src/service/freteiros.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Whatsapp } from 'src/entities/whatsapp.entity';
-import { Freteiro } from 'src/entities/freteiro.entity';
+import { Proprietario } from 'src/entities/proprietario.entity';
+import { ProprietarioService } from 'src/service/proprietario.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Whatsapp, Freteiro])],
+  imports: [TypeOrmModule.forFeature([Proprietario])],
   controllers: [WhatsappController],
-  providers: [WhatsAppService, FreteirosService],
+  providers: [WhatsAppService, ProprietarioService],
 })
 export class WhatsAppModule {}

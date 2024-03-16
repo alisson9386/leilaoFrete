@@ -1,22 +1,30 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtMiddleware } from './auth/jwt.middleware';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { UsuariosModule } from './module/usuarios.module';
 import { Usuario } from './entities/usuario.entity';
-import { FreteirosModule } from './module/freteiros.module';
+import { ProprietarioModule } from './module/proprietario.module';
 import { LoggingInterceptor } from './logging.interceptor';
 import { LoggerService } from './service/logger.service';
-import { WhatsAppModule } from './module/whatsapp.module';
 import { WhatsAppService } from './service/whatsapp.service';
-import { FreteirosService } from './service/freteiros.service';
-import { Freteiro } from './entities/freteiro.entity';
+import { ProprietarioService } from './service/proprietario.service';
+import { Proprietario } from './entities/proprietario.entity';
 import { TipoUsersModule } from './module/tipo-users.module';
 import { TipoUser } from './entities/tipo-user.entity';
+import { VeiculoModule } from './module/veiculo.module';
+import { ProprietarioController } from './controller/proprietario.controller';
+import { TipoUsersController } from './controller/tipo-users.controller';
+import { UsuariosController } from './controller/usuarios.controller';
+import { VeiculoController } from './controller/veiculo.controller';
+import { WhatsappController } from './controller/whatsapp.controller';
+import { TipoProprietarioModule } from './module/tipo_proprietario.module';
+import { TipoCarroceriaVeiculoModule } from './module/tipo_carroceria_veiculo.module';
+import { TipoRodadoVeiculoModule } from './module/tipo_rodado_veiculo.module';
+import { UfModule } from './module/uf.module';
+import { WhatsAppModule } from './module/whatsapp.module';
 
 @Module({
   imports: [
@@ -33,17 +41,22 @@ import { TipoUser } from './entities/tipo-user.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_DATABASE,
-      entities: [Usuario, Freteiro, TipoUser],
+      entities: [Usuario, Proprietario, TipoUser],
       synchronize: false,
     }),
     UsuariosModule,
-    FreteirosModule,
-    WhatsAppModule,
+    ProprietarioModule,
     TipoUsersModule,
+    VeiculoModule,
+    TipoProprietarioModule,
+    TipoCarroceriaVeiculoModule,
+    TipoRodadoVeiculoModule,
+    UfModule,
+    WhatsAppModule
   ],
-  controllers: [AppController],
+  controllers: [
+  ],
   providers: [
-    AppService,
     JwtMiddleware,
     WhatsAppService,
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
@@ -59,7 +72,6 @@ export class AppModule {
         { path: 'users', method: RequestMethod.POST },
         { path: 'users/user/:user', method: RequestMethod.GET },
         { path: 'users/:id', method: RequestMethod.PATCH },
-        { path: 'whatsapp/statusServidor', method: RequestMethod.GET}
       )
       .forRoutes('*');
   }

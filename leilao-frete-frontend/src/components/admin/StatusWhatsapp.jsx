@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { isExpired, /*decodeToken*/ } from 'react-jwt';
+import { isExpired, decodeToken } from 'react-jwt';
 import Cookies from 'js-cookie';
 import AppServices from '../../service/app-service'
 import useAuth from '../../context/useAuth';
 import QRCode from 'qrcode.react';
-import Swal from 'sweetalert2';
+//import Swal from 'sweetalert2';
+import history from '../../history';
 //import history from '../../history';
 
 
@@ -22,10 +23,13 @@ class StatusWhatsappComponent extends Component {
     async componentDidMount(){
 
         const token = Cookies.get('token');
-        //const myDecodedToken = decodeToken(token);
+        const myDecodedToken = decodeToken(token);
         const isMyTokenExpired = isExpired(token);
         if(isMyTokenExpired){
             useAuth.handleLogout();
+        }
+        if(myDecodedToken.user.tipo_user !== 1){
+            history.push('/index')
         }
         const whatsappStatus = await AppServices.statusServidor();
         if (whatsappStatus.data != null) {

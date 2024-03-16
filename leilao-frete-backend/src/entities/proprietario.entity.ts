@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'freteiro' })
-export class Freteiro {
+@Entity({ name: 'proprietario' })
+export class Proprietario {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -9,16 +9,19 @@ export class Freteiro {
   nome: string;
 
   @Column()
-  cpf: string;
-
-  @Column()
-  modelo_veiculo: string;
-
-  @Column()
-  placa: string;
+  cpf_cnpj: string;
 
   @Column()
   tel_whatsapp: string;
+
+  @Column()
+  ie: string;
+
+  @Column()
+  uf: number;
+  
+  @Column()
+  tipo_proprietario: number;
 
   @Column({ default: true })
   fl_ativo: boolean;
