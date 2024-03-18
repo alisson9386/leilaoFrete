@@ -10,11 +10,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthService } from 'src/auth/auth.service';
-import { LoginDto } from 'src/dto/login_dto/login.dto';
-import { CreateUsuarioDto } from 'src/dto/usuarios_dto/create-usuario.dto';
-import { UpdateUsuarioDto } from 'src/dto/usuarios_dto/update-usuario.dto';
-import { UsuariosService } from 'src/service/usuarios.service';
+import { AuthService } from '../auth/auth.service';
+import { LoginDto } from '../dto/login_dto/login.dto';
+import { CreateUsuarioDto } from '../dto/usuarios_dto/create-usuario.dto';
+import { UpdateUsuarioDto } from '../dto/usuarios_dto/update-usuario.dto';
+import { UsuariosService } from '../service/usuarios.service';
 
 @Controller('users')
 export class UsuariosController {

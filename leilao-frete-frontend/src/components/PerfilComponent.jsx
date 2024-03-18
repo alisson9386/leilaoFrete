@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import Cookies from "js-cookie";
-import { isExpired, decodeToken } from "react-jwt";
 import useAuth from "../context/useAuth";
 import AppServices from "../service/app-service";
 import Modal from "react-bootstrap/Modal";
@@ -17,6 +15,7 @@ import {
   MDBCardImage,
   MDBBtn,
   MDBTypography,
+  MDBInput,
 } from "mdb-react-ui-kit";
 
 class PerfilComponent extends Component {
@@ -66,6 +65,9 @@ class PerfilComponent extends Component {
       email: "",
       tipoUsuarios: [],
       showModal: false,
+      showPasswordFields: false,
+      buttonPassword: true,
+      showPassword: false,
     };
 
     this.changeTipoUserHandler = this.changeTipoUserHandler.bind(this);
@@ -77,7 +79,13 @@ class PerfilComponent extends Component {
   }
 
   handleClose = () => {
-    this.setState({ showModal: false });
+    this.setState({
+      showModal: false,
+      buttonPassword: true,
+      showPasswordFields: false,
+      senha: "",
+      senhaConfirm: "",
+    });
     this.componentDidMount();
   };
 
@@ -89,31 +97,29 @@ class PerfilComponent extends Component {
     this.handleShow();
   };
 
+  togglePasswordFields = () => {
+    this.setState({ showPasswordFields: true, buttonPassword: false });
+  };
+
+  toggleShowPassword = () => {
+    this.setState((prevState) => ({ showPassword: !prevState.showPassword }));
+  };
+
   async componentDidMount() {
-    try {
-      const token = Cookies.get("token");
-      const myDecodedToken = decodeToken(token);
-      const isMyTokenExpired = isExpired(token);
-      if (isMyTokenExpired) {
-        useAuth.handleLogout();
-      } else if (!isMyTokenExpired) {
-        this.setState({ id: myDecodedToken.user.id });
-        this.setState({ usuario: myDecodedToken.user.usuario });
-        this.setState({ nome: myDecodedToken.user.nome });
-        this.setState({ email: myDecodedToken.user.email });
-        const responseTipoUser = await AppServices.listTipoUser();
-        if (responseTipoUser.data != null) {
-          this.setState({ tipoUsuarios: responseTipoUser.data });
-        }
-        const tipo = responseTipoUser.data.find(
-          (tipos) => tipos.id === myDecodedToken.user.tipo_user
-        );
-        this.setState({ tipo_user: tipo.tipo });
-        this.setState({ tipo_user_id: tipo.id });
-      }
-    } catch (error) {
-      console.log(error);
+    const myDecodedToken = useAuth.setAuthInfo();
+    this.setState({ id: myDecodedToken.user.id });
+    this.setState({ usuario: myDecodedToken.user.usuario });
+    this.setState({ nome: myDecodedToken.user.nome });
+    this.setState({ email: myDecodedToken.user.email });
+    const responseTipoUser = await AppServices.listTipoUser();
+    if (responseTipoUser.data != null) {
+      this.setState({ tipoUsuarios: responseTipoUser.data });
     }
+    const tipo = responseTipoUser.data.find(
+      (tipos) => tipos.id === myDecodedToken.user.tipo_user
+    );
+    this.setState({ tipo_user: tipo.tipo });
+    this.setState({ tipo_user_id: tipo.id });
   }
 
   changeTipoUserHandler = (event) => {
@@ -178,6 +184,7 @@ class PerfilComponent extends Component {
 
   render() {
     const { tipoUsuarios, tipo_user } = this.state;
+    const passwordType = this.state.showPassword ? "text" : "password";
     return (
       <>
         <br />
@@ -200,10 +207,16 @@ class PerfilComponent extends Component {
                     <MDBTypography tag="h4"> {this.state.nome}</MDBTypography>
                     <MDBCardText className="text-muted mb-4">
                       {this.state.usuario} <span className="mx-2">|</span>{" "}
-                      <a href="#!">{this.state.email} <span className="mx-2">|</span>{" "}</a>
+                      <a href="#!">
+                        {this.state.email} <span className="mx-2">|</span>{" "}
+                      </a>
                       {this.state.tipo_user}
                     </MDBCardText>
-                    <MDBBtn rounded size="lg" onClick={() => this.handleEditPerfil()}>
+                    <MDBBtn
+                      rounded
+                      size="lg"
+                      onClick={() => this.handleEditPerfil()}
+                    >
                       Editar Perfil
                     </MDBBtn>
                   </MDBCardBody>
@@ -273,7 +286,97 @@ class PerfilComponent extends Component {
             <Modal.Title>Editar perfil</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <div className="containerPerfilEdit">
+            <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
+              <MDBCol sm="5">
+                <MDBInput
+                  id="nomw"
+                  label="Nome"
+                  value={this.state.nome}
+                  onChange={this.changeNomeHandler}
+                />
+              </MDBCol>
+              <MDBCol sm="5">
+                <MDBInput
+                  id="email"
+                  onChange={this.changeEmailHandler}
+                  label="Email"
+                  value={this.state.email}
+                />
+              </MDBCol>
+              <MDBRow className="g-2">
+                <MDBCol sm="5">
+                  <MDBInput
+                    onChange={this.changeUserHandler}
+                    id="user"
+                    label="Usuário"
+                    value={this.state.usuario}
+                    disabled={this.state.tipo_user_id !== 1}
+                  />
+                </MDBCol>
+                <MDBCol sm="5">
+                  <select
+                    className="form-control"
+                    label="Tipo de usuário"
+                    value={tipo_user}
+                    onChange={this.changeTipoUserHandler}
+                    disabled={this.state.tipo_user_id !== 1}
+                  >
+                    {tipoUsuarios.map((option, index) => (
+                      <option key={index} value={option.tipo}>
+                        {option.tipo}
+                      </option>
+                    ))}
+                  </select>
+                </MDBCol>
+              </MDBRow>
+              <MDBRow className="g-2">
+                {this.state.buttonPassword && (
+                  <MDBCol size="auto">
+                    <Button
+                      variant="primary"
+                      id="termosButton"
+                      data-toggle="modal"
+                      onClick={this.togglePasswordFields}
+                    >
+                      Alterar senha?
+                    </Button>
+                  </MDBCol>
+                )}
+              </MDBRow>
+              {this.state.showPasswordFields && (
+                <MDBRow className="g-2">
+                  <MDBCol sm="5">
+                    <MDBInput
+                      id="senha"
+                      label="Senha"
+                      type={passwordType}
+                      value={this.state.senha}
+                      onChange={this.changeSenhaHandler}
+                    />
+                  </MDBCol>
+                  <MDBCol sm="5">
+                    <MDBInput
+                      id="confirmSenha"
+                      type={passwordType}
+                      label="Confirme a senha"
+                      value={this.state.senhaConfirm}
+                      onChange={this.changeSenhaConfirmHandler}
+                    />
+                  </MDBCol>
+                  <MDBCol sm="2">
+                    <Button
+                      variant="primary"
+                      id="termosButton"
+                      data-toggle="modal"
+                      onClick={this.toggleShowPassword}
+                    >
+                      {this.state.showPassword ? "Ocultar" : "Exibir"}
+                    </Button>
+                  </MDBCol>
+                </MDBRow>
+              )}
+            </MDBRow>
+            {/*<div className="containerPerfilEdit">
               <form onSubmit={this.editarPerfil}>
                 <div className="row g-3">
                   <div className="col-md-5">
@@ -365,7 +468,7 @@ class PerfilComponent extends Component {
                   </div>
                 </div>
               </form>
-            </div>
+                        </div>*/}
           </Modal.Body>
           <Modal.Footer>
             <Button

@@ -69,9 +69,9 @@ class StatusWhatsappComponent extends Component {
             fontWeight: 'bold',
             color: status === 'Conectado' ? 'green' : 'red'
         };
-        const qrCodeSize = 300;
+        const qrCodeSize = 200;
         return (
-            <div className='containerCenter'>
+            <div className='containerPerfilView'>
                 <br/><br/><br/><br/>
                 <h3>Status whatsapp</h3>
                 <p>Status : <span style={statusStyle}>{status}</span></p>

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from '../dto/usuarios_dto/create-usuario.dto'
 import { UpdateUsuarioDto } from '../dto/usuarios_dto/update-usuario.dto';
 import * as bcrypt from 'bcryptjs';
-import { Usuario } from 'src/entities/usuario.entity';
+import { Usuario } from '../entities/usuario.entity';
 
 @Injectable()
 export class UsuariosService {
