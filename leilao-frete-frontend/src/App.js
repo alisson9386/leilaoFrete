@@ -10,6 +10,8 @@ import HomeComponent from './components/HomeComponent';
 import PerfilComponent from './components/PerfilComponent';
 import Layout from './components/Layout';
 import StatusWhatsappComponent from './components/admin/StatusWhatsapp';
+import AdminComponent from './components/admin/Admin';
+import ModeloComponent from './components/Modelo';
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
 						<Switch>
 							<Route path="/" exact component={LoginComponent}/>
 							<Route path="/replacePassword" component={ReplacePasswordComponent}/>
+									<Route path="/modelo" component={ModeloComponent}/>
 							<Route>
 								<NavbarComponent/>
 								<Switch>
@@ -25,6 +28,9 @@ function App() {
 									<Route path="/index" component={HomeComponent}/>
 									<Route path="/perfil" component={PerfilComponent}/>
 									<Route path="/statusWhatsapp" component={StatusWhatsappComponent}/>
+									<Route path="/admin" component={AdminComponent}/>
+
+
 								</Layout>
 								</Switch>
               </Route>

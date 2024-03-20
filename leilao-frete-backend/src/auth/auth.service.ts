@@ -16,7 +16,10 @@ export class AuthService {
     );
     if (!authenticatedUser) {
       throw new HttpException(
-        'Usuário ou senha inválidos',
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Usuário ou senha inválidos',
+        },
         HttpStatus.UNAUTHORIZED,
       );
     }

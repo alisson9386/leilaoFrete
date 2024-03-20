@@ -24,10 +24,11 @@ class UseAuth {
   }
 
   setAuthInfo() {
-    const decodedToken = decodeToken();
+    const decodedToken = this.decodeToken();
     var user = {
       id: decodedToken.user.id,
-      user: decodedToken.user.usuario,
+      usuario: decodedToken.user.usuario,
+      tipo_user: decodedToken.user.tipo_user,
       nome: decodedToken.user.nome,
       email: decodedToken.user.email,
     };

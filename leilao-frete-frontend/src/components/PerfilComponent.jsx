@@ -5,6 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import imgPerfil from "../assets/img/perfil.png";
+import { BsEyeSlashFill, BsEyeFill } from "react-icons/bs";
 import {
   MDBCol,
   MDBContainer,
@@ -68,6 +69,7 @@ class PerfilComponent extends Component {
       showPasswordFields: false,
       buttonPassword: true,
       showPassword: false,
+      erroSenha: "",
     };
 
     this.changeTipoUserHandler = this.changeTipoUserHandler.bind(this);
@@ -107,16 +109,16 @@ class PerfilComponent extends Component {
 
   async componentDidMount() {
     const myDecodedToken = useAuth.setAuthInfo();
-    this.setState({ id: myDecodedToken.user.id });
-    this.setState({ usuario: myDecodedToken.user.usuario });
-    this.setState({ nome: myDecodedToken.user.nome });
-    this.setState({ email: myDecodedToken.user.email });
+    this.setState({ id: myDecodedToken.id });
+    this.setState({ usuario: myDecodedToken.usuario });
+    this.setState({ nome: myDecodedToken.nome });
+    this.setState({ email: myDecodedToken.email });
     const responseTipoUser = await AppServices.listTipoUser();
     if (responseTipoUser.data != null) {
       this.setState({ tipoUsuarios: responseTipoUser.data });
     }
     const tipo = responseTipoUser.data.find(
-      (tipos) => tipos.id === myDecodedToken.user.tipo_user
+      (tipos) => tipos.id === myDecodedToken.tipo_user
     );
     this.setState({ tipo_user: tipo.tipo });
     this.setState({ tipo_user_id: tipo.id });
@@ -129,10 +131,14 @@ class PerfilComponent extends Component {
     this.setState({ usuario: event.target.value });
   };
   changeSenhaHandler = (event) => {
-    this.setState({ senha: event.target.value });
+    this.setState({ senha: event.target.value }, () => {
+      this.validarSenhas();
+    });
   };
   changeSenhaConfirmHandler = (event) => {
-    this.setState({ senhaConfirm: event.target.value });
+    this.setState({ senhaConfirm: event.target.value }, () => {
+      this.validarSenhas();
+    });
   };
   changeNomeHandler = (event) => {
     this.setState({ nome: event.target.value });
@@ -145,6 +151,15 @@ class PerfilComponent extends Component {
     const tipo = this.state.tipoUsuarios.find((tipos) => tipos.id === tipoUser);
     this.setState({ tipo_user: tipo.tipo });
     this.setState({ tipo_user_id: tipo.id });
+  };
+
+  validarSenhas = () => {
+    const { senha, senhaConfirm } = this.state;
+    if (senha !== senhaConfirm) {
+      this.setState({ erroSenha: "As senhas não coincidem." });
+    } else {
+      this.setState({ erroSenha: "" });
+    }
   };
 
   editarPerfil = async () => {
@@ -183,7 +198,14 @@ class PerfilComponent extends Component {
   };
 
   render() {
-    const { tipoUsuarios, tipo_user } = this.state;
+    const {
+      tipoUsuarios,
+      tipo_user,
+      senha,
+      senhaConfirm,
+      erroSenha,
+      showPasswordFields,
+    } = this.state;
     const passwordType = this.state.showPassword ? "text" : "password";
     return (
       <>
@@ -213,8 +235,10 @@ class PerfilComponent extends Component {
                       {this.state.tipo_user}
                     </MDBCardText>
                     <MDBBtn
+                      className="me-1"
+                      color="secondary"
                       rounded
-                      size="lg"
+                      style={{ textTransform: 'none' }}
                       onClick={() => this.handleEditPerfil()}
                     >
                       Editar Perfil
@@ -224,57 +248,6 @@ class PerfilComponent extends Component {
               </MDBCol>
             </MDBRow>
           </MDBContainer>
-          {/*<Form>
-            <Row className="mb-3">
-              <Form.Group as={Col} md="4">
-                <Form.Label>Nome</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={this.state.nome}
-                  disabled="disabled"
-                  placeholder="Nome"
-                />
-              </Form.Group>
-            </Row>
-            <Row className="mb-3">
-              <Form.Group as={Col} md="3">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={this.state.email}
-                  disabled="disabled"
-                  placeholder="Email"
-                />
-              </Form.Group>
-            </Row>
-            <Row className="mb-3">
-              <Form.Group as={Col} md="2">
-                <Form.Label>Usuário</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Usuário"
-                  value={this.state.usuario}
-                  disabled="disabled"
-                />
-              </Form.Group>
-              <Form.Group as={Col} md="2">
-                <Form.Label>Tipo de usuário</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={this.state.tipo_user}
-                  disabled="disabled"
-                  placeholder="Email"
-                />
-              </Form.Group>
-            </Row>
-            <Button
-              type="button"
-              className="btn btn-dark"
-              onClick={() => this.handleEditPerfil()}
-            >
-              Editar perfil
-            </Button>
-    </Form>*/}
         </div>
         <Modal
           className="modal modal-lg"
@@ -333,7 +306,7 @@ class PerfilComponent extends Component {
                 {this.state.buttonPassword && (
                   <MDBCol size="auto">
                     <Button
-                      variant="primary"
+                      variant="link"
                       id="termosButton"
                       data-toggle="modal"
                       onClick={this.togglePasswordFields}
@@ -350,7 +323,7 @@ class PerfilComponent extends Component {
                       id="senha"
                       label="Senha"
                       type={passwordType}
-                      value={this.state.senha}
+                      value={senha}
                       onChange={this.changeSenhaHandler}
                     />
                   </MDBCol>
@@ -359,126 +332,45 @@ class PerfilComponent extends Component {
                       id="confirmSenha"
                       type={passwordType}
                       label="Confirme a senha"
-                      value={this.state.senhaConfirm}
+                      value={senhaConfirm}
                       onChange={this.changeSenhaConfirmHandler}
                     />
                   </MDBCol>
                   <MDBCol sm="2">
                     <Button
-                      variant="primary"
+                      variant="link"
+                      size="lg"
+                      data-toggle="tooltip"
                       id="termosButton"
-                      data-toggle="modal"
+                      data-placement="right"
+                      title={this.state.showPassword ? "Ocultar" : "Exibir"}
                       onClick={this.toggleShowPassword}
                     >
-                      {this.state.showPassword ? "Ocultar" : "Exibir"}
+                      {this.state.showPassword ? (
+                        <BsEyeSlashFill />
+                      ) : (
+                        <BsEyeFill />
+                      )}
                     </Button>
                   </MDBCol>
+                  {erroSenha && <p style={{ color: "red" }}>{erroSenha}</p>}
                 </MDBRow>
               )}
             </MDBRow>
-            {/*<div className="containerPerfilEdit">
-              <form onSubmit={this.editarPerfil}>
-                <div className="row g-3">
-                  <div className="col-md-5">
-                    <div className="form-group">
-                      <label>Nome</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Nome"
-                        value={this.state.nome}
-                        onChange={this.changeNomeHandler}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-5">
-                    <div className="form-group">
-                      <label>Email</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder="Seu email"
-                        value={this.state.email}
-                        onChange={this.changeEmailHandler}
-                        disabled={this.state.tipo_user_id !== 1}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-3">
-                    <div className="form-group">
-                      <label>Usuário</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Usuário"
-                        value={this.state.usuario}
-                        onChange={this.changeUserHandler}
-                        disabled={this.state.tipo_user_id !== 1}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-3">
-                    <div className="form-group">
-                      <label>Tipo de usuário</label>
-                      <select
-                        className="form-control"
-                        value={tipo_user}
-                        onChange={this.changeTipoUserHandler}
-                        disabled={this.state.tipo_user_id !== 1}
-                      >
-                        {tipoUsuarios.map((option, index) => (
-                          <option key={index} value={option.tipo}>
-                            {option.tipo}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="row g-3">
-                  <div className="col-md-5">
-                    <div className="form-group">
-                      <label>Senha</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Senha"
-                        value={this.state.senha}
-                        onChange={this.changeSenhaHandler}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-5">
-                    <div className="form-group">
-                      <label>Confirme sua senha</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Confirme sua senha"
-                        value={this.state.senhaConfirm}
-                        onChange={this.changeSenhaConfirmHandler}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </form>
-                        </div>*/}
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="primary"
-              id="termosButton"
-              data-toggle="modal"
-              onClick={this.editarPerfil}
-            >
-              Salvar
-            </Button>
+            {!showPasswordFields || (showPasswordFields && !erroSenha) ? (
+              <Button
+                variant="success"
+                id="termosButton"
+                data-toggle="modal"
+                onClick={this.editarPerfil}
+              >
+                Salvar
+              </Button>
+            ) : (
+              ""
+            )}
             <span style={{ marginLeft: "10px" }}></span>
             <Button variant="danger" onClick={this.handleClose}>
               Cancelar

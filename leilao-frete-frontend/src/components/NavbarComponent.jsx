@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import history from "../history";
 import useAuth from "../context/useAuth";
-import { isExpired, decodeToken } from "react-jwt";
 import Swal from "sweetalert2";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import Cookies from "js-cookie";
 import logo from "../assets/img/logo.png";
 import {
   BsPersonCircle,
@@ -65,22 +63,18 @@ class NavbarComponent extends Component {
   }
 
   async componentDidMount() {
-    const token = Cookies.get("token");
-    const myDecodedToken = decodeToken(token);
-    const isMyTokenExpired = isExpired(token);
-    if (isMyTokenExpired) {
-      useAuth.handleLogout();
-    } else if (!isMyTokenExpired) {
-      this.setState({ id: myDecodedToken.user.id });
-      this.setState({ tipo_user: myDecodedToken.user.tipo_user });
-      this.setState({ usuario: myDecodedToken.user.usuario });
-      this.setState({ nome: myDecodedToken.user.nome });
-      this.setState({ setor_user: myDecodedToken.user.setor_user });
-      const whatsappStatus = await AppServices.statusServidor();
-      if (whatsappStatus.data != null) {
-        this.setState({ whatsappStatus: whatsappStatus.data[0] });
-      }
+    const myDecodedToken = useAuth.setAuthInfo();
+    console.log(myDecodedToken)
+    this.setState({ id: myDecodedToken.id });
+    this.setState({ usuario: myDecodedToken.usuario });
+    this.setState({ nome: myDecodedToken.nome });
+    this.setState({ email: myDecodedToken.email });
+    this.setState({ tipo_user: myDecodedToken.tipo_user });
+    const whatsappStatus = await AppServices.statusServidor();
+    if (whatsappStatus.data != null) {
+      this.setState({ whatsappStatus: whatsappStatus.data[0] });
     }
+
     setTimeout(() => {
       let time = !this.state.whatsappStatus ? 5000 : 30000;
       this.intervalId = setInterval(this.fetchData, time);
@@ -157,7 +151,16 @@ class NavbarComponent extends Component {
                         </Navbar>*/}
         <MDBNavbar expand="lg" dark bgColor="dark">
           <MDBContainer fluid>
-            <MDBNavbarBrand href="/index"><img src={logo} className="img-thumbnail" alt="..." width="50" height="50" style={{ borderRadius: "50%", margin: "auto" }}></img></MDBNavbarBrand>
+            <MDBNavbarBrand href="/index">
+              <img
+                src={logo}
+                className="img-thumbnail"
+                alt="..."
+                width="50"
+                height="50"
+                style={{ borderRadius: "50%", margin: "auto" }}
+              ></img>
+            </MDBNavbarBrand>
 
             <MDBNavbarToggler
               aria-controls="navbarSupportedContent"
@@ -186,8 +189,12 @@ class NavbarComponent extends Component {
                       Fretes
                     </MDBDropdownToggle>
                     <MDBDropdownMenu>
-                      <MDBDropdownItem link><BsClipboard2Fill/> Meus fretes</MDBDropdownItem>
-                      <MDBDropdownItem link><BsTruck/> Novo frete</MDBDropdownItem>
+                      <MDBDropdownItem link>
+                        <BsClipboard2Fill /> Meus fretes
+                      </MDBDropdownItem>
+                      <MDBDropdownItem link>
+                        <BsTruck /> Novo frete
+                      </MDBDropdownItem>
                     </MDBDropdownMenu>
                   </MDBDropdown>
                 </MDBNavbarItem>

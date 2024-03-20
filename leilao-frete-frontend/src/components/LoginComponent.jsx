@@ -25,7 +25,7 @@ class LoginComponent extends Component {
         Swal.fire({
                     icon: 'error',
 					title: 'Falha no login',
-                    html: err.message,
+                    html: err.response.data.error,
 						})	
     }
     showAlertUserAuthenticated = () => {
@@ -93,17 +93,17 @@ class LoginComponent extends Component {
         return (
             <div className="page">
                 <form method="POST" className="formLogin">
-                    <h1>Login</h1>
+                    <h1>Leilão de fretes</h1>
+                    <h6>Buritti Alimentos</h6>
                     <p>Digite os seus dados de acesso no campo abaixo.</p>
                     <label htmlFor="usuario">Usuario</label>
                     <input type="text" id="usuario" placeholder="Digite seu usuario" value={this.state.usuario} onChange={this.changeUserHandler} />
                     <label htmlFor="password">Senha</label>
                     <input type="password" id="senha" value={this.state.senha} onChange={this.changePasswordHandler} placeholder="Digite sua senha" />
-                    {/* <a href="/">Esqueci minha senha</a> */}
                     <Button onClick={this.loginExecute} className="btn">Acessar</Button>
                     <Button onClick={this.toReplacePassword} className="btn btn-secondary ml-2">Esqueci minha senha</Button>
                 </form>
-            </div>
+        </div>
         )
 
     }
