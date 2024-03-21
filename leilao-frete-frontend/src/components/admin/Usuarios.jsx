@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import AppServices from "../../service/app-service";
 import { Button, Form, Pagination } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
+import Swal from "sweetalert2";
 import {
   BsFillPencilFill,
   BsFillTrash3Fill,
@@ -26,8 +27,76 @@ class UsuariosEditComponent extends Component {
       filteredUsuarios: [],
       currentPage: 1,
       usuariosPerPage: 10,
+      editUser: {},
+      modalMode: "add",
     };
   }
+
+  showLoading = (text) => {
+    Swal.fire({
+      title: "Aguarde!",
+      html: text, // add html attribute if you want or remove
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  };
+
+  confirmDeleteUser = (user) => {
+    Swal.fire({
+      title: "Tem certeza?",
+      text: `Você está prestes a desativar o usuário ${user.usuario}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, deletar!",
+      cancelButtonText: "Não",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.serviceDeleteUser(user.id);
+      }
+    });
+  }
+
+  deleteStatus = (confirm, ...message) =>{
+  if(confirm){
+    this.componentDidMount();
+    Swal.fire(
+      'Excluído!',
+      'Usuário excluído.',
+      'success'
+    )
+  }else{
+    Swal.fire(
+      'Erro ao excluir!',
+      `${message}`,
+      'error'
+    )
+  }
+}
+
+  updateUserSuccess = () => {
+    Swal.fire({
+      icon: "success",
+      title: "Usuário atualizado!",
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 3000,
+    });
+    return;
+  };
+
+  showAlertError = (err) => {
+    Swal.fire({
+      icon: "error",
+      title: "Erro, por favor contate o administrador!",
+      text: err,
+    });
+  };
 
   async componentDidMount() {
     const responseTipoUser = await AppServices.listTipoUser();
@@ -43,6 +112,7 @@ class UsuariosEditComponent extends Component {
           (tipos) => tipos.id === user.tipo_user
         );
         user.tipoUsuario = tipo;
+        user.senha = ''
       });
       this.setState({ usuarios: usuarios, filteredUsuarios: usuarios });
     }
@@ -69,9 +139,21 @@ class UsuariosEditComponent extends Component {
     this.setState({ showPasswordFields: true, buttonPassword: false });
   };
 
-  handleEditUsuario = () => {
-    this.handleShow();
+  handleDeleteReserva = (user) =>{
+    this.confirmDeleteUser(user);
+  }
+
+  handleEditUsuario = (user) => {
+    this.handleShow(user);
   };
+
+  handleShow = (userData = {}, mode = "add") => {
+    this.setState({
+       showModal: true,
+       editUser: userData,
+       modalMode: mode,
+    });
+   };
 
   handleClose = () => {
     this.setState({
@@ -80,13 +162,53 @@ class UsuariosEditComponent extends Component {
       showPasswordFields: false,
       senha: "",
       senhaConfirm: "",
+      editUser: {},
     });
     this.componentDidMount();
   };
 
-  handleShow = () => {
-    this.setState({ showModal: true });
-  };
+  handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === 'tipoUsuario') {
+       const tipoUsuarioSelecionado = this.state.tipoUsuarios.find(tipo => tipo.tipo === value);
+       this.setState(prevState => ({
+         editUser: {
+           ...prevState.editUser,
+           tipoUsuario: tipoUsuarioSelecionado,
+           tipo_user: tipoUsuarioSelecionado.id
+         },
+       }));
+    } else {
+       this.setState(prevState => ({
+         editUser: {
+           ...prevState.editUser,
+           [name]: value,
+         },
+       }));
+    }
+   };
+
+  editOrAddUser = () => {
+    console.log(this.state.editUser)
+  }
+
+  serviceDeleteUser = (idUser) =>{
+    this.showLoading('Excluindo');
+    AppServices.deleteUser(idUser).then((res) => {
+      if(res.data.message === 'Usuário desativado com sucesso'){
+        Swal.close();
+        this.deleteStatus(true);
+      }else{
+        Swal.close();
+        this.deleteStatus(false, res.data.message);
+      }
+    }).catch(error => {
+      Swal.close();
+      this.deleteStatus(false)
+      console.log(error)
+    });
+    
+  }
 
   renderUsuarios = () => {
     const { currentPage, usuariosPerPage } = this.state;
@@ -98,25 +220,25 @@ class UsuariosEditComponent extends Component {
       indexOfLastUsuario
     );
 
-    return currentUsuarios.map((option) => (
-      <tr key={option.id}>
-        <td>{option.id}</td>
-        <td>{option.nome}</td>
-        <td>{option.usuario}</td>
-        <td>{option.email}</td>
-        <td>{option.tipoUsuario.tipo}</td>
-        <td>{option.fl_ativo ? "Ativo" : "Inativo"}</td>
+    return currentUsuarios.map((user) => (
+      <tr key={user.id}>
+        <td>{user.id}</td>
+        <td>{user.nome}</td>
+        <td>{user.usuario}</td>
+        <td>{user.email}</td>
+        <td>{user.tipoUsuario.tipo}</td>
+        <td>{user.fl_ativo ? "Ativo" : "Inativo"}</td>
         <td>
           <Button
             variant="warning"
             size="sm"
             title="Editar usuário"
-            onClick={() => this.handleEditUsuario()}
+            onClick={() => this.handleEditUsuario(user)}
           >
             <BsFillPencilFill />
           </Button>{" "}
-          {option.fl_ativo ? (
-            <Button variant="danger" size="sm" title="Desativar">
+          {user.fl_ativo ? (
+            <Button variant="danger" size="sm" title="Desativar" onClick={() => this.handleDeleteReserva(user)}>
               <BsFillTrash3Fill />
             </Button>
           ) : (
@@ -144,7 +266,7 @@ class UsuariosEditComponent extends Component {
           {number}
         </Pagination.Item>
       );
-   }
+    }
     return (
       <>
         <div>
@@ -155,11 +277,23 @@ class UsuariosEditComponent extends Component {
   };
 
   render() {
-    const { tipoUsuarios } = this.state;
+    const { tipoUsuarios, editUser } = this.state;
     const passwordType = this.state.showPassword ? "text" : "password";
     return (
       <>
-        <h3>Editar usuarios</h3>
+        <br />
+        <Button
+          variant="primary"
+          size="sm"
+          data-toggle="tooltip"
+          id="termosButton"
+          data-placement="right"
+          onClick={() => this.handleShow({}, "add")}
+        >
+          Novo usuário
+        </Button>
+        <br />
+        <br />
         <Form.Control
           type="text"
           placeholder="Pesquisar por nome"
@@ -167,20 +301,20 @@ class UsuariosEditComponent extends Component {
           onChange={this.handleSearchChange}
         />
         <div className="table-responsive">
-        <table class="table table-striped table-bordered table-hover table-sm">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Nome</th>
-              <th scope="col">Usuário</th>
-              <th scope="col">Email</th>
-              <th scope="col">Tipo de usuário</th>
-              <th scope="col">Status</th>
-              <th scope="col">Opções</th>
-            </tr>
-          </thead>
-          <tbody>{this.renderUsuarios()}</tbody>
-        </table>
+          <table className="table table-striped table-bordered table-hover table-sm">
+            <thead className="thead-dark">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Usuário</th>
+                <th scope="col">Email</th>
+                <th scope="col">Tipo de usuário</th>
+                <th scope="col">Status</th>
+                <th scope="col">Opções</th>
+              </tr>
+            </thead>
+            <tbody>{this.renderUsuarios()}</tbody>
+          </table>
         </div>
         <div>{this.renderPagination()}</div>
 
@@ -191,22 +325,49 @@ class UsuariosEditComponent extends Component {
           dialogClassName="custom-modal"
         >
           <Modal.Header closeButton>
-            <Modal.Title>Editar usuário</Modal.Title>
+            <Modal.Title>
+              {this.state.modalMode === "add"
+                ? "Adicionar usuário"
+                : "Editar usuário"}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
               <MDBCol sm="5">
-                <MDBInput id="nomw" label="Nome" />
+                <MDBInput
+                  id="nomw"
+                  name="nome"
+                  label="Nome"
+                  value={editUser.nome || ""}
+                  onChange={this.handleInputChange}
+                />
               </MDBCol>
               <MDBCol sm="5">
-                <MDBInput id="email" label="Email" />
+                <MDBInput
+                  id="email"
+                  name="email"
+                  label="Email"
+                  value={editUser.email || ""}
+                  onChange={this.handleInputChange}
+                />
               </MDBCol>
               <MDBRow className="g-2">
                 <MDBCol sm="5">
-                  <MDBInput id="user" label="Usuário" />
+                  <MDBInput
+                    id="user"
+                    name="usuario"
+                    label="Usuário"
+                    value={editUser.usuario || ""}
+                    onChange={this.handleInputChange}
+                  />
                 </MDBCol>
                 <MDBCol sm="5">
-                  <select className="form-control" label="Tipo de usuário">
+                  <select
+                    className="form-control"
+                    name="tipoUsuario"
+                    value={editUser.tipoUsuario ? editUser.tipoUsuario.tipo : ''}
+                    onChange={this.handleInputChange}
+                  >
                     {tipoUsuarios.map((option, index) => (
                       <option key={index} value={option.tipo}>
                         {option.tipo}
@@ -216,43 +377,27 @@ class UsuariosEditComponent extends Component {
                 </MDBCol>
               </MDBRow>
               <MDBRow className="g-2">
-                {this.state.buttonPassword && (
-                  <MDBCol size="auto">
-                    <Button
-                      variant="link"
-                      id="termosButton"
-                      data-toggle="modal"
-                      onClick={this.togglePasswordFields}
-                    >
-                      Alterar senha?
-                    </Button>
-                  </MDBCol>
-                )}
+                <MDBCol sm="5">
+                  <MDBInput id="senha" name="senha" label="Senha" type={passwordType} onChange={this.handleInputChange}/>
+                </MDBCol>
+                <MDBCol sm="2">
+                  <Button
+                    variant="link"
+                    size="lg"
+                    data-toggle="tooltip"
+                    id="termosButton"
+                    data-placement="right"
+                    title={this.state.showPassword ? "Ocultar" : "Exibir"}
+                    onClick={this.toggleShowPassword}
+                  >
+                    {this.state.showPassword ? (
+                      <BsEyeSlashFill />
+                    ) : (
+                      <BsEyeFill />
+                    )}
+                  </Button>
+                </MDBCol>
               </MDBRow>
-              {this.state.showPasswordFields && (
-                <MDBRow className="g-2">
-                  <MDBCol sm="5">
-                    <MDBInput id="senha" label="Senha" type={passwordType} />
-                  </MDBCol>
-                  <MDBCol sm="2">
-                    <Button
-                      variant="link"
-                      size="lg"
-                      data-toggle="tooltip"
-                      id="termosButton"
-                      data-placement="right"
-                      title={this.state.showPassword ? "Ocultar" : "Exibir"}
-                      onClick={this.toggleShowPassword}
-                    >
-                      {this.state.showPassword ? (
-                        <BsEyeSlashFill />
-                      ) : (
-                        <BsEyeFill />
-                      )}
-                    </Button>
-                  </MDBCol>
-                </MDBRow>
-              )}
             </MDBRow>
           </Modal.Body>
           <Modal.Footer>
@@ -260,7 +405,7 @@ class UsuariosEditComponent extends Component {
               variant="success"
               id="termosButton"
               data-toggle="modal"
-              onClick={this.editarPerfil}
+              onClick={this.editOrAddUser}
             >
               Salvar
             </Button>

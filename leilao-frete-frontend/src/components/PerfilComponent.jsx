@@ -22,7 +22,7 @@ import {
 class PerfilComponent extends Component {
   showLoading = (text) => {
     Swal.fire({
-      title: "Aguarde !",
+      title: "Aguarde!",
       html: text, // add html attribute if you want or remove
       allowOutsideClick: false,
       allowEscapeKey: false,

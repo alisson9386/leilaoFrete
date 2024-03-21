@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTipoCarroceriaVeiculoDto } from '../dto/tipo_carroceria_veiculo_dto/create-tipo_carroceria_veiculo.dto';
 import { UpdateTipoCarroceriaVeiculoDto } from '../dto/tipo_carroceria_veiculo_dto/update-tipo_carroceria_veiculo.dto';
+import { TipoCarroceriaVeiculo } from 'src/entities/tipo_carroceria_veiculo.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class TipoCarroceriaVeiculoService {
+  constructor(
+    @InjectRepository(TipoCarroceriaVeiculo)
+    private tipoCarroceriaVeiculoRepository: Repository<TipoCarroceriaVeiculo>,
+  ) {}
   create(createTipoCarroceriaVeiculoDto: CreateTipoCarroceriaVeiculoDto) {
-    return 'This action adds a new tipoCarroceriaVeiculo';
+    return this.tipoCarroceriaVeiculoRepository.save(createTipoCarroceriaVeiculoDto);
   }
 
   findAll() {
-    return `This action returns all tipoCarroceriaVeiculo`;
+    return this.tipoCarroceriaVeiculoRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} tipoCarroceriaVeiculo`;
+    return this.tipoCarroceriaVeiculoRepository.findOneBy({ id: id });
   }
 
   update(id: number, updateTipoCarroceriaVeiculoDto: UpdateTipoCarroceriaVeiculoDto) {
-    return `This action updates a #${id} tipoCarroceriaVeiculo`;
+    return this.tipoCarroceriaVeiculoRepository.update(id, updateTipoCarroceriaVeiculoDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} tipoCarroceriaVeiculo`;
+    return this.tipoCarroceriaVeiculoRepository.delete(id);
   }
 }

@@ -19,7 +19,7 @@ export class LoggerService {
           filename: 'logs/error.log',
           level: 'error',
         }), // Log de erros em arquivo
-        new winston.transports.File({ filename: 'logs/combined.log' }), // Log de todas as mensagens em arquivo
+        //new winston.transports.File({ filename: 'logs/combined.log' }), // Log de todas as mensagens em arquivo
       ],
     });
   }

@@ -6,7 +6,6 @@ import { Proprietario } from 'src/entities/proprietario.entity';
 import { ProprietarioService } from 'src/service/proprietario.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Proprietario])],
   controllers: [WhatsappController],
   providers: [WhatsAppService, ProprietarioService],
 })

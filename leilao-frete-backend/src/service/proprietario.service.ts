@@ -27,16 +27,8 @@ export class ProprietarioService {
     return this.proprietarioRepository.update(id, updateProprietarioDto);
   }
 
-  async desativarProprietario(
-    id: number,
-  ): Promise<{ success: boolean; message?: string }> {
-    const proprietario = await this.proprietarioRepository.findOneBy({ id: id });
-    if (proprietario !== null) {
-      proprietario.fl_ativo = false;
-      await this.proprietarioRepository.save(proprietario);
+  async desativarProprietario(id: number){
+      await this.proprietarioRepository.delete(id);
       return { success: true, message: 'Proprietario desativado com sucesso' };
-    } else {
-      throw new NotFoundException('Proprietario não encontrado');
-    }
   }
 }

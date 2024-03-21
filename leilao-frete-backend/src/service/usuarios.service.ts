@@ -18,7 +18,11 @@ export class UsuariosService {
   }
 
   findAll() {
-    return this.userRepository.find();
+    return this.userRepository.find({
+      where: {
+      fl_ativo: true
+    }
+    });
   }
 
   findOne(id: number) {

@@ -8,5 +8,5 @@ export class CreateVeiculoDto {
     uf_veiculo_licenciado: number;
     tipo_rodado: number;
     tipo_carroceria: number;
-    veiculo_proprio: number;
+    veiculo_proprio: boolean;
 }
