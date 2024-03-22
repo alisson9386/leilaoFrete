@@ -85,7 +85,8 @@ class StatusWhatsappComponent extends Component {
                       value={this.state.whatsappQrcode}
                       size={qrCodeSize}
                     />
-                    <Button onClick={this.reload}>Gerar novo QrCode</Button>
+                    <br/><br/>
+                    <Button onClick={this.reload} size="sm">Gerar novo QrCode</Button>
                   </>
                 ) : (
                   <>

@@ -25,6 +25,11 @@ import { TipoCarroceriaVeiculoModule } from './module/tipo_carroceria_veiculo.mo
 import { TipoRodadoVeiculoModule } from './module/tipo_rodado_veiculo.module';
 import { UfModule } from './module/uf.module';
 import { WhatsAppModule } from './module/whatsapp.module';
+import { TipoProprietario } from './entities/tipo_proprietario.entity';
+import { TipoCarroceriaVeiculo } from './entities/tipo_carroceria_veiculo.entity';
+import { TipoRodadoVeiculo } from './entities/tipo_rodado_veiculo.entity';
+import { Uf } from './entities/uf.entity';
+import { Veiculo } from './entities/veiculo.entity';
 
 @Module({
   imports: [
@@ -41,7 +46,16 @@ import { WhatsAppModule } from './module/whatsapp.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_DATABASE,
-      entities: [Usuario, Proprietario, TipoUser],
+      entities: [
+        Usuario,
+        Proprietario,
+        TipoUser,
+        TipoProprietario,
+        TipoCarroceriaVeiculo,
+        TipoRodadoVeiculo,
+        Uf,
+        Veiculo,
+      ],
       synchronize: false,
     }),
     UsuariosModule,
@@ -52,10 +66,9 @@ import { WhatsAppModule } from './module/whatsapp.module';
     TipoCarroceriaVeiculoModule,
     TipoRodadoVeiculoModule,
     UfModule,
-    WhatsAppModule
+    WhatsAppModule,
   ],
-  controllers: [
-  ],
+  controllers: [],
   providers: [
     JwtMiddleware,
     WhatsAppService,

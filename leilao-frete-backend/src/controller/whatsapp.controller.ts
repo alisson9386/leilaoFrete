@@ -6,14 +6,12 @@ import { WhatsAppService } from '../service/whatsapp.service';
 export class WhatsappController {
   constructor(
     private readonly whatsappService: WhatsAppService,
-    private readonly proprietarioService: ProprietarioService,
     ) {}
 
   @Get('all')
-  async senderAll() {
-    var proprietarioService = await this.proprietarioService.findAll();
+  async senderAll(data: any) {
     let numeros = [];
-    proprietarioService.map((freteiro) => {
+    data.map((freteiro: { tel_whatsapp: any; }) => {
       if(freteiro.tel_whatsapp) numeros.push(freteiro.tel_whatsapp)
     })
     return this.whatsappService.senderAll(numeros);

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTipoProprietarioDto } from '../dto/tipo_proprietario_dto/create-tipo_proprietario.dto';
 import { UpdateTipoProprietarioDto } from '../dto/tipo_proprietario_dto/update-tipo_proprietario.dto';
-import { TipoProprietario } from 'src/entities/tipo_proprietario.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TipoProprietario } from 'src/entities/tipo_proprietario.entity';
 
 @Injectable()
 export class TipoProprietarioService {

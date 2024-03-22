@@ -22,6 +22,27 @@ class BackService {
     updateTipoUser(baia, idTipoUser){ return api_leilao.patch('/tipo-users/' + idTipoUser, baia); }
     deleteTipoUser(idTipoUser){ return api_leilao.delete('/tipo-users/' + idTipoUser); }
 
+    //Serviços de proprietários
+    listProprietarios(){ return api_leilao.get('/proprietario/'); }
+    listProprietariosById(idProprietario){ return api_leilao.get('/proprietario/' + idProprietario); }
+    saveProprietarios(idProprietario){ return api_leilao.post('/proprietario/', idProprietario); }
+    updateProprietarios(proprietario, idProprietario){ return api_leilao.patch('/proprietario/' + idProprietario, proprietario); }
+    deleteProprietarios(idProprietario){ return api_leilao.delete('/proprietario/' + idProprietario); }
+
+    //Serviços de tipo de proprietários
+    listTipoProprietarios(){ return api_leilao.get('/tipo-proprietario/'); }
+    listTipoProprietariosById(idTipoProprietario){ return api_leilao.get('/tipo-proprietario/' + idTipoProprietario); }
+    saveTipoProprietarios(idTipoProprietario){ return api_leilao.post('/tipo-proprietario/', idTipoProprietario); }
+    updateTipoProprietarios(tipoProprietario, idTipoProprietario){ return api_leilao.patch('/tipo-proprietario/' + idTipoProprietario, tipoProprietario); }
+    deleteTipoProprietarios(idTipoProprietario){ return api_leilao.delete('/tipo-proprietario/' + idTipoProprietario); }
+
+    //Serviços de uf
+    listUf(){ return api_leilao.get('/uf/'); }
+    listUfById(idUf){ return api_leilao.get('/uf/' + idUf); }
+    saveUf(idUf){ return api_leilao.post('/uf/', idUf); }
+    updateUf(uf, idUf){ return api_leilao.patch('/uf/' + idUf, uf); }
+    deleteUf(idUf){ return api_leilao.delete('/uf/' + idUf); }
+
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

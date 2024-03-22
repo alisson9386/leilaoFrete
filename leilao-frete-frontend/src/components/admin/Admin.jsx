@@ -9,6 +9,7 @@ import {
   MDBTabsPane,
 } from "mdb-react-ui-kit";
 import UsuariosEditComponent from "./Usuarios";
+import FreteirosEditComponent from "./Freteiros";
 
 class AdminComponent extends Component {
   constructor(props) {
@@ -77,7 +78,7 @@ class AdminComponent extends Component {
               Fretes
             </MDBTabsPane>
             <MDBTabsPane open={basicActive === "proprietarios"}>
-             Proprietários
+             <FreteirosEditComponent/>
             </MDBTabsPane>
             <MDBTabsPane open={basicActive === "usuarios"}>
               <UsuariosEditComponent/>

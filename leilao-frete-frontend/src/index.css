@@ -190,6 +190,10 @@ button {
   width: 18rem;
 }
 
+.btn {
+  text-transform: none !important;
+ }
+ 
 .containerUsually {
   color: black;
   width: 80%;

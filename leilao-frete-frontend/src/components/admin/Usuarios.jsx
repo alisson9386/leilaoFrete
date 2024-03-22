@@ -60,34 +60,33 @@ class UsuariosEditComponent extends Component {
         this.serviceDeleteUser(user.id);
       }
     });
-  }
+  };
 
-  deleteStatus = (confirm, ...message) =>{
-  if(confirm){
-    this.componentDidMount();
-    Swal.fire(
-      'Excluído!',
-      'Usuário excluído.',
-      'success'
-    )
-  }else{
-    Swal.fire(
-      'Erro ao excluir!',
-      `${message}`,
-      'error'
-    )
-  }
-}
+  deleteStatus = (confirm, ...message) => {
+    if (confirm) {
+      this.componentDidMount();
+      Swal.fire("Excluído!", "Usuário excluído.", "success");
+    } else {
+      Swal.fire("Erro ao excluir!", `${message}`, "error");
+    }
+  };
 
-  updateUserSuccess = () => {
-    Swal.fire({
-      icon: "success",
-      title: "Usuário atualizado!",
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 3000,
-    });
-    return;
+  addStatus = (confirm, ...message) => {
+    if (confirm) {
+      this.componentDidMount();
+      Swal.fire("Salvo!", "Usuário salvo.", "success");
+    } else {
+      Swal.fire("Erro ao salvar!", `${message}`, "error");
+    }
+  };
+
+  updateUsuarioSuccess = (confirm, ...message) => {
+    if (confirm) {
+      this.componentDidMount();
+      Swal.fire("Atualizado!", "Usuário atualizado.", "success");
+    } else {
+      Swal.fire("Erro ao atualizar!", `${message}`, "error");
+    }
   };
 
   showAlertError = (err) => {
@@ -112,7 +111,7 @@ class UsuariosEditComponent extends Component {
           (tipos) => tipos.id === user.tipo_user
         );
         user.tipoUsuario = tipo;
-        user.senha = ''
+        user.senha = "";
       });
       this.setState({ usuarios: usuarios, filteredUsuarios: usuarios });
     }
@@ -139,21 +138,21 @@ class UsuariosEditComponent extends Component {
     this.setState({ showPasswordFields: true, buttonPassword: false });
   };
 
-  handleDeleteReserva = (user) =>{
+  handleDeleteUsuario = (user) => {
     this.confirmDeleteUser(user);
-  }
-
-  handleEditUsuario = (user) => {
-    this.handleShow(user);
   };
 
-  handleShow = (userData = {}, mode = "add") => {
+  handleEditUsuario = (user) => {
+    this.handleShow(user, "edit");
+  };
+
+  handleShow = (userData = {}, mode) => {
     this.setState({
-       showModal: true,
-       editUser: userData,
-       modalMode: mode,
+      showModal: true,
+      editUser: userData,
+      modalMode: mode,
     });
-   };
+  };
 
   handleClose = () => {
     this.setState({
@@ -169,46 +168,99 @@ class UsuariosEditComponent extends Component {
 
   handleInputChange = (event) => {
     const { name, value } = event.target;
-    if (name === 'tipoUsuario') {
-       const tipoUsuarioSelecionado = this.state.tipoUsuarios.find(tipo => tipo.tipo === value);
-       this.setState(prevState => ({
-         editUser: {
-           ...prevState.editUser,
-           tipoUsuario: tipoUsuarioSelecionado,
-           tipo_user: tipoUsuarioSelecionado.id
-         },
-       }));
+    if (name === "tipoUsuario") {
+      const tipoUsuarioSelecionado = this.state.tipoUsuarios.find(
+        (tipo) => tipo.tipo === value
+      );
+      if (tipoUsuarioSelecionado !== undefined) {
+        this.setState((prevState) => ({
+          editUser: {
+            ...prevState.editUser,
+            tipoUsuario: tipoUsuarioSelecionado ? tipoUsuarioSelecionado : null,
+            tipo_user: tipoUsuarioSelecionado.id
+              ? tipoUsuarioSelecionado.id
+              : null,
+          },
+        }));
+      } else {
+        this.setState((prevState) => ({
+          editUser: {
+            ...prevState.editUser,
+            tipoUsuario: null,
+            tipo_user: null,
+          },
+        }));
+      }
     } else {
-       this.setState(prevState => ({
-         editUser: {
-           ...prevState.editUser,
-           [name]: value,
-         },
-       }));
+      this.setState((prevState) => ({
+        editUser: {
+          ...prevState.editUser,
+          [name]: value,
+        },
+      }));
     }
-   };
+  };
 
   editOrAddUser = () => {
-    console.log(this.state.editUser)
-  }
+    const { editUser, modalMode } = this.state;
+    if (
+      !editUser.nome ||
+      !editUser.usuario ||
+      !editUser.email ||
+      !editUser.tipo_user ||
+      modalMode === "add"
+        ? !editUser.senha
+        : ""
+    ) {
+      Swal.fire({
+        title: "Ops!",
+        text: "É necessário preencher todos os campos!",
+        icon: "error",
+      });
+      return;
+    }
 
-  serviceDeleteUser = (idUser) =>{
-    this.showLoading('Excluindo');
-    AppServices.deleteUser(idUser).then((res) => {
-      if(res.data.message === 'Usuário desativado com sucesso'){
+    AppServices.saveUser(editUser)
+      .then((res) => {
+        if (res.status === 201) {
+          Swal.close();
+          if (modalMode === "add") {
+            this.addStatus(true);
+            this.handleClose();
+          } else {
+            this.updateUsuarioSuccess(true);
+            this.handleClose();
+          }
+        } else {
+          Swal.close();
+          this.updateProprietarioSuccess(false, res.statusText);
+        }
+      })
+      .catch((error) => {
         Swal.close();
-        this.deleteStatus(true);
-      }else{
+        this.deleteStatus(false);
+        console.log(error);
+      });
+  };
+
+  serviceDeleteUser = (idUser) => {
+    this.showLoading("Excluindo");
+    AppServices.deleteUser(idUser)
+      .then((res) => {
+        if (res.data.message === "Usuário desativado com sucesso") {
+          Swal.close();
+          this.deleteStatus(true);
+        } else {
+          Swal.close();
+          this.deleteStatus(false, res.data.message);
+        }
+      })
+      .catch((error) => {
         Swal.close();
-        this.deleteStatus(false, res.data.message);
-      }
-    }).catch(error => {
-      Swal.close();
-      this.deleteStatus(false)
-      console.log(error)
-    });
-    
-  }
+        this.deleteStatus(false);
+        console.log(error);
+      });
+  };
 
   renderUsuarios = () => {
     const { currentPage, usuariosPerPage } = this.state;
@@ -238,7 +290,12 @@ class UsuariosEditComponent extends Component {
             <BsFillPencilFill />
           </Button>{" "}
           {user.fl_ativo ? (
-            <Button variant="danger" size="sm" title="Desativar" onClick={() => this.handleDeleteReserva(user)}>
+            <Button
+              variant="danger"
+              size="sm"
+              title="Desativar"
+              onClick={() => this.handleDeleteUsuario(user)}
+            >
               <BsFillTrash3Fill />
             </Button>
           ) : (
@@ -365,9 +422,12 @@ class UsuariosEditComponent extends Component {
                   <select
                     className="form-control"
                     name="tipoUsuario"
-                    value={editUser.tipoUsuario ? editUser.tipoUsuario.tipo : ''}
+                    value={
+                      editUser.tipoUsuario ? editUser.tipoUsuario.tipo : ""
+                    }
                     onChange={this.handleInputChange}
                   >
+                    <option>Selecione uma função</option>
                     {tipoUsuarios.map((option, index) => (
                       <option key={index} value={option.tipo}>
                         {option.tipo}
@@ -378,7 +438,13 @@ class UsuariosEditComponent extends Component {
               </MDBRow>
               <MDBRow className="g-2">
                 <MDBCol sm="5">
-                  <MDBInput id="senha" name="senha" label="Senha" type={passwordType} onChange={this.handleInputChange}/>
+                  <MDBInput
+                    id="senha"
+                    name="senha"
+                    label="Senha"
+                    type={passwordType}
+                    onChange={this.handleInputChange}
+                  />
                 </MDBCol>
                 <MDBCol sm="2">
                   <Button

@@ -10,7 +10,6 @@ import {
   BsFillGearFill,
   BsDashCircle,
   BsTruck,
-  BsClipboard2Fill,
   BsPersonGear,
 } from "react-icons/bs";
 import AppServices from "../service/app-service";
@@ -64,7 +63,6 @@ class NavbarComponent extends Component {
 
   async componentDidMount() {
     const myDecodedToken = useAuth.setAuthInfo();
-    console.log(myDecodedToken)
     this.setState({ id: myDecodedToken.id });
     this.setState({ usuario: myDecodedToken.usuario });
     this.setState({ nome: myDecodedToken.nome });
@@ -113,42 +111,6 @@ class NavbarComponent extends Component {
     const { openBasic } = this.state;
     return (
       <>
-        {/*<Navbar bg="dark" expand="lg" variant="dark">
-                <Container>
-                    <Navbar.Brand href="/index">
-                        <img src={logo} className="img-thumbnail" alt="..." width="50" height="50" style={{ borderRadius: "50%", margin: "auto" }}></img>
-                    </Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
-                            <Nav.Link href="/index">Início</Nav.Link>
-                            <NavDropdown title="Fretes" id="basic-nav-dropdown">
-                                <NavDropdown.Item href=""><BsClipboard2Fill/> Meus fretes</NavDropdown.Item>
-                                <NavDropdown.Item href=""><BsTruck/> Novo frete</NavDropdown.Item>
-                                <NavDropdown.Item href=""><BsFillPersonPlusFill/> Cadastrar freteiro</NavDropdown.Item>
-                            </NavDropdown>
-                        </Nav>
-                    </Navbar.Collapse>
-                    <Navbar.Collapse className="justify-content-end">
-                        <Nav>
-                        {tipoUser === 1 ? (<Navbar.Text className="navbar-text-spacing">
-                                <Link to="/statusWhatsapp">Whatsapp {whatsappStatus ? <FcOk/> : <FcHighPriority /> }</Link>
-                            </Navbar.Text>) : (<></>)}
-                            <NavDropdown title={
-                                <Navbar.Text> Bem vindo, {this.state.usuario} <BsPersonGear />
-                                </Navbar.Text>
-                            }>
-                                <NavDropdown.Item href="/perfil"><BsPersonCircle/> Meu perfil</NavDropdown.Item>
-                                {tipoUser === 1 ? (<NavDropdown.Item href="/admin"><BsFillGearFill/> Administração</NavDropdown.Item>) : (<></>)}
-                                <NavDropdown.Divider />
-                                <NavDropdown.Item href="#" onClick={this.logout}>
-                                    <BsDashCircle style={{ color: 'red' }}/> Logout
-                                </NavDropdown.Item>
-                            </NavDropdown>
-                        </Nav>
-                    </Navbar.Collapse>
-                </Container>
-                        </Navbar>*/}
         <MDBNavbar expand="lg" dark bgColor="dark">
           <MDBContainer fluid>
             <MDBNavbarBrand href="/index">
@@ -189,11 +151,8 @@ class NavbarComponent extends Component {
                       Fretes
                     </MDBDropdownToggle>
                     <MDBDropdownMenu>
-                      <MDBDropdownItem link>
-                        <BsClipboard2Fill /> Meus fretes
-                      </MDBDropdownItem>
-                      <MDBDropdownItem link>
-                        <BsTruck /> Novo frete
+                      <MDBDropdownItem link href="/fretes">
+                        <BsTruck /> Fretes
                       </MDBDropdownItem>
                     </MDBDropdownMenu>
                   </MDBDropdown>
@@ -203,7 +162,9 @@ class NavbarComponent extends Component {
               {tipoUser === 1 ? (
                 <MDBNavbarBrand className="meu-navbar-brand">
                   <MDBNavbarLink href="/statusWhatsapp">
-                    Whatsapp {whatsappStatus ? <FcOk /> : <FcHighPriority />}
+                    <span>
+                      Whatsapp {whatsappStatus ? <FcOk /> : <FcHighPriority />}
+                    </span>
                   </MDBNavbarLink>
                 </MDBNavbarBrand>
               ) : (
