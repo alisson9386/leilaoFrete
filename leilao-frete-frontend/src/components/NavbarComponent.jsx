@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Cookies from "js-cookie";
 import history from "../history";
 import useAuth from "../context/useAuth";
 import Swal from "sweetalert2";
@@ -62,21 +63,26 @@ class NavbarComponent extends Component {
   }
 
   async componentDidMount() {
-    const myDecodedToken = useAuth.setAuthInfo();
-    this.setState({ id: myDecodedToken.id });
-    this.setState({ usuario: myDecodedToken.usuario });
-    this.setState({ nome: myDecodedToken.nome });
-    this.setState({ email: myDecodedToken.email });
-    this.setState({ tipo_user: myDecodedToken.tipo_user });
-    const whatsappStatus = await AppServices.statusServidor();
-    if (whatsappStatus.data != null) {
-      this.setState({ whatsappStatus: whatsappStatus.data[0] });
+    if(Cookies.get("token")){
+      const myDecodedToken = useAuth.setAuthInfo();
+      this.setState({ id: myDecodedToken.id });
+      this.setState({ usuario: myDecodedToken.usuario });
+      this.setState({ nome: myDecodedToken.nome });
+      this.setState({ email: myDecodedToken.email });
+      this.setState({ tipo_user: myDecodedToken.tipo_user });
+      const whatsappStatus = await AppServices.statusServidor();
+      if (whatsappStatus.data != null) {
+        this.setState({ whatsappStatus: whatsappStatus.data[0] });
+      }else{
+        this.showAlertUserAuthenticated()
+        this.logout();
+      }
+  
+      setTimeout(() => {
+        let time = !this.state.whatsappStatus ? 5000 : 30000;
+        this.intervalId = setInterval(this.fetchData, time);
+      }, 30000);
     }
-
-    setTimeout(() => {
-      let time = !this.state.whatsappStatus ? 5000 : 30000;
-      this.intervalId = setInterval(this.fetchData, time);
-    }, 30000);
   }
 
   componentWillUnmount() {
@@ -90,6 +96,9 @@ class NavbarComponent extends Component {
   fetchData = async () => {
     try {
       const whatsappStatus = await AppServices.statusServidor();
+      if(whatsappStatus.status === 401){
+        this.logout();
+      }
       if (whatsappStatus.data != null) {
         this.setState({ whatsappStatus: whatsappStatus.data[0] });
       } else {

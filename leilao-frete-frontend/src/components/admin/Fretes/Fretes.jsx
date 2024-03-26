@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-class TipoProprietarioComponent extends Component {
+class FretesComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -12,10 +12,10 @@ class TipoProprietarioComponent extends Component {
   render() {
     return (
       <div className="containerUsually">
-        <h3>aaa</h3>
+        <h3>Modelo</h3>
       </div>
     );
   }
 }
 
-export default TipoProprietarioComponent;
+export default FretesComponent;

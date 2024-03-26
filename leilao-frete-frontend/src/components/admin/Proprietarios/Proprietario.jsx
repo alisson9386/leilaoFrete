@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import AppServices from "../../service/app-service";
+import AppServices from "../../../service/app-service";
 import { Button, Form, Pagination } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import Swal from "sweetalert2";
@@ -10,6 +10,7 @@ import {
   BsTruck,
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
+import VeiculoComponent from "../Veiculo/Veiculo";
 
 class ProprietariosEditComponent extends Component {
   constructor(props) {
@@ -26,6 +27,9 @@ class ProprietariosEditComponent extends Component {
       proprietariosPerPage: 10,
       editProprietario: {},
       modalMode: "add",
+      showModalVeiculo: false,
+      editVeiculo: {},
+      idProprietarioModalVeiculo: ''
     };
   }
 
@@ -171,6 +175,21 @@ class ProprietariosEditComponent extends Component {
     this.componentDidMount();
   };
 
+  handleShowModalVeiculo = (idProprietario) => {
+    this.setState({
+      showModalVeiculo: true,
+      idProprietarioModalVeiculo: idProprietario
+    });
+  };
+
+  handleCloseModalVeiculo = () => {
+    this.setState({
+      showModalVeiculo: false,
+      editVeiculo: {},
+    });
+    this.componentDidMount();
+  };
+
   handleInputChange = (event) => {
     const { name, value } = event.target;
     if (name === "tipoProprietario") {
@@ -234,7 +253,6 @@ class ProprietariosEditComponent extends Component {
     if (
       !editProprietario.nome ||
       !editProprietario.cpf_cnpj ||
-      !editProprietario.ie ||
       !editProprietario.tipoProprietario ||
       !editProprietario.uf ||
       !editProprietario.tel_whatsapp
@@ -336,8 +354,8 @@ class ProprietariosEditComponent extends Component {
           <Button
             variant="info"
             size="sm"
-            title="Editar usuário"
-            onClick={() => this.handleEditProprietario(proprietario)}
+            title="Veículo"
+            onClick={() => this.handleShowModalVeiculo(proprietario.id)}
           >
             <BsTruck />
           </Button>{" "}
@@ -486,6 +504,20 @@ class ProprietariosEditComponent extends Component {
                   />
                 </MDBCol>
                 <MDBCol sm="5">
+                  <MDBInput
+                    id="tel_whatsapp"
+                    type="text"
+                    name="tel_whatsapp"
+                    label="Telefone"
+                    value={this.formatPhoneNumber(
+                      editProprietario.tel_whatsapp || ""
+                    )}
+                    onChange={this.handleInputChange}
+                  />
+                </MDBCol>
+                <br/>
+                <MDBCol sm="5">
+                <label><small class="form-text text-muted">Tipo de proprietário</small></label>
                   <select
                     className="form-control"
                     name="tipoProprietario"
@@ -505,6 +537,7 @@ class ProprietariosEditComponent extends Component {
                   </select>
                 </MDBCol>
                 <MDBCol sm="5">
+                <label><small class="form-text text-muted">UF</small></label>
                   <select
                     className="form-control"
                     name="uf"
@@ -521,18 +554,6 @@ class ProprietariosEditComponent extends Component {
                     ))}
                   </select>
                 </MDBCol>
-                <MDBCol sm="5">
-                  <MDBInput
-                    id="tel_whatsapp"
-                    type="text"
-                    name="tel_whatsapp"
-                    label="Telefone"
-                    value={this.formatPhoneNumber(
-                      editProprietario.tel_whatsapp || ""
-                    )}
-                    onChange={this.handleInputChange}
-                  />
-                </MDBCol>
               </MDBRow>
             </MDBRow>
           </Modal.Body>
@@ -548,6 +569,29 @@ class ProprietariosEditComponent extends Component {
             <span style={{ marginLeft: "10px" }}></span>
             <Button variant="danger" onClick={this.handleClose}>
               Cancelar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+
+        <Modal
+          className="modal modal-lg"
+          show={this.state.showModalVeiculo}
+          onHide={this.handleCloseModalVeiculo}
+          dialogClassName="custom-modal-veiculo"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              Veículos
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <VeiculoComponent proprietarioId={this.state.idProprietarioModalVeiculo}/>
+          </Modal.Body>
+          <Modal.Footer>
+            <span style={{ marginLeft: "10px" }}></span>
+            <Button variant="info" onClick={this.handleCloseModalVeiculo}>
+              Fechar
             </Button>
           </Modal.Footer>
         </Modal>

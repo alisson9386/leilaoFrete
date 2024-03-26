@@ -9,7 +9,7 @@ export class Veiculo {
   placa: string;
 
   @Column()
-  rntc: number;
+  rntrc: number;
 
   @Column()
   tara_kg: number;
@@ -31,6 +31,9 @@ export class Veiculo {
 
   @Column()
   tipo_carroceria: number;
+
+  @Column()
+  id_proprietario: number;
 
   @Column()
   veiculo_proprio: boolean;

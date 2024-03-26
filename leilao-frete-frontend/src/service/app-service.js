@@ -43,6 +43,28 @@ class BackService {
     updateUf(uf, idUf){ return api_leilao.patch('/uf/' + idUf, uf); }
     deleteUf(idUf){ return api_leilao.delete('/uf/' + idUf); }
 
+    //Serviços de tipo rodado
+    listTipoRodado(){ return api_leilao.get('/tipo-rodado-veiculo/'); }
+    listTipoRodadoById(idTipoRodado){ return api_leilao.get('/tipo-rodado-veiculo/' + idTipoRodado); }
+    saveTipoRodado(idTipoRodado){ return api_leilao.post('/tipo-rodado-veiculo/', idTipoRodado); }
+    updateTipoRodado(tipoRodado, idTipoRodado){ return api_leilao.patch('/tipo-rodado-veiculo/' + idTipoRodado, tipoRodado); }
+    deleteTipoRodado(idTipoRodado){ return api_leilao.delete('/tipo-rodado-veiculo/' + idTipoRodado); }
+
+    //Serviços de tipo carroceria
+    listTipoCarroceria(){ return api_leilao.get('/tipo-carroceria-veiculo/'); }
+    listTipoCarroceriaById(idTipoCarroceria){ return api_leilao.get('/tipo-carroceria-veiculo/' + idTipoCarroceria); }
+    saveTipoCarroceria(idTipoCarroceria){ return api_leilao.post('/tipo-carroceria-veiculo/', idTipoCarroceria); }
+    updateTipoCarroceria(tipoCarroceria, idTipoCarroceria){ return api_leilao.patch('/tipo-carroceria-veiculo/' + idTipoCarroceria, tipoCarroceria); }
+    deleteTipoCarroceria(idTipoCarroceria){ return api_leilao.delete('/tipo-carroceria-veiculo/' + idTipoCarroceria); }
+
+    //Serviços de veiculo
+    listVeiculos(){ return api_leilao.get('/veiculo/'); }
+    listVeiculosByProprietario(idProprietario){ return api_leilao.get('/veiculo/proprietario/' + idProprietario)}
+    listVeiculoById(idVeiculo){ return api_leilao.get('/veiculo/' + idVeiculo); }
+    saveVeiculo(idVeiculo){ return api_leilao.post('/veiculo/', idVeiculo); }
+    updateVeiculo(veiculo, idVeiculo){ return api_leilao.patch('/veiculo/' + idVeiculo, veiculo); }
+    deleteVeiculo(idVeiculo){ return api_leilao.delete('/veiculo/' + idVeiculo); }
+
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

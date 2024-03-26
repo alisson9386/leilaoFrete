@@ -277,7 +277,7 @@ class TipoUsuariosComponent extends Component {
           data-placement="right"
           onClick={() => this.handleShow({}, "add")}
         >
-          Novo usuário
+          Novo tipo usuário
         </Button>
         <br />
         <br />

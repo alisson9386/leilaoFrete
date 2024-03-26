@@ -7,10 +7,10 @@ import {
 } from "mdb-react-ui-kit";
 import React, { Component } from "react";
 import history from "../../history";
-import ProprietariosEditComponent from "./Freteiros";
+import ProprietariosEditComponent from "./Proprietarios/Proprietario";
 import UsuariosEditComponent from "./Usuarios/Usuarios";
 import useAuth from "../../context/useAuth";
-import TipoProprietarioComponent from "./TipoProprietario";
+import TipoProprietarioComponent from "./Proprietarios/TipoProprietario";
 import TipoRodadoVeiculoComponent from "./Veiculo/TipoRodadoVeiculo";
 import TipoCarroceriaComponent from "./Veiculo/TipoCarroceria";
 import TipoUsuariosComponent from "./Usuarios/TipoUsuarios";

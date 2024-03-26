@@ -9,18 +9,18 @@ import {
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
 
-class TipoRodadoVeiculoComponent extends Component {
+class TipoProprietarioComponent extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      tipoRodados : [],
+      tipoProprietarios : [],
       showModal: false,
       search: "",
-      filteredTipoRodados: [],
+      filteredTipoProprietarios: [],
       currentPage: 1,
-      tipoRodadoPerPage: 10,
-      editTipoRodado: {},
+      tipoProprietarioPerPage: 10,
+      editTipoProprietario: {},
       modalMode: "add",
     };
   }
@@ -38,10 +38,10 @@ class TipoRodadoVeiculoComponent extends Component {
     });
   };
 
-  confirmDeleteTipoRodado = (tipoRodado) => {
+  confirmDeleteTipoProprietario = (tipoProprietario) => {
     Swal.fire({
       title: "Tem certeza?",
-      text: `Você está prestes a excluir o tipo de rodado ${tipoRodado.tipo}`,
+      text: `Você está prestes a excluir o tipo de proprietario ${tipoProprietario.tipo}`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -50,7 +50,7 @@ class TipoRodadoVeiculoComponent extends Component {
       cancelButtonText: "Não",
     }).then((result) => {
       if (result.isConfirmed) {
-        this.serviceDeleteTipoRodado(tipoRodado.id);
+        this.serviceDeleteTipoProprietario(tipoProprietario.id);
       }
     });
   };
@@ -58,7 +58,7 @@ class TipoRodadoVeiculoComponent extends Component {
   deleteStatus = (confirm, ...message) => {
     if (confirm) {
       this.componentDidMount();
-      Swal.fire("Excluído!", "Tipo de rodado excluído.", "success");
+      Swal.fire("Excluído!", "Tipo de proprietario excluído.", "success");
     } else {
       Swal.fire("Erro ao excluir!", `${message}`, "error");
     }
@@ -67,16 +67,16 @@ class TipoRodadoVeiculoComponent extends Component {
   addStatus = (confirm, ...message) => {
     if (confirm) {
       this.componentDidMount();
-      Swal.fire("Salvo!", "Tipo de rodado salvo.", "success");
+      Swal.fire("Salvo!", "Tipo de proprietario salvo.", "success");
     } else {
       Swal.fire("Erro ao salvar!", `${message}`, "error");
     }
   };
 
-  updateTipoRodadoSuccess = (confirm, ...message) => {
+  updateTipoProprietarioSuccess = (confirm, ...message) => {
     if (confirm) {
       this.componentDidMount();
-      Swal.fire("Atualizado!", "Tipo de rodado atualizado.", "success");
+      Swal.fire("Atualizado!", "Tipo de proprietario atualizado.", "success");
     } else {
       Swal.fire("Erro ao atualizar!", `${message}`, "error");
     }
@@ -91,37 +91,37 @@ class TipoRodadoVeiculoComponent extends Component {
   };
 
   async componentDidMount() {
-    const responseTipoRodado = await AppServices.listTipoRodado();
-    if (responseTipoRodado.data) {
-      this.setState({ tipoRodados: responseTipoRodado.data, filteredTipoRodados: responseTipoRodado.data });
+    const responseTipoProprietario = await AppServices.listTipoProprietarios();
+    if (responseTipoProprietario.data) {
+      this.setState({ tipoProprietarios: responseTipoProprietario.data, filteredTipoProprietarios: responseTipoProprietario.data });
     }
   }
 
-  filterTipoRodados = (search) => {
-    const filteredTipoRodados = this.state.tipoRodados.filter((tipoRodado) =>
-    tipoRodado.tipo.toLowerCase().includes(search.toLowerCase())
+  filterTipoProprietarios = (search) => {
+    const filteredTipoProprietarios = this.state.tipoProprietarios.filter((tipoProprietario) =>
+    tipoProprietario.tipo.toLowerCase().includes(search.toLowerCase())
     );
-    this.setState({ filteredTipoRodados, currentPage: 1 });
+    this.setState({ filteredTipoProprietarios, currentPage: 1 });
   };
 
   handleSearchChange = (event) => {
     const search = event.target.value;
     this.setState({ search });
-    this.filterTipoRodados(search);
+    this.filterTipoProprietarios(search);
   };
 
-  handleDeleteRodado = (rodado) => {
-    this.confirmDeleteTipoRodado(rodado);
+  handleDeleteProprietario = (proprietario) => {
+    this.confirmDeleteTipoProprietario(proprietario);
   };
 
-  handleEditTipoRodado = (rodado) => {
-    this.handleShow(rodado, "edit");
+  handleEditTipoProprietario = (proprietario) => {
+    this.handleShow(proprietario, "edit");
   };
 
-  handleShow = (rodadoData = {}, mode) => {
+  handleShow = (proprietarioData = {}, mode) => {
     this.setState({
       showModal: true,
-      editTipoRodado: rodadoData,
+      editTipoProprietario: proprietarioData,
       modalMode: mode,
     });
   };
@@ -133,7 +133,7 @@ class TipoRodadoVeiculoComponent extends Component {
       showPasswordFields: false,
       senha: "",
       senhaConfirm: "",
-      editTipoRodado: {},
+      editTipoProprietario: {},
     });
     this.componentDidMount();
   };
@@ -141,17 +141,17 @@ class TipoRodadoVeiculoComponent extends Component {
   handleInputChange = (event) => {
     const { name, value } = event.target;
       this.setState((prevState) => ({
-        editTipoRodado: {
-          ...prevState.editTipoRodado,
+        editTipoProprietario: {
+          ...prevState.editTipoProprietario,
           [name]: value,
         },
       }));
   };
 
-  editOrAddTipoRodado = () => {
-    const { editTipoRodado, modalMode } = this.state;
+  editOrAddTipoProprietario = () => {
+    const { editTipoProprietario, modalMode } = this.state;
     if (
-      !editTipoRodado.tipo_rodado
+      !editTipoProprietario.tipo_proprietario
     ) {
       Swal.fire({
         title: "Ops!",
@@ -161,7 +161,7 @@ class TipoRodadoVeiculoComponent extends Component {
       return;
     }
 
-    AppServices.saveTipoRodado(editTipoRodado)
+    AppServices.saveTipoProprietarios(editTipoProprietario)
       .then((res) => {
         if (res.status === 201) {
           Swal.close();
@@ -169,12 +169,12 @@ class TipoRodadoVeiculoComponent extends Component {
             this.addStatus(true);
             this.handleClose();
           } else {
-            this.updateTipoRodadoSuccess(true);
+            this.updateTipoProprietarioSuccess(true);
             this.handleClose();
           }
         } else {
           Swal.close();
-          this.updateTipoRodadoSuccess(false, res.statusText);
+          this.updateTipoProprietarioSuccess(false, res.statusText);
         }
       })
       .catch((error) => {
@@ -184,9 +184,9 @@ class TipoRodadoVeiculoComponent extends Component {
       });
   };
 
-  serviceDeleteTipoRodado = (idTipoRodado) => {
+  serviceDeleteTipoProprietario = (idTipoProprietario) => {
     this.showLoading("Excluindo");
-    AppServices.deleteTipoRodado(idTipoRodado)
+    AppServices.deleteTipoProprietarios(idTipoProprietario)
       .then((res) => {
         if (res.status === 200) {
           Swal.close();
@@ -203,26 +203,26 @@ class TipoRodadoVeiculoComponent extends Component {
       });
   };
 
-  renderRodados = () => {
-    const { currentPage, tipoRodadoPerPage } = this.state;
+  renderProprietarios = () => {
+    const { currentPage, tipoProprietarioPerPage } = this.state;
 
-    const indexOfLastRodado = currentPage * tipoRodadoPerPage;
-    const indexOfFirstRodado = indexOfLastRodado - tipoRodadoPerPage;
-    const currentTipoRodados = this.state.filteredTipoRodados.slice(
-      indexOfFirstRodado,
-      indexOfLastRodado
+    const indexOfLastProprietario = currentPage * tipoProprietarioPerPage;
+    const indexOfFirstProprietario = indexOfLastProprietario - tipoProprietarioPerPage;
+    const currentTipoProprietarios = this.state.filteredTipoProprietarios.slice(
+      indexOfFirstProprietario,
+      indexOfLastProprietario
     );
 
-    return currentTipoRodados.map((tipoRodado) => (
-      <tr key={tipoRodado.id}>
-        <td>{tipoRodado.id}</td>
-        <td>{tipoRodado.tipo_rodado}</td>
+    return currentTipoProprietarios.map((tipoProprietario) => (
+      <tr key={tipoProprietario.id}>
+        <td>{tipoProprietario.id}</td>
+        <td>{tipoProprietario.tipo_proprietario}</td>
         <td>
           <Button
             variant="warning"
             size="sm"
-            title="Editar rodado"
-            onClick={() => this.handleEditTipoRodado(tipoRodado)}
+            title="Editar proprietario"
+            onClick={() => this.handleEditTipoProprietario(tipoProprietario)}
           >
             <BsFillPencilFill />
           </Button>{" "}
@@ -230,7 +230,7 @@ class TipoRodadoVeiculoComponent extends Component {
               variant="danger"
               size="sm"
               title="Desativar"
-              onClick={() => this.handleDeleteRodado(tipoRodado)}
+              onClick={() => this.handleDeleteProprietario(tipoProprietario)}
             >
               <BsFillTrash3Fill />
             </Button>
@@ -240,9 +240,9 @@ class TipoRodadoVeiculoComponent extends Component {
   };
 
   renderPagination = () => {
-    const { currentPage, tipoRodadoPerPage } = this.state;
-    const totalRodados = this.state.filteredTipoRodados.length;
-    const totalPages = Math.ceil(totalRodados / tipoRodadoPerPage);
+    const { currentPage, tipoProprietarioPerPage } = this.state;
+    const totalProprietarios = this.state.filteredTipoProprietarios.length;
+    const totalPages = Math.ceil(totalProprietarios / tipoProprietarioPerPage);
     let items = [];
     for (let number = 1; number <= totalPages; number++) {
       items.push(
@@ -265,7 +265,7 @@ class TipoRodadoVeiculoComponent extends Component {
   };
 
   render() {
-    const { editTipoRodado } = this.state;
+    const { editTipoProprietario } = this.state;
     return (
       <>
         <br />
@@ -277,7 +277,7 @@ class TipoRodadoVeiculoComponent extends Component {
           data-placement="right"
           onClick={() => this.handleShow({}, "add")}
         >
-          Novo tipo rodado
+          Novo tipo proprietario
         </Button>
         <br />
         <br />
@@ -296,7 +296,7 @@ class TipoRodadoVeiculoComponent extends Component {
                 <th scope="col">Opções</th>
               </tr>
             </thead>
-            <tbody>{this.renderRodados()}</tbody>
+            <tbody>{this.renderProprietarios()}</tbody>
           </table>
         </div>
         <div>{this.renderPagination()}</div>
@@ -310,18 +310,18 @@ class TipoRodadoVeiculoComponent extends Component {
           <Modal.Header closeButton>
             <Modal.Title>
               {this.state.modalMode === "add"
-                ? "Adicionar tipo de rodado"
-                : "Editar tipo de rodado"}
+                ? "Adicionar tipo de proprietario"
+                : "Editar tipo de proprietario"}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
               <MDBCol sm="5">
                 <MDBInput
-                  id="tipo_rodado"
-                  name="tipo_rodado"
-                  label="Tipo de rodado"
-                  value={editTipoRodado.tipo_rodado || ""}
+                  id="tipo_proprietario"
+                  name="tipo_proprietario"
+                  label="Tipo de proprietario"
+                  value={editTipoProprietario.tipo_proprietario || ""}
                   onChange={this.handleInputChange}
                 />
               </MDBCol>
@@ -332,7 +332,7 @@ class TipoRodadoVeiculoComponent extends Component {
               variant="success"
               id="termosButton"
               data-toggle="modal"
-              onClick={this.editOrAddTipoRodado}
+              onClick={this.editOrAddTipoProprietario}
             >
               Salvar
             </Button>
@@ -347,4 +347,5 @@ class TipoRodadoVeiculoComponent extends Component {
   }
 }
 
-export default TipoRodadoVeiculoComponent;
+export default TipoProprietarioComponent;
+

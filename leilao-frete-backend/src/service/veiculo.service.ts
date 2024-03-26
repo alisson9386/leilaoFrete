@@ -19,6 +19,13 @@ export class VeiculoService {
     return this.veiculoRepository.find();
   }
 
+  findAllByProprietario(id: number){
+    return this.veiculoRepository
+    .createQueryBuilder('v')
+    .where('v.id_proprietario= :id', { id })
+    .getMany();
+  }
+
   findOne(id: number) {
     return this.veiculoRepository.findOneBy({ id: id });
   }
