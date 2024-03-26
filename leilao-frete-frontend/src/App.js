@@ -13,6 +13,7 @@ import StatusWhatsappComponent from "./components/admin/StatusWhatsapp";
 import AdminComponent from "./components/admin/Admin";
 import ModeloComponent from "./components/Modelo";
 import FretesComponent from "./components/FretesComponent";
+import FooterComponent from "./components/FooterComponent";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/modelo" component={ModeloComponent} />
           <Route>
             <NavbarComponent />
+            <FooterComponent />
             <Switch>
               <Layout>
                 <Route path="/index" component={HomeComponent} />

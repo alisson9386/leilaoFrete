@@ -27,10 +27,7 @@ export class TipoUsersService {
     return this.tipoUserRepository.update(id, updateTipoUserDto);
   }
 
-  async desactivateTipoUser(id: number): Promise<boolean> {
-    const tipoUser = await this.tipoUserRepository.findOneBy({ id: id });
-    tipoUser.fl_ativo = false;
-    const save = await this.tipoUserRepository.save(tipoUser);
-    return save ? true : false;
+  remove(id: number) {
+    return this.tipoUserRepository.delete(id);
   }
 }

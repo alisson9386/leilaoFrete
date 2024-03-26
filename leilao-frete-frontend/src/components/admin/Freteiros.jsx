@@ -11,7 +11,7 @@ import {
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
 
-class FreteirosEditComponent extends Component {
+class ProprietariosEditComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -377,13 +377,13 @@ class FreteirosEditComponent extends Component {
     let items = [];
     for (let number = 1; number <= totalPages; number++) {
       items.push(
-        <Pagination.Item
+        <><Pagination.Item
           key={number}
           active={number === currentPage}
           onClick={() => this.setState({ currentPage: number })}
         >
           {number}
-        </Pagination.Item>
+        </Pagination.Item><br /></>
       );
     }
     return (
@@ -408,7 +408,7 @@ class FreteirosEditComponent extends Component {
           data-placement="right"
           onClick={() => this.handleShow({}, "add")}
         >
-          Novo usuário
+          Novo proprietário
         </Button>
         <br />
         <br />
@@ -556,4 +556,4 @@ class FreteirosEditComponent extends Component {
   }
 }
 
-export default FreteirosEditComponent;
+export default ProprietariosEditComponent;

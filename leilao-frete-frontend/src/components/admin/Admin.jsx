@@ -1,15 +1,19 @@
-import React, { Component } from "react";
-import useAuth from "../../context/useAuth";
-import history from "../../history";
 import {
   MDBTabs,
+  MDBTabsContent,
   MDBTabsItem,
   MDBTabsLink,
-  MDBTabsContent,
   MDBTabsPane,
 } from "mdb-react-ui-kit";
-import UsuariosEditComponent from "./Usuarios";
-import FreteirosEditComponent from "./Freteiros";
+import React, { Component } from "react";
+import history from "../../history";
+import ProprietariosEditComponent from "./Freteiros";
+import UsuariosEditComponent from "./Usuarios/Usuarios";
+import useAuth from "../../context/useAuth";
+import TipoProprietarioComponent from "./TipoProprietario";
+import TipoRodadoVeiculoComponent from "./Veiculo/TipoRodadoVeiculo";
+import TipoCarroceriaComponent from "./Veiculo/TipoCarroceria";
+import TipoUsuariosComponent from "./Usuarios/TipoUsuarios";
 
 class AdminComponent extends Component {
   constructor(props) {
@@ -63,6 +67,39 @@ class AdminComponent extends Component {
                 Proprietarios
               </MDBTabsLink>
             </MDBTabsItem>
+
+            <MDBTabsItem>
+              <MDBTabsLink
+                onClick={() => this.handleBasicClick("tipo_usuario")}
+                active={basicActive === "tipo_usuario"}
+              >
+                Tipos de usuários
+              </MDBTabsLink>
+            </MDBTabsItem>
+            <MDBTabsItem>
+              <MDBTabsLink
+                onClick={() => this.handleBasicClick("tipo_carroceria")}
+                active={basicActive === "tipo_carroceria"}
+              >
+                Tipos de carrocerias
+              </MDBTabsLink>
+            </MDBTabsItem>
+            <MDBTabsItem>
+              <MDBTabsLink
+                onClick={() => this.handleBasicClick("tipo_rodado")}
+                active={basicActive === "tipo_rodado"}
+              >
+                Tipos rodados
+              </MDBTabsLink>
+            </MDBTabsItem>
+            <MDBTabsItem>
+              <MDBTabsLink
+                onClick={() => this.handleBasicClick("tipo_proprietario")}
+                active={basicActive === "tipo_proprietario"}
+              >
+                Tipos de proprietários
+              </MDBTabsLink>
+            </MDBTabsItem>
             <MDBTabsItem>
               <MDBTabsLink
                 onClick={() => this.handleBasicClick("usuarios")}
@@ -78,7 +115,20 @@ class AdminComponent extends Component {
               Fretes
             </MDBTabsPane>
             <MDBTabsPane open={basicActive === "proprietarios"}>
-             <FreteirosEditComponent/>
+             <ProprietariosEditComponent/>
+            </MDBTabsPane>
+
+            <MDBTabsPane open={basicActive === "tipo_usuario"}>
+              <TipoUsuariosComponent/>
+            </MDBTabsPane>
+            <MDBTabsPane open={basicActive === "tipo_carroceria"}>
+              <TipoCarroceriaComponent/>
+            </MDBTabsPane>
+            <MDBTabsPane open={basicActive === "tipo_rodado"}>
+              <TipoRodadoVeiculoComponent/>
+            </MDBTabsPane>
+            <MDBTabsPane open={basicActive === "tipo_proprietario"}>
+              <TipoProprietarioComponent/>
             </MDBTabsPane>
             <MDBTabsPane open={basicActive === "usuarios"}>
               <UsuariosEditComponent/>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import AppServices from "../../service/app-service";
+import AppServices from "../../../service/app-service";
 import { Button, Form, Pagination } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import Swal from "sweetalert2";

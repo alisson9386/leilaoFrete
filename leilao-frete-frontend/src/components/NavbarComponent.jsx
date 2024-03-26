@@ -4,7 +4,7 @@ import useAuth from "../context/useAuth";
 import Swal from "sweetalert2";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import logo from "../assets/img/logo.png";
+import logo from "../assets/img/logo-buritti.png";
 import {
   BsPersonCircle,
   BsFillGearFill,

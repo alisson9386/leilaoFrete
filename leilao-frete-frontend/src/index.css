@@ -190,6 +190,11 @@ button {
   width: 18rem;
 }
 
+.table-responsive {
+  max-height: 500px; /* Ajuste este valor conforme necessário */
+  overflow-y: auto; /* Habilita a rolagem vertical */
+ }
+
 .btn {
   text-transform: none !important;
  }

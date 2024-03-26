@@ -36,7 +36,7 @@ import { Veiculo } from './entities/veiculo.entity';
     ConfigModule.forRoot(),
     JwtModule.register({
       secret: 'zaq12wsxZAQ!@WSXZ0rr0b@tmak',
-      signOptions: { expiresIn: '30m' },
+      signOptions: { expiresIn: '12h' },
     }),
     UsuariosModule,
     TypeOrmModule.forRoot({

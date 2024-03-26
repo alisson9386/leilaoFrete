@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-class FretesComponent extends Component {
+class TipoCarroceriaComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -12,11 +12,10 @@ class FretesComponent extends Component {
   render() {
     return (
       <div className="containerUsually">
-        <br />
-        <br />
+        <h3>aaa</h3>
       </div>
     );
   }
 }
 
-export default FretesComponent;
+export default TipoCarroceriaComponent;
