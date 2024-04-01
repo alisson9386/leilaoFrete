@@ -5,11 +5,13 @@ import { BsFillPencilFill, BsFillTrash3Fill } from "react-icons/bs";
 import Modal from "react-bootstrap/Modal";
 import Swal from "sweetalert2";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
+import useAlerts from "../../../context/useAlerts";
+import { faTruckField } from "@fortawesome/free-solid-svg-icons";
 
 class VeiculoComponent extends Component {
   constructor(props) {
     super(props);
-
+    
     this.state = {
       veiculosProprietario: [],
       showModal: false,
@@ -24,20 +26,7 @@ class VeiculoComponent extends Component {
       tiposCarroceria: [],
     };
   }
-
-  showLoading = (text) => {
-    Swal.fire({
-      title: "Aguarde!",
-      html: text, // add html attribute if you want or remove
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  };
-
+  
   confirmDeleteVeiculo = (veiculo) => {
     Swal.fire({
       title: "Tem certeza?",
@@ -55,41 +44,6 @@ class VeiculoComponent extends Component {
     });
   };
 
-  deleteStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Excluído!", "Veículo excluído.", "success");
-    } else {
-      Swal.fire("Erro ao excluir!", `${message}`, "error");
-    }
-  };
-
-  addStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Salvo!", "Veículo salvo.", "success");
-    } else {
-      Swal.fire("Erro ao salvar!", `${message}`, "error");
-    }
-  };
-
-  updateVeiculoSuccess = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Atualizado!", "Veículo atualizado.", "success");
-    } else {
-      Swal.fire("Erro ao atualizar!", `${message}`, "error");
-    }
-  };
-
-  showAlertError = (err) => {
-    Swal.fire({
-      icon: "error",
-      title: "Erro, por favor contate o administrador!",
-      text: err,
-    });
-  };
-
   async componentDidMount() {
     const ufs = await AppServices.listUf();
     const tiposRodados = await AppServices.listTipoRodado();
@@ -104,6 +58,7 @@ class VeiculoComponent extends Component {
     );
     if (veiculos.data) {
       let veic = veiculos.data;
+      // eslint-disable-next-line
       veic.map((veiculo) => {
         const tipoRodado = tiposRodados.data.find(
           (tipos) => tipos.id === veiculo.tipo_rodado
@@ -211,11 +166,7 @@ class VeiculoComponent extends Component {
   editOrAddVeiculo = () => {
     const { editVeiculo, modalMode } = this.state;
     if (!editVeiculo.placa || !editVeiculo.rntrc) {
-      Swal.fire({
-        title: "Ops!",
-        text: "É necessário preencher todos os campos obrigatórios!",
-        icon: "error",
-      });
+      useAlerts.alertCamposObrigatorios();
       return;
     }
 
@@ -226,40 +177,40 @@ class VeiculoComponent extends Component {
         if (res.status === 201) {
           Swal.close();
           if (modalMode === "add") {
-            this.addStatus(true);
+            useAlerts.addStatus(true);
             this.handleClose();
           } else {
-            this.updateVeiculoSuccess(true);
+            useAlerts.updateSuccess(true);
             this.handleClose();
           }
         } else {
           Swal.close();
-          this.showAlertError();
+          useAlerts.showAlertError(res.statusText);
         }
       })
       .catch((error) => {
         Swal.close();
-        this.addStatus(false);
-        console.log(error);
+        useAlerts.addStatus(false, 'Veículo', error);
       });
   };
 
   serviceDeleteVeiculo = (idVeiculo) => {
-    this.showLoading("Excluindo");
+    useAlerts.showLoading("Excluindo");
     AppServices.deleteVeiculo(idVeiculo)
       .then((res) => {
         if (res.status === 200) {
           Swal.close();
-          this.deleteStatus(true);
+          useAlerts.deleteStatus(faTruckField)
+          this.componentDidMount();
         } else {
           Swal.close();
-          this.deleteStatus(false, res.data.message);
+          useAlerts.deleteStatus(false, res.data.message)
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
-        console.log(error);
+        useAlerts.deleteStatus(false, error)
       });
   };
 

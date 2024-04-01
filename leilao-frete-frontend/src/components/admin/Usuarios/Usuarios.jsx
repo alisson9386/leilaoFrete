@@ -11,6 +11,7 @@ import {
   BsEyeFill,
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
+import useAlerts from "../../../context/useAlerts";
 
 class UsuariosEditComponent extends Component {
   constructor(props) {
@@ -32,19 +33,6 @@ class UsuariosEditComponent extends Component {
     };
   }
 
-  showLoading = (text) => {
-    Swal.fire({
-      title: "Aguarde!",
-      html: text, // add html attribute if you want or remove
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  };
-
   confirmDeleteUser = (user) => {
     Swal.fire({
       title: "Tem certeza?",
@@ -59,41 +47,6 @@ class UsuariosEditComponent extends Component {
       if (result.isConfirmed) {
         this.serviceDeleteUser(user.id);
       }
-    });
-  };
-
-  deleteStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Excluído!", "Usuário excluído.", "success");
-    } else {
-      Swal.fire("Erro ao excluir!", `${message}`, "error");
-    }
-  };
-
-  addStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Salvo!", "Usuário salvo.", "success");
-    } else {
-      Swal.fire("Erro ao salvar!", `${message}`, "error");
-    }
-  };
-
-  updateUsuarioSuccess = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Atualizado!", "Usuário atualizado.", "success");
-    } else {
-      Swal.fire("Erro ao atualizar!", `${message}`, "error");
-    }
-  };
-
-  showAlertError = (err) => {
-    Swal.fire({
-      icon: "error",
-      title: "Erro, por favor contate o administrador!",
-      text: err,
     });
   };
 
@@ -212,11 +165,7 @@ class UsuariosEditComponent extends Component {
         ? !editUser.senha
         : ""
     ) {
-      Swal.fire({
-        title: "Ops!",
-        text: "É necessário preencher todos os campos!",
-        icon: "error",
-      });
+      useAlerts.alertCamposObrigatorios();
       return;
     }
 
@@ -225,40 +174,47 @@ class UsuariosEditComponent extends Component {
         if (res.status === 201) {
           Swal.close();
           if (modalMode === "add") {
-            this.addStatus(true);
+            useAlerts.addStatus(true);
             this.handleClose();
+            this.componentDidMount();
           } else {
-            this.updateUsuarioSuccess(true);
+            useAlerts.updateSuccess(true);
             this.handleClose();
+            this.componentDidMount();
           }
         } else {
           Swal.close();
-          this.updateProprietarioSuccess(false, res.statusText);
+          useAlerts.updateSuccess(false, res.statusText);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 
   serviceDeleteUser = (idUser) => {
-    this.showLoading("Excluindo");
+    useAlerts.showLoading("Excluindo");
     AppServices.deleteUser(idUser)
       .then((res) => {
         if (res.data.message === "Usuário desativado com sucesso") {
           Swal.close();
-          this.deleteStatus(true);
+          useAlerts.deleteStatus(true);
+          this.componentDidMount();
         } else {
           Swal.close();
-          this.deleteStatus(false, res.data.message);
+          useAlerts.deleteStatus(false, res.data.message);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 

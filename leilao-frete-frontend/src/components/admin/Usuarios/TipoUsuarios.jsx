@@ -8,6 +8,7 @@ import {
   BsFillTrash3Fill,
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
+import useAlerts from "../../../context/useAlerts";
 
 class TipoUsuariosComponent extends Component {
   constructor(props) {
@@ -25,19 +26,6 @@ class TipoUsuariosComponent extends Component {
     };
   }
 
-  showLoading = (text) => {
-    Swal.fire({
-      title: "Aguarde!",
-      html: text, // add html attribute if you want or remove
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  };
-
   confirmDeleteTipoUser = (tipoUser) => {
     Swal.fire({
       title: "Tem certeza?",
@@ -52,41 +40,6 @@ class TipoUsuariosComponent extends Component {
       if (result.isConfirmed) {
         this.serviceDeleteTipoUser(tipoUser.id);
       }
-    });
-  };
-
-  deleteStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Excluído!", "Tipo de usuário excluído.", "success");
-    } else {
-      Swal.fire("Erro ao excluir!", `${message}`, "error");
-    }
-  };
-
-  addStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Salvo!", "Tipo de usuário salvo.", "success");
-    } else {
-      Swal.fire("Erro ao salvar!", `${message}`, "error");
-    }
-  };
-
-  updateTipoUsuarioSuccess = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Atualizado!", "Tipo de usuário atualizado.", "success");
-    } else {
-      Swal.fire("Erro ao atualizar!", `${message}`, "error");
-    }
-  };
-
-  showAlertError = (err) => {
-    Swal.fire({
-      icon: "error",
-      title: "Erro, por favor contate o administrador!",
-      text: err,
     });
   };
 
@@ -153,11 +106,7 @@ class TipoUsuariosComponent extends Component {
     if (
       !editTipoUser.tipo
     ) {
-      Swal.fire({
-        title: "Ops!",
-        text: "É necessário preencher todos os campos!",
-        icon: "error",
-      });
+      useAlerts.alertCamposObrigatorios();
       return;
     }
 
@@ -166,40 +115,46 @@ class TipoUsuariosComponent extends Component {
         if (res.status === 201) {
           Swal.close();
           if (modalMode === "add") {
-            this.addStatus(true);
+            useAlerts.addStatus(true);
             this.handleClose();
+            this.componentDidMount();
           } else {
-            this.updateTipoUsuarioSuccess(true);
+            useAlerts.updateSuccess(true);
             this.handleClose();
+            this.componentDidMount();
           }
         } else {
           Swal.close();
-          this.updateTipoUsuarioSuccess(false, res.statusText);
+          useAlerts.updateSuccess(false, res.statusText);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 
   serviceDeleteTipoUser = (idTipoUser) => {
-    this.showLoading("Excluindo");
+    useAlerts.showLoading("Excluindo");
     AppServices.deleteTipoUser(idTipoUser)
       .then((res) => {
+        Swal.close();
         if (res.status === 200) {
-          Swal.close();
-          this.deleteStatus(true);
+          useAlerts.deleteStatus(true);
+          this.componentDidMount();
         } else {
-          Swal.close();
-          this.deleteStatus(false, res.data.message);
+          useAlerts.deleteStatus(false, res.data.message);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 

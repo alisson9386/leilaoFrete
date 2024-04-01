@@ -333,7 +333,7 @@ td, tr {
   text-align: center;
 }
 
-.custom-modal-veiculo {
+.custom-modal-veiculo, .custom-modal-leilao {
   width: 80% !important; /* Ajuste o valor conforme necessário */
   height: 80% !important; /* Ajuste o valor conforme necessário */
   max-width: none !important; /* Remove o limite máximo de largura */

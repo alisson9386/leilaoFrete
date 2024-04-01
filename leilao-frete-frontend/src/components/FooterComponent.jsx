@@ -15,7 +15,7 @@ class FooterComponent extends Component {
         <MDBFooter bgColor='dark' className='text-center text-lg-left' style={{ position: 'fixed', bottom: '0', width: '100%' }}>
         <div className='text-center p-3' style={{ color: 'white' }}>
           &copy; {new Date().getFullYear()} Copyright:{' '}
-          <a className='text-light' target="_blank" href='https://www.buritti.com.br/'>
+          <a className='text-light' target="_blank" rel="noreferrer" href='https://www.buritti.com.br/'>
             Buritti.com.br
           </a>
         </div>

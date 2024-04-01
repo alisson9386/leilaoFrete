@@ -11,6 +11,7 @@ import {
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
 import VeiculoComponent from "../Veiculo/Veiculo";
+import useAlerts from "../../../context/useAlerts";
 
 class ProprietariosEditComponent extends Component {
   constructor(props) {
@@ -33,19 +34,6 @@ class ProprietariosEditComponent extends Component {
     };
   }
 
-  showLoading = (text) => {
-    Swal.fire({
-      title: "Aguarde!",
-      html: text, // add html attribute if you want or remove
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  };
-
   confirmDeleteProprietario = (proprietario) => {
     Swal.fire({
       title: "Tem certeza?",
@@ -60,41 +48,6 @@ class ProprietariosEditComponent extends Component {
       if (result.isConfirmed) {
         this.serviceDeleteProprietario(proprietario.id);
       }
-    });
-  };
-
-  deleteStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Excluído!", "Proprietário excluído.", "success");
-    } else {
-      Swal.fire("Erro ao excluir!", `${message}`, "error");
-    }
-  };
-
-  addStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Salvo!", "Proprietário salvo.", "success");
-    } else {
-      Swal.fire("Erro ao salvar!", `${message}`, "error");
-    }
-  };
-
-  updateProprietarioSuccess = (confirm, ...message) => {
-    if (confirm) {
-        this.componentDidMount();
-        Swal.fire("Atualizado!", "Proprietário atualizado.", "success");
-      } else {
-        Swal.fire("Erro ao atualizar!", `${message}`, "error");
-      }
-  };
-
-  showAlertError = (err) => {
-    Swal.fire({
-      icon: "error",
-      title: "Erro, por favor contate o administrador!",
-      text: err,
     });
   };
 
@@ -257,11 +210,7 @@ class ProprietariosEditComponent extends Component {
       !editProprietario.uf ||
       !editProprietario.tel_whatsapp
     ) {
-      Swal.fire({
-        title: "Ops!",
-        text: "É necessário preencher todos os campos!",
-        icon: "error",
-      });
+      useAlerts.alertCamposObrigatorios();
       return;
     }
 
@@ -271,42 +220,47 @@ class ProprietariosEditComponent extends Component {
       .then((res) => {
         if (res.status === 201) {
           Swal.close();
-          if(modalMode === 'add'){
-              this.addStatus(true);
-              this.handleClose();
-          }else{
-            this.updateProprietarioSuccess(true);
+          if (modalMode === "add") {
+            useAlerts.addStatus(true);
             this.handleClose();
+            this.componentDidMount();
+          } else {
+            useAlerts.updateSuccess(true);
+            this.handleClose();
+            this.componentDidMount();
           }
         } else {
           Swal.close();
-          this.updateProprietarioSuccess(false, res.statusText);
+          useAlerts.updateSuccess(false, res.statusText);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
-    console.log(this.state.editProprietario);
   };
 
   serviceDeleteProprietario = (idProprietario) => {
-    this.showLoading("Excluindo");
+    useAlerts.showLoading("Excluindo");
     AppServices.deleteProprietarios(idProprietario)
       .then((res) => {
+        Swal.close();
         if (res.status === 200) {
-          Swal.close();
-          this.deleteStatus(true);
+          useAlerts.deleteStatus(true);
+          this.componentDidMount();
         } else {
-          Swal.close();
-          this.deleteStatus(false, res.data.message);
+          useAlerts.deleteStatus(false, res.data.message);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 

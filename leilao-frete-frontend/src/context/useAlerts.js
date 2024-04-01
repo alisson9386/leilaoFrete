@@ -1,17 +1,10 @@
-import React, { Component } from "react";
 import Swal from "sweetalert2";
 
-class SwalComponent extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {};
-  }
-
+class UserAlerts {
   showLoading = (text) => {
     Swal.fire({
       title: "Aguarde!",
-      html: text, // add html attribute if you want or remove
+      html: text,
       allowOutsideClick: false,
       allowEscapeKey: false,
       timerProgressBar: true,
@@ -23,8 +16,7 @@ class SwalComponent extends Component {
 
   deleteStatus = (confirm, ...message) => {
     if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Excluído!", "Veículo excluído.", "success");
+      Swal.fire("Excluído!", `Item excluído.`, "success");
     } else {
       Swal.fire("Erro ao excluir!", `${message}`, "error");
     }
@@ -32,17 +24,15 @@ class SwalComponent extends Component {
 
   addStatus = (confirm, ...message) => {
     if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Salvo!", "Veículo salvo.", "success");
+      Swal.fire("Salvo!", `Item salvo.`, "success");
     } else {
       Swal.fire("Erro ao salvar!", `${message}`, "error");
     }
   };
 
-  updateVeiculoSuccess = (confirm, ...message) => {
+  updateSuccess = (confirm, ...message) => {
     if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Atualizado!", "Veículo atualizado.", "success");
+      Swal.fire("Atualizado!", `Item atualizado.`, "success");
     } else {
       Swal.fire("Erro ao atualizar!", `${message}`, "error");
     }
@@ -56,15 +46,15 @@ class SwalComponent extends Component {
     });
   };
 
-  componentDidMount() {}
+  alertCamposObrigatorios = () => {
+    Swal.fire({
+      title: "Atenção!",
+      text: "É necessário preencher todos os campos obrigatórios!",
+      icon: "error",
+    });
+  };
 
-  render() {
-    return (
-      <div className="containerUsually">
-        <h3>Modelo</h3>
-      </div>
-    );
-  }
 }
 
-export default SwalComponent;
+// eslint-disable-next-line import/no-anonymous-default-export
+export default new UserAlerts();

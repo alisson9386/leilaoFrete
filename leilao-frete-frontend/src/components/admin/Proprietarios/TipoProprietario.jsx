@@ -8,6 +8,7 @@ import {
   BsFillTrash3Fill,
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
+import useAlerts from "../../../context/useAlerts";
 
 class TipoProprietarioComponent extends Component {
   constructor(props) {
@@ -25,19 +26,6 @@ class TipoProprietarioComponent extends Component {
     };
   }
 
-  showLoading = (text) => {
-    Swal.fire({
-      title: "Aguarde!",
-      html: text, // add html attribute if you want or remove
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  };
-
   confirmDeleteTipoProprietario = (tipoProprietario) => {
     Swal.fire({
       title: "Tem certeza?",
@@ -52,41 +40,6 @@ class TipoProprietarioComponent extends Component {
       if (result.isConfirmed) {
         this.serviceDeleteTipoProprietario(tipoProprietario.id);
       }
-    });
-  };
-
-  deleteStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Excluído!", "Tipo de proprietario excluído.", "success");
-    } else {
-      Swal.fire("Erro ao excluir!", `${message}`, "error");
-    }
-  };
-
-  addStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Salvo!", "Tipo de proprietario salvo.", "success");
-    } else {
-      Swal.fire("Erro ao salvar!", `${message}`, "error");
-    }
-  };
-
-  updateTipoProprietarioSuccess = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Atualizado!", "Tipo de proprietario atualizado.", "success");
-    } else {
-      Swal.fire("Erro ao atualizar!", `${message}`, "error");
-    }
-  };
-
-  showAlertError = (err) => {
-    Swal.fire({
-      icon: "error",
-      title: "Erro, por favor contate o administrador!",
-      text: err,
     });
   };
 
@@ -153,11 +106,7 @@ class TipoProprietarioComponent extends Component {
     if (
       !editTipoProprietario.tipo_proprietario
     ) {
-      Swal.fire({
-        title: "Ops!",
-        text: "É necessário preencher todos os campos!",
-        icon: "error",
-      });
+      useAlerts.alertCamposObrigatorios();
       return;
     }
 
@@ -166,40 +115,46 @@ class TipoProprietarioComponent extends Component {
         if (res.status === 201) {
           Swal.close();
           if (modalMode === "add") {
-            this.addStatus(true);
+            useAlerts.addStatus(true);
             this.handleClose();
+            this.componentDidMount();
           } else {
-            this.updateTipoProprietarioSuccess(true);
+            useAlerts.updateSuccess(true);
             this.handleClose();
+            this.componentDidMount();
           }
         } else {
           Swal.close();
-          this.updateTipoProprietarioSuccess(false, res.statusText);
+          useAlerts.updateSuccess(false, res.statusText);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 
   serviceDeleteTipoProprietario = (idTipoProprietario) => {
-    this.showLoading("Excluindo");
+    useAlerts.showLoading("Excluindo");
     AppServices.deleteTipoProprietarios(idTipoProprietario)
       .then((res) => {
+        Swal.close();
         if (res.status === 200) {
-          Swal.close();
-          this.deleteStatus(true);
+          useAlerts.deleteStatus(true);
+          this.componentDidMount();
         } else {
-          Swal.close();
-          this.deleteStatus(false, res.data.message);
+          useAlerts.deleteStatus(false, res.data.message);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 

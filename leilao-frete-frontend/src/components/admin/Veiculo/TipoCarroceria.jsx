@@ -8,6 +8,7 @@ import {
   BsFillTrash3Fill,
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
+import useAlerts from "../../../context/useAlerts";
 
 class TipoCarroceriaComponent extends Component {
   constructor(props) {
@@ -25,19 +26,6 @@ class TipoCarroceriaComponent extends Component {
     };
   }
 
-  showLoading = (text) => {
-    Swal.fire({
-      title: "Aguarde!",
-      html: text, // add html attribute if you want or remove
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  };
-
   confirmDeleteTipoCarroceria = (tipoCarroceria) => {
     Swal.fire({
       title: "Tem certeza?",
@@ -52,41 +40,6 @@ class TipoCarroceriaComponent extends Component {
       if (result.isConfirmed) {
         this.serviceDeleteTipoCarroceria(tipoCarroceria.id);
       }
-    });
-  };
-
-  deleteStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Excluído!", "Tipo de carroceria excluído.", "success");
-    } else {
-      Swal.fire("Erro ao excluir!", `${message}`, "error");
-    }
-  };
-
-  addStatus = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Salvo!", "Tipo de carroceria salvo.", "success");
-    } else {
-      Swal.fire("Erro ao salvar!", `${message}`, "error");
-    }
-  };
-
-  updateTipoCarroceriaSuccess = (confirm, ...message) => {
-    if (confirm) {
-      this.componentDidMount();
-      Swal.fire("Atualizado!", "Tipo de carroceria atualizado.", "success");
-    } else {
-      Swal.fire("Erro ao atualizar!", `${message}`, "error");
-    }
-  };
-
-  showAlertError = (err) => {
-    Swal.fire({
-      icon: "error",
-      title: "Erro, por favor contate o administrador!",
-      text: err,
     });
   };
 
@@ -153,11 +106,7 @@ class TipoCarroceriaComponent extends Component {
     if (
       !editTipoCarroceria.tipo_carroceria
     ) {
-      Swal.fire({
-        title: "Ops!",
-        text: "É necessário preencher todos os campos!",
-        icon: "error",
-      });
+      useAlerts.alertCamposObrigatorios();
       return;
     }
 
@@ -166,40 +115,46 @@ class TipoCarroceriaComponent extends Component {
         if (res.status === 201) {
           Swal.close();
           if (modalMode === "add") {
-            this.addStatus(true);
+            useAlerts.addStatus(true);
             this.handleClose();
+            this.componentDidMount();
           } else {
-            this.updateTipoCarroceriaSuccess(true);
+            useAlerts.updateSuccess(true);
             this.handleClose();
+            this.componentDidMount();
           }
         } else {
           Swal.close();
-          this.updateTipoCarroceriaSuccess(false, res.statusText);
+          useAlerts.updateSuccess(false, res.statusText);
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 
   serviceDeleteTipoCarroceria = (idTipoCarroceria) => {
-    this.showLoading("Excluindo");
+    useAlerts.showLoading("Excluindo");
     AppServices.deleteTipoCarroceria(idTipoCarroceria)
       .then((res) => {
         if (res.status === 200) {
           Swal.close();
-          this.deleteStatus(true);
+          useAlerts.deleteStatus(true);
+          this.componentDidMount();
         } else {
           Swal.close();
-          this.deleteStatus(false, res.data.message);
+          useAlerts.deleteStatus(false, res.data.message);
+          this.componentDidMount();
         }
       })
       .catch((error) => {
         Swal.close();
-        this.deleteStatus(false);
+        useAlerts.deleteStatus(false);
         console.log(error);
+        this.componentDidMount();
       });
   };
 
@@ -283,7 +238,7 @@ class TipoCarroceriaComponent extends Component {
         <br />
         <Form.Control
           type="text"
-          placeholder="Pesquisar por nome"
+          placeholder="Pesquisar por tipo"
           value={this.state.search}
           onChange={this.handleSearchChange}
         />

@@ -161,7 +161,7 @@ class NavbarComponent extends Component {
                     </MDBDropdownToggle>
                     <MDBDropdownMenu>
                       <MDBDropdownItem link href="/fretes">
-                        <BsTruck /> Fretes
+                        <BsTruck /> Leilão
                       </MDBDropdownItem>
                     </MDBDropdownMenu>
                   </MDBDropdown>
