@@ -73,6 +73,13 @@ class BackService {
     updateLocaisColeta(locaisColeta, idLocaisColeta){ return api_leilao.patch('/locais-coleta/' + idLocaisColeta, locaisColeta); }
     deleteLocaisColeta(idLocaisColeta){ return api_leilao.delete('/locais-coleta/' + idLocaisColeta); }
 
+    //Serviços de fretes
+    listFretes(){ return api_leilao.get('/locais-coleta/'); }
+    listFreteById(idLocaisColeta){ return api_leilao.get('/locais-coleta/' + idLocaisColeta); }
+    saveFrete(idLocaisColeta){ return api_leilao.post('/locais-coleta/', idLocaisColeta); }
+    updateFrete(locaisColeta, idLocaisColeta){ return api_leilao.patch('/locais-coleta/' + idLocaisColeta, locaisColeta); }
+    deleteFrete(idLocaisColeta){ return api_leilao.delete('/locais-coleta/' + idLocaisColeta); }
+
 
 }
 

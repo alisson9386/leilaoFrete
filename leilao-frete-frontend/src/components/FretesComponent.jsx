@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Modal, Form, Row, Col } from "react-bootstrap";
+import { Button, Modal, Form, Row, Col, Pagination } from "react-bootstrap";
 import Multiselect from "multiselect-react-dropdown";
 
 class FretesComponent extends Component {
@@ -13,6 +13,8 @@ class FretesComponent extends Component {
         { name: "Option 2️", id: 2 },
       ],
       minDate: "",
+      currentPage: 1,
+      fretesPerPage: 10,
     };
   }
 
@@ -34,10 +36,35 @@ class FretesComponent extends Component {
     this.componentDidMount();
   };
 
+  renderPagination = () => {
+    const { currentPage, fretesPerPage } = this.state;
+    const totalFretes = this.state.filteredUsuarios.length;
+    const totalPages = Math.ceil(totalFretes / fretesPerPage);
+    let items = [];
+    for (let number = 1; number <= totalPages; number++) {
+      items.push(
+        <Pagination.Item
+          key={number}
+          active={number === currentPage}
+          onClick={() => this.setState({ currentPage: number })}
+        >
+          {number}
+        </Pagination.Item>
+      );
+    }
+    return (
+      <>
+        <div>
+          <Pagination>{items}</Pagination>
+        </div>
+      </>
+    );
+  };
+
   render() {
     return (
       <>
-        <div className="containerUsually">
+        <div className="containerCard">
           <br />
           <br />
           <Button
@@ -50,8 +77,141 @@ class FretesComponent extends Component {
           >
             Novo leilão
           </Button>
-          <br/><br/>
+          <br />
+          <br />
+
+          <div className="card-container">
+            <div className="card">
+              <div className="card-header">Primeira</div>
+              <div className="card-body">
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Integer posuere erat a ante.
+                  </p>
+                  <footer className="blockquote-footer">
+                    Someone famous in{" "}
+                    <cite title="Source Title">Source Title</cite>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+            <br/>
+            <div className="card">
+              <div className="card-header">Quote</div>
+              <div className="card-body">
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Integer posuere erat a ante.
+                  </p>
+                  <footer className="blockquote-footer">
+                    Someone famous in{" "}
+                    <cite title="Source Title">Source Title</cite>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+            <br/>
+            <div className="card">
+              <div className="card-header">Quote</div>
+              <div className="card-body">
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Integer posuere erat a ante.
+                  </p>
+                  <footer className="blockquote-footer">
+                    Someone famous in{" "}
+                    <cite title="Source Title">Source Title</cite>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+            <br/>
+            <div className="card">
+              <div className="card-header">Quote</div>
+              <div className="card-body">
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Integer posuere erat a ante.
+                  </p>
+                  <footer className="blockquote-footer">
+                    Someone famous in{" "}
+                    <cite title="Source Title">Source Title</cite>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+            <br/>
+            <div className="card">
+              <div className="card-header">Quote</div>
+              <div className="card-body">
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Integer posuere erat a ante.
+                  </p>
+                  <footer className="blockquote-footer">
+                    Someone famous in{" "}
+                    <cite title="Source Title">Source Title</cite>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+            <br/>
+            <div className="card">
+              <div className="card-header">Quote</div>
+              <div className="card-body">
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Integer posuere erat a ante.
+                  </p>
+                  <footer className="blockquote-footer">
+                    Someone famous in{" "}
+                    <cite title="Source Title">Source Title</cite>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+            <br/>
+            <div className="card">
+              <div className="card-header">Quote</div>
+              <div className="card-body">
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Integer posuere erat a ante.
+                  </p>
+                  <footer className="blockquote-footer">
+                    Someone famous in{" "}
+                    <cite title="Source Title">Source Title</cite>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+            <br/>
+            <div className="card">
+              <div className="card-header">Ultimo</div>
+              <div className="card-body">
+                <blockquote className="blockquote mb-0">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Integer posuere erat a ante.
+                  </p>
+                  <footer className="blockquote-footer">
+                    Someone famous in{" "}
+                    <cite title="Source Title">Source Title</cite>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+            <br/>
+          </div>
         </div>
+
         <Modal
           className="modal modal-lg"
           show={this.state.showModal}
@@ -155,6 +315,10 @@ class FretesComponent extends Component {
                   <Form.Label>Cidade</Form.Label>
                   <Form.Control type="text" placeholder="Cidade" />
                 </Form.Group>
+                <Form.Group as={Col}>
+                  <Form.Label>CNPJ</Form.Label>
+                  <Form.Control type="number" placeholder="CNPJ" />
+                </Form.Group>
               </Row>
               <Row className="mb-3">
                 <Form.Group as={Col} controlId="formGridState">
@@ -166,7 +330,7 @@ class FretesComponent extends Component {
                 </Form.Group>
 
                 <Form.Group as={Col}>
-                  <Form.Label>IE</Form.Label>
+                  <Form.Label>Inscrição Estadual</Form.Label>
                   <Form.Control type="number" placeholder="IE" />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formGridPassword">

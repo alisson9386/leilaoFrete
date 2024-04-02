@@ -152,7 +152,7 @@ button {
 
 button {
   text-transform: none;
- }
+}
 
 .imgReserva {
   float: right;
@@ -186,19 +186,35 @@ button {
   height: 100%;
 }
 
-.card {
-  width: 18rem;
+.containerCenterHome {
+  color: black;
+  width: 70%; /* Define a largura do container */
+  max-width: 1200px; /* Define uma largura máxima para evitar que o container fique muito grande em telas grandes */
+  margin: 0 auto; /* Centraliza o container horizontalmente */
+  padding: 45px 27px 30px 27px; /* Adiciona padding ao container */
+  text-align: center; /* Centraliza o texto dentro do container */
+  overflow: auto; /* Permite rolagem se o conteúdo exceder o tamanho do container */
+  display: flex; /* Define o container como um flexbox */
+  flex-direction: column; /* Alinha os itens do container em uma coluna */
+  justify-content: center; /* Centraliza os itens do container verticalmente */
+  align-items: center; /* Centraliza os itens do container horizontalmente */
+  gap: 65px; /* Define o espaço entre os itens do container */
+  height: 100vh; /* Define a altura do container como 100% da altura da viewport */
 }
+
+/*.card {
+  width: 18rem;
+}*/
 
 .table-responsive {
   max-height: 500px; /* Ajuste este valor conforme necessário */
   overflow-y: auto; /* Habilita a rolagem vertical */
- }
+}
 
 .btn {
   text-transform: none !important;
- }
- 
+}
+
 .containerUsually {
   color: black;
   width: 80%;
@@ -310,7 +326,7 @@ button {
 }
 
 .card-container {
-  max-height: 400px; /* Defina a altura máxima desejada */
+  max-height: 80vh; /* Defina a altura máxima desejada */
   overflow-y: auto; /* Adicione uma barra de rolagem vertical quando necessário */
 }
 
@@ -323,23 +339,37 @@ button {
   padding: 0; /* Ajuste o padding conforme necessário */
 }
 
-.table td.fit, 
+.table td.fit,
 .table th.fit {
-   white-space: nowrap;
-   width: 1%;
+  white-space: nowrap;
+  width: 1%;
 }
 
-td, tr {
+td,
+tr {
   text-align: center;
 }
 
-.custom-modal-veiculo, .custom-modal-leilao {
+.custom-modal-veiculo,
+.custom-modal-leilao {
   width: 80% !important; /* Ajuste o valor conforme necessário */
   height: 80% !important; /* Ajuste o valor conforme necessário */
   max-width: none !important; /* Remove o limite máximo de largura */
- }
+}
 
- #centralized-text {
+#centralized-text {
   text-align: center;
+}
+
+.containerCard {
+  color: black;
+  width: 80%;
+  margin: auto;
+  justify-content: space-between;
+  gap: 65px;
+  min-height: 100vh; /* Ajustado para 100vh */
+  padding: 45px 27px 30px 27px;
+  overflow: auto; /* Adicionado para permitir rolagem dentro do container */
  }
+ 
  

@@ -29,7 +29,7 @@ class TipoProprietarioComponent extends Component {
   confirmDeleteTipoProprietario = (tipoProprietario) => {
     Swal.fire({
       title: "Tem certeza?",
-      text: `Você está prestes a excluir o tipo de proprietario ${tipoProprietario.tipo}`,
+      text: `Você está prestes a excluir o tipo de proprietario ${tipoProprietario.tipo_proprietario}`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",

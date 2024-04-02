@@ -29,7 +29,7 @@ class TipoCarroceriaComponent extends Component {
   confirmDeleteTipoCarroceria = (tipoCarroceria) => {
     Swal.fire({
       title: "Tem certeza?",
-      text: `Você está prestes a excluir o tipo de carroceria ${tipoCarroceria.tipo}`,
+      text: `Você está prestes a excluir o tipo de carroceria ${tipoCarroceria.tipo_carroceria}`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
