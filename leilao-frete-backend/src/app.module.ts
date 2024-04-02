@@ -30,6 +30,8 @@ import { TipoCarroceriaVeiculo } from './entities/tipo_carroceria_veiculo.entity
 import { TipoRodadoVeiculo } from './entities/tipo_rodado_veiculo.entity';
 import { Uf } from './entities/uf.entity';
 import { Veiculo } from './entities/veiculo.entity';
+import { LocaisColetaModule } from './module/locais-coleta.module';
+import { LocaisColeta } from './entities/locais-coleta.entity';
 
 @Module({
   imports: [
@@ -55,6 +57,7 @@ import { Veiculo } from './entities/veiculo.entity';
         TipoRodadoVeiculo,
         Uf,
         Veiculo,
+        LocaisColeta
       ],
       synchronize: false,
     }),
@@ -67,6 +70,7 @@ import { Veiculo } from './entities/veiculo.entity';
     TipoRodadoVeiculoModule,
     UfModule,
     WhatsAppModule,
+    LocaisColetaModule,
   ],
   controllers: [],
   providers: [

@@ -27,8 +27,21 @@ export class ProprietarioService {
     return this.proprietarioRepository.update(id, updateProprietarioDto);
   }
 
-  async desativarProprietario(id: number){
+  async alterarProprietario(
+    id: number,
+  ): Promise<{ success: boolean; message?: string }> {
+    const user = await this.proprietarioRepository.findOneBy({ id: id });
+    if (user !== null) {
+      user.fl_ativo = user.fl_ativo ? false : true;
+      await this.proprietarioRepository.save(user);
+      return { success: true, message: 'Proprietário alterado com sucesso' };
+    } else {
+      throw new NotFoundException('Proprietário não encontrado');
+    }
+  }
+
+  async deletarProprietario(id: number){
       await this.proprietarioRepository.delete(id);
-      return { success: true, message: 'Proprietario desativado com sucesso' };
+      return { success: true, message: 'Proprietario deletado com sucesso' };
   }
 }

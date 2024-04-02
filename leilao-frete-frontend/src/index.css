@@ -210,7 +210,7 @@ button {
 
 .containerAdmin {
   color: black;
-  width: 80%;
+  width: 100%;
   margin: auto;
   justify-content: space-between;
   gap: 65px;
@@ -338,3 +338,8 @@ td, tr {
   height: 80% !important; /* Ajuste o valor conforme necessário */
   max-width: none !important; /* Remove o limite máximo de largura */
  }
+
+ #centralized-text {
+  text-align: center;
+ }
+ 

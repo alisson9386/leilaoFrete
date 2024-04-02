@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, NotFoundException } from '@nestjs/common';
 import { ProprietarioService } from '../service/proprietario.service';
 import { CreateProprietarioDto } from '../dto/proprietario_dto/create-proprietario.dto';
 import { UpdateProprietarioDto } from '../dto/proprietario_dto/update-proprietario.dto';
@@ -27,8 +27,25 @@ export class ProprietarioController {
     return this.proprietarioService.update(+id, updateFreteiroDto);
   }
 
+  @Get('status/:id')
+  async desativarOuAtivar(@Param('id') id: string) {
+    try {
+      const result = await this.proprietarioService.alterarProprietario(+id);
+      return { message: result.message };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return { message: error.message, statusCode: HttpStatus.NOT_FOUND };
+      } else {
+        return {
+          message: 'Erro ao deletar',
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        };
+      }
+    }
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.proprietarioService.desativarProprietario(+id);
+    return this.proprietarioService.deletarProprietario(+id);
   }
 }

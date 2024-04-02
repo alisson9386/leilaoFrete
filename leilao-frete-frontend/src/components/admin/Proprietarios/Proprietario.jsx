@@ -8,6 +8,7 @@ import {
   BsFillTrash3Fill,
   BsArrowCounterclockwise,
   BsTruck,
+  BsFillXCircleFill,
 } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
 import VeiculoComponent from "../Veiculo/Veiculo";
@@ -237,8 +238,27 @@ class ProprietariosEditComponent extends Component {
       })
       .catch((error) => {
         Swal.close();
-        useAlerts.deleteStatus(false);
-        console.log(error);
+        useAlerts.showAlertError(error);
+        this.componentDidMount();
+      });
+  };
+
+  serviceAlterarProprietario = (idProprietario) => {
+    useAlerts.showLoading("Alterando proprietário");
+    AppServices.alterarStatusProprietario(idProprietario)
+      .then((res) => {
+        Swal.close();
+        if (res.status === 200) {
+          useAlerts.alteracaoStatus(true);
+          this.componentDidMount();
+        } else {
+          useAlerts.alteracaoStatus(false, res.data.message);
+          this.componentDidMount();
+        }
+      })
+      .catch((error) => {
+        Swal.close();
+        useAlerts.showAlertError(error);
         this.componentDidMount();
       });
   };
@@ -258,8 +278,7 @@ class ProprietariosEditComponent extends Component {
       })
       .catch((error) => {
         Swal.close();
-        useAlerts.deleteStatus(false);
-        console.log(error);
+        useAlerts.showAlertError(error);
         this.componentDidMount();
       });
   };
@@ -300,10 +319,13 @@ class ProprietariosEditComponent extends Component {
         <td>{proprietario.id}</td>
         <td>{proprietario.nome}</td>
         <td>{proprietario.cpf_cnpj}</td>
+        <td>{proprietario.email}</td>
         <td>{proprietario.ie}</td>
         <td>{proprietario.regiao.uf}</td>
         <td>{proprietario.tipoProprietario.tipo_proprietario}</td>
+        <td>{this.formatPhoneNumber(proprietario.tel_contato)}</td>
         <td>{this.formatPhoneNumber(proprietario.tel_whatsapp)}</td>
+        <td>{proprietario.fl_ativo ? "Ativo" : "Suspenso"}</td>
         <td>
           <Button
             variant="info"
@@ -325,18 +347,26 @@ class ProprietariosEditComponent extends Component {
           </Button>{" "}
           {proprietario.fl_ativo ? (
             <Button
+              variant="secondary"
+              size="sm"
+              title="Suspender"
+              onClick={() => this.serviceAlterarProprietario(proprietario.id)}
+            >
+              <BsFillXCircleFill />
+            </Button>
+          ) : (
+            <Button variant="success" size="sm" title="Ativar" onClick={() => this.serviceAlterarProprietario(proprietario.id)}>
+              <BsArrowCounterclockwise />
+            </Button>
+          )}{" "}
+          <Button
               variant="danger"
               size="sm"
-              title="Desativar"
+              title="Excluir"
               onClick={() => this.handleDeleteProprietario(proprietario)}
             >
               <BsFillTrash3Fill />
             </Button>
-          ) : (
-            <Button variant="secondary" size="sm" title="Ativar">
-              <BsArrowCounterclockwise />
-            </Button>
-          )}
         </td>
       </tr>
     ));
@@ -397,10 +427,13 @@ class ProprietariosEditComponent extends Component {
                 <th scope="col">ID</th>
                 <th scope="col">Nome</th>
                 <th scope="col">CPF/CNPJ</th>
+                <th scope="col">Email</th>
                 <th scope="col">IE</th>
                 <th scope="col">UF</th>
                 <th scope="col">Tipo de proprietário</th>
                 <th scope="col">Telefone</th>
+                <th scope="col">Telefone Whatsapp</th>
+                <th scope="col">Status</th>
                 <th scope="col">Veículos</th>
                 <th scope="col">Opções</th>
               </tr>
@@ -446,7 +479,18 @@ class ProprietariosEditComponent extends Component {
                   onChange={this.handleInputChange}
                 />
               </MDBCol>
-              <MDBRow className="g-2">
+              <MDBCol sm="5">
+                <MDBInput
+                  id="email"
+                  name="email"
+                  type="email"
+                  min="11"
+                  max="14"
+                  label="Email"
+                  value={editProprietario.email || ""}
+                  onChange={this.handleInputChange}
+                />
+              </MDBCol>
                 <MDBCol sm="5">
                   <MDBInput
                     id="ie"
@@ -462,13 +506,26 @@ class ProprietariosEditComponent extends Component {
                     id="tel_whatsapp"
                     type="text"
                     name="tel_whatsapp"
-                    label="Telefone"
+                    label="Whatsapp"
                     value={this.formatPhoneNumber(
                       editProprietario.tel_whatsapp || ""
                     )}
                     onChange={this.handleInputChange}
                   />
                 </MDBCol>
+                <MDBCol sm="5">
+                  <MDBInput
+                    id="tel_contato"
+                    type="text"
+                    name="tel_contato"
+                    label="Contato"
+                    value={this.formatPhoneNumber(
+                      editProprietario.tel_contato || ""
+                    )}
+                    onChange={this.handleInputChange}
+                  />
+                </MDBCol>
+                <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
                 <br/>
                 <MDBCol sm="5">
                 <label><small class="form-text text-muted">Tipo de proprietário</small></label>
@@ -515,6 +572,7 @@ class ProprietariosEditComponent extends Component {
             <Button
               variant="success"
               id="termosButton"
+              type="submit"
               data-toggle="modal"
               onClick={this.editOrAddProprietario}
             >

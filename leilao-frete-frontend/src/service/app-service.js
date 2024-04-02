@@ -28,6 +28,7 @@ class BackService {
     saveProprietarios(idProprietario){ return api_leilao.post('/proprietario/', idProprietario); }
     updateProprietarios(proprietario, idProprietario){ return api_leilao.patch('/proprietario/' + idProprietario, proprietario); }
     deleteProprietarios(idProprietario){ return api_leilao.delete('/proprietario/' + idProprietario); }
+    alterarStatusProprietario(idProprietario){ return api_leilao.get('/proprietario/status/' + idProprietario); }
 
     //Serviços de tipo de proprietários
     listTipoProprietarios(){ return api_leilao.get('/tipo-proprietario/'); }
@@ -64,6 +65,14 @@ class BackService {
     saveVeiculo(idVeiculo){ return api_leilao.post('/veiculo/', idVeiculo); }
     updateVeiculo(veiculo, idVeiculo){ return api_leilao.patch('/veiculo/' + idVeiculo, veiculo); }
     deleteVeiculo(idVeiculo){ return api_leilao.delete('/veiculo/' + idVeiculo); }
+
+    //Serviços de locais de coleta
+    listLocaisColeta(){ return api_leilao.get('/locais-coleta/'); }
+    listLocaisColetaById(idLocaisColeta){ return api_leilao.get('/locais-coleta/' + idLocaisColeta); }
+    saveLocaisColeta(idLocaisColeta){ return api_leilao.post('/locais-coleta/', idLocaisColeta); }
+    updateLocaisColeta(locaisColeta, idLocaisColeta){ return api_leilao.patch('/locais-coleta/' + idLocaisColeta, locaisColeta); }
+    deleteLocaisColeta(idLocaisColeta){ return api_leilao.delete('/locais-coleta/' + idLocaisColeta); }
+
 
 }
 

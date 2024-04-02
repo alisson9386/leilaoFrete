@@ -4,6 +4,8 @@ import {
   MDBTabsItem,
   MDBTabsLink,
   MDBTabsPane,
+  MDBRow,
+  MDBCol
 } from "mdb-react-ui-kit";
 import React, { Component } from "react";
 import history from "../../history";
@@ -14,6 +16,7 @@ import TipoProprietarioComponent from "./Proprietarios/TipoProprietario";
 import TipoRodadoVeiculoComponent from "./Veiculo/TipoRodadoVeiculo";
 import TipoCarroceriaComponent from "./Veiculo/TipoCarroceria";
 import TipoUsuariosComponent from "./Usuarios/TipoUsuarios";
+import LocaisColetaComponent from "./Fretes/LocaisColeta";
 
 class AdminComponent extends Component {
   constructor(props) {
@@ -50,7 +53,9 @@ class AdminComponent extends Component {
         <br />
         <br />
         <>
-          <MDBTabs fill className='mb-3'>
+        <MDBRow>
+        <MDBCol size='12' md='3'>
+          <MDBTabs className='flex-column text-center'>
             <MDBTabsItem>
               <MDBTabsLink
                 onClick={() => this.handleBasicClick("frete")}
@@ -108,8 +113,17 @@ class AdminComponent extends Component {
                 Usuários
               </MDBTabsLink>
             </MDBTabsItem>
+            <MDBTabsItem>
+              <MDBTabsLink
+                onClick={() => this.handleBasicClick("locais-coleta")}
+                active={basicActive === "locais-coleta"}
+              >
+                Locais de coleta
+              </MDBTabsLink>
+            </MDBTabsItem>
           </MDBTabs>
-
+          </MDBCol>
+          <MDBCol size='12' md='9'>
           <MDBTabsContent>
             <MDBTabsPane open={basicActive === "frete"}>
               Fretes
@@ -133,7 +147,12 @@ class AdminComponent extends Component {
             <MDBTabsPane open={basicActive === "usuarios"}>
               <UsuariosEditComponent/>
             </MDBTabsPane>
+            <MDBTabsPane open={basicActive === "locais-coleta"}>
+              <LocaisColetaComponent/>
+            </MDBTabsPane>
           </MDBTabsContent>
+          </MDBCol>
+          </MDBRow>
         </>
       </div>
     );

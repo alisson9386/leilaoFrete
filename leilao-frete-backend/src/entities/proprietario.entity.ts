@@ -12,6 +12,12 @@ export class Proprietario {
   cpf_cnpj: string;
 
   @Column()
+  email: string;
+
+  @Column()
+  tel_contato: string;
+
+  @Column()
   tel_whatsapp: string;
 
   @Column()

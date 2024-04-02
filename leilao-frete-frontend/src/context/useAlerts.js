@@ -22,6 +22,14 @@ class UserAlerts {
     }
   };
 
+  alteracaoStatus = (confirm, ...message) => {
+    if (confirm) {
+      Swal.fire("Status alterado!", ``, "success");
+    } else {
+      Swal.fire("Erro ao alterar status!", `${message}`, "error");
+    }
+  };
+
   addStatus = (confirm, ...message) => {
     if (confirm) {
       Swal.fire("Salvo!", `Item salvo.`, "success");

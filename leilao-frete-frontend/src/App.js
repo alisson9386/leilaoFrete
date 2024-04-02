@@ -1,19 +1,19 @@
 import "./App.css";
 //import './assets/style.scss'
-import "./index.css";
-import history from "./history";
-import { Switch, Router, Route } from "react-router-dom";
-import LoginComponent from "./components/LoginComponent";
-import ReplacePasswordComponent from "./components/ReplacePasswordComponent";
-import NavbarComponent from "./components/NavbarComponent";
-import HomeComponent from "./components/HomeComponent";
-import PerfilComponent from "./components/PerfilComponent";
-import Layout from "./components/Layout";
-import StatusWhatsappComponent from "./components/admin/StatusWhatsapp";
-import AdminComponent from "./components/admin/Admin";
-import ModeloComponent from "./components/Modelo";
-import FretesComponent from "./components/FretesComponent";
+import { Route, Router, Switch } from "react-router-dom";
 import FooterComponent from "./components/FooterComponent";
+import FretesComponent from "./components/FretesComponent";
+import HomeComponent from "./components/HomeComponent";
+import Layout from "./components/Layout";
+import LoginComponent from "./components/LoginComponent";
+import ModeloComponent from "./components/Modelo";
+import NavbarComponent from "./components/NavbarComponent";
+import PerfilComponent from "./components/PerfilComponent";
+import ReplacePasswordComponent from "./components/ReplacePasswordComponent";
+import AdminComponent from "./components/admin/Admin";
+import StatusWhatsappComponent from "./components/admin/StatusWhatsapp";
+import history from "./history";
+import "./index.css";
 
 function App() {
   return (
