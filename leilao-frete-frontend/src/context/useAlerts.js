@@ -62,6 +62,14 @@ class UserAlerts {
     });
   };
 
+  alertTodosCamposObrigatorios = () => {
+    Swal.fire({
+      title: "Atenção!",
+      text: "É necessário preencher todos os campos!",
+      icon: "error",
+    });
+  };
+
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

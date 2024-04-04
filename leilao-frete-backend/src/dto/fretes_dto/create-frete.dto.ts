@@ -1,10 +1,8 @@
-import { Double } from "typeorm";
-
 export class CreateFreteDto {
     num_leilao: number;
     dt_abertura: Date;
     dt_validade_leilao: Date;
-    vl_lance_maximo: Double;
+    vl_lance_maximo: number;
     num_ordem_coleta: number;
     dt_emissao_ordem: Date;
     dt_coleta_ordem: Date;
@@ -19,4 +17,5 @@ export class CreateFreteDto {
     cidade_destino: string;
     uf: number;
     ie: number;
+    status: number;
 }

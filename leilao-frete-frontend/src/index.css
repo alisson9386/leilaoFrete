@@ -325,10 +325,7 @@ button {
   opacity: 1; /* Mostra ao passar o mouse */
 }
 
-.card-container {
-  max-height: 80vh; /* Defina a altura máxima desejada */
-  overflow-y: auto; /* Adicione uma barra de rolagem vertical quando necessário */
-}
+
 
 .navbar-text-spacing {
   margin-right: 30px;
@@ -372,4 +369,15 @@ tr {
   overflow: auto; /* Adicionado para permitir rolagem dentro do container */
  }
  
- 
+ .small-card {
+  width: 500px; /* Ajuste a largura conforme necessário */
+  height: 200px; /* Ajuste a altura conforme necessário */
+  overflow: hidden; /* Isso garante que o conteúdo que excede o tamanho do card seja ocultado */
+}
+
+.custom-footer {
+  display: flex;
+  justify-content: center; /* Centraliza os itens horizontalmente */
+  align-items: center; /* Centraliza os itens verticalmente */
+  gap: 10px; /* Adiciona um espaçamento entre os itens */
+ }

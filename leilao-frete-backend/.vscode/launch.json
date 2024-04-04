@@ -7,7 +7,7 @@
         "name": "Debug Nest Framework",
         "args": ["${workspaceFolder}/src/main.ts"],
         "runtimeArgs": ["--nolazy", "-r", "ts-node/register", "-r", "tsconfig-paths/register"],
-        "runtimeVersion": "18.17.1",
+        "runtimeVersion": "21.7.2",
         "sourceMaps": true,
         "envFile": "${workspaceFolder}/.env",
         "cwd": "${workspaceRoot}",

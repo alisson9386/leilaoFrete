@@ -11,7 +11,25 @@ export class FretesService {
     @InjectRepository(Frete)
     private freteRepository: Repository<Frete>,
   ) {}
-  create(createFreteDto: CreateFreteDto) {
+  async create(createFreteDto: CreateFreteDto) {
+    const result = await this.freteRepository.find({
+      order: {
+        id: 'DESC',
+      },
+      take: 1,
+    });
+    const lastLeilao = result[0];
+    let ano = String(new Date().getFullYear());
+    if (!lastLeilao) {
+      let num = '1';
+      num = num.concat(ano)
+      createFreteDto.num_leilao = Number(num);
+    } else {
+      let num = String(lastLeilao.id + 1);
+      num = num.concat(ano)
+      createFreteDto.num_leilao = Number(num);
+    }
+    createFreteDto.num_ordem_coleta = createFreteDto.num_leilao;
     return this.freteRepository.save(createFreteDto);
   }
 

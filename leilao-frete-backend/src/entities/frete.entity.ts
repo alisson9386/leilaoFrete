@@ -1,4 +1,4 @@
-import { Column, Double, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'frete' })
 export class Frete {
@@ -15,7 +15,7 @@ export class Frete {
   dt_validade_leilao: Date;
 
   @Column()
-  vl_lance_maximo: Double;
+  vl_lance_maximo: number;
 
   @Column()
   num_ordem_coleta: number;
@@ -58,4 +58,7 @@ export class Frete {
 
   @Column()
   ie: number;
+
+  @Column()
+  status: number;
 }
