@@ -77,7 +77,7 @@ class BackService {
     listFretes(){ return api_leilao.get('/fretes/'); }
     listFreteById(idFretes){ return api_leilao.get('/fretes/' + idFretes); }
     saveFrete(idFretes){ return api_leilao.post('/fretes/', idFretes); }
-    updateFrete(fretes, idFretes){ return api_leilao.patch('/fretes/' + idFretes, fretes); }
+    updateFrete(fretes, idFretes){ return api_leilao.put('/fretes/' + idFretes, fretes); }
     deleteFrete(idFretes){ return api_leilao.delete('/fretes/' + idFretes); }
 
 

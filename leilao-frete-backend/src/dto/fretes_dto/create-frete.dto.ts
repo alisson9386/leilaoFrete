@@ -10,7 +10,7 @@ export class CreateFreteDto {
     local_origem: number;
     nm_ordem_venda: number;
     razao_social: string;
-    cnpj: number;
+    cnpj: string;
     endereco_destino: string;
     numero_destino: number;
     cep_destino: number;

@@ -37,10 +37,7 @@ class UseAuth {
 
   checkTokenExpiration() {
     this.tokenCheckInterval = setInterval(() => {
-      const decodedToken = this.decodeToken();
-      if (!decodedToken) {
-        this.handleLogout();
-      }
+      this.decodeToken();
     }, 2 * 60 * 1000); // Verifica a cada 2 minutos
  }
 }

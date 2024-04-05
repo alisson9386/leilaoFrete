@@ -39,7 +39,7 @@ export class Frete {
   razao_social: string;
 
   @Column()
-  cnpj: number;
+  cnpj: string;
 
   @Column()
   endereco_destino: string;

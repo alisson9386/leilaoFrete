@@ -1,21 +1,38 @@
-import React, { Component } from "react";
+import React, { useState } from 'react';
 
-class ModeloComponent extends Component {
-  constructor(props) {
-    super(props);
+function DynamicSelect() {
+ const [options, setOptions] = useState(['Opção 1', 'Opção 2', 'Opção 3']);
+ const [selectedOptions, setSelectedOptions] = useState([]);
 
-    this.state = {};
-  }
+ const handleSelectChange = (event) => {
+    const selectedOption = event.target.value;
+    setSelectedOptions(prevOptions => [...prevOptions, selectedOption]);
+    setOptions(prevOptions => prevOptions.filter(option => option !== selectedOption));
+ };
 
-  componentDidMount() {}
+ const handleRemoveOption = (optionToRemove) => {
+    setSelectedOptions(prevOptions => prevOptions.filter(option => option !== optionToRemove));
+    setOptions(prevOptions => [...prevOptions, optionToRemove]);
+ };
 
-  render() {
-    return (
-      <div className="containerUsually">
-        <h3>Modelo</h3>
+ return (
+    <div>
+      <select onChange={handleSelectChange}>
+        {options.map((option, index) => (
+          <option key={index} value={option}>{option}</option>
+        ))}
+      </select>
+
+      <div>
+        {selectedOptions.map((option, index) => (
+          <div key={index}>
+            {option}
+            <button onClick={() => handleRemoveOption(option)}>Remover</button>
+          </div>
+        ))}
       </div>
-    );
-  }
+    </div>
+ );
 }
 
-export default ModeloComponent;
+export default DynamicSelect;

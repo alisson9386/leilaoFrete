@@ -248,7 +248,7 @@ class VeiculoComponent extends Component {
           <Button
             variant="danger"
             size="sm"
-            title="Desativar"
+            title="Excluir"
             onClick={() => this.handleDeleteVeiculo(veiculo)}
           >
             <BsFillTrash3Fill />

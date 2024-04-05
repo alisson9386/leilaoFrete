@@ -315,7 +315,7 @@ class ProprietariosEditComponent extends Component {
     );
 
     return currentProprietarios.map((proprietario) => (
-      <tr key={proprietario.id}>
+      <tr key={proprietario.id} style={{ backgroundColor: proprietario.fl_ativo ? 'transparent' : '#F7AAA9' }}>
         <td>{proprietario.id}</td>
         <td>{proprietario.nome}</td>
         <td>{proprietario.cpf_cnpj}</td>
@@ -347,7 +347,7 @@ class ProprietariosEditComponent extends Component {
           </Button>{" "}
           {proprietario.fl_ativo ? (
             <Button
-              variant="secondary"
+              variant="dark"
               size="sm"
               title="Suspender"
               onClick={() => this.serviceAlterarProprietario(proprietario.id)}
@@ -355,7 +355,7 @@ class ProprietariosEditComponent extends Component {
               <BsFillXCircleFill />
             </Button>
           ) : (
-            <Button variant="success" size="sm" title="Ativar" onClick={() => this.serviceAlterarProprietario(proprietario.id)}>
+            <Button variant="secondary" size="sm" title="Ativar" onClick={() => this.serviceAlterarProprietario(proprietario.id)}>
               <BsArrowCounterclockwise />
             </Button>
           )}{" "}

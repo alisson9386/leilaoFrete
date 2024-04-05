@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { FretesService } from '../service/fretes.service';
 import { CreateFreteDto } from '../dto/fretes_dto/create-frete.dto';
 import { UpdateFreteDto } from '../dto/fretes_dto/update-frete.dto';
@@ -22,7 +22,7 @@ export class FretesController {
     return this.fretesService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateFreteDto: UpdateFreteDto) {
     return this.fretesService.update(+id, updateFreteDto);
   }

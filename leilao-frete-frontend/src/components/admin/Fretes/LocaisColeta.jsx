@@ -288,7 +288,7 @@ class LocaisColetaComponent extends Component {
             <thead className="thead-dark">
               <tr>
                 <th scope="col">ID</th>
-                <th scope="col">Nome</th>
+                <th scope="col">Razão social</th>
                 <th scope="col">Endereço</th>
                 <th scope="col">Número</th>
                 <th scope="col">Complemento</th>
@@ -323,7 +323,7 @@ class LocaisColetaComponent extends Component {
                 <MDBInput
                   id="nome"
                   name="nome"
-                  label="Nome"
+                  label="Razão social"
                   value={editLocaisColeta.nome || ""}
                   onChange={this.handleInputChange}
                 />
