@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import {
-  Button,
-  Modal,
-  Form,
-  Row,
-  Col,
-  Pagination,
   Badge,
+  Button,
+  Col,
+  Form,
+  Modal,
+  Pagination,
+  Row,
 } from "react-bootstrap";
 import { BsTruck, BsWhatsapp } from "react-icons/bs";
-import Multiselect from "multiselect-react-dropdown";
-import AppServices from "../service/app-service";
+import { IMaskInput } from "react-imask";
 import useAlerts from "../context/useAlerts";
+import AppServices from "../service/app-service";
 
 class FretesComponent extends Component {
   constructor(props) {
@@ -37,6 +37,7 @@ class FretesComponent extends Component {
       tiposCarroceria: [],
       tiposVeiculos: [],
       tiposRodadosSelecionados: [],
+      tipoCarroceriaSelecionado: [],
     };
   }
 
@@ -111,6 +112,7 @@ class FretesComponent extends Component {
     this.setState({
       showModal: false,
       tiposRodadosSelecionados: [],
+      tipoCarroceriaSelecionado: [],
     });
   };
 
@@ -162,9 +164,21 @@ class FretesComponent extends Component {
     });
   };
 
-  handleInputChange = (event, ...option) => {
+  handleInputCarroceria = (event, rodado) => {
+    const { tiposCarroceria } = this.state;
+    let value = event.target.value;
     // eslint-disable-next-line
-    const { editFrete } = this.state;
+    this.state.tiposRodadosSelecionados.map((t) => {
+      if (t.id === rodado.id) {
+        const tipoCarroceria = tiposCarroceria.find(
+          (tipos) => tipos.tipo_carroceria === value
+        );
+        t.carroceria = tipoCarroceria;
+      }
+    });
+  };
+
+  handleInputChange = (event, ...option) => {
     const { name, type } = event.target;
     let value = type === "checkbox" ? event.target.checked : event.target.value;
 
@@ -283,9 +297,9 @@ class FretesComponent extends Component {
   formatarData(dataISO, toTela) {
     const data = new Date(dataISO);
 
-    const dia = data.getDate().toString().padStart(2, "0");
-    const mes = (data.getMonth() + 1).toString().padStart(2, "0"); // Os meses são indexados a partir de 0
-    const ano = data.getFullYear();
+    const dia = data.getUTCDate().toString().padStart(2, "0");
+    const mes = (data.getUTCMonth() + 1).toString().padStart(2, "0"); // Os meses são indexados a partir de 0
+    const ano = data.getUTCFullYear();
 
     if (toTela) return `${ano}-${mes}-${dia}`;
     return `${dia}/${mes}/${ano}`;
@@ -441,7 +455,8 @@ class FretesComponent extends Component {
   };
 
   render() {
-    const { editFrete, ufs, locaisColeta, tiposRodados } = this.state;
+    const { editFrete, ufs, locaisColeta, tiposRodados, tiposCarroceria } =
+      this.state;
     return (
       <>
         <div className="containerCard">
@@ -514,7 +529,7 @@ class FretesComponent extends Component {
                 </Form.Group>
 
                 <Form.Group as={Col}>
-                  <Form.Label>Data de coleta da ordem de coleta</Form.Label>
+                  <Form.Label>Data coleta ordem de</Form.Label>
                   <Form.Control
                     id="dt_coleta_ordem"
                     name="dt_coleta_ordem"
@@ -525,11 +540,8 @@ class FretesComponent extends Component {
                     onChange={this.handleInputChange}
                   />
                 </Form.Group>
-              </Row>
-
-              <Row className="mb-3">
                 <Form.Group as={Col} controlId="formGridState">
-                  <Form.Label>Local de origem da coleta</Form.Label>
+                  <Form.Label>Origem da coleta</Form.Label>
                   <Form.Select
                     name="local_origem"
                     value={
@@ -549,7 +561,7 @@ class FretesComponent extends Component {
                 </Form.Group>
 
                 <Form.Group as={Col}>
-                  <Form.Label>Data máxima de entrega destino</Form.Label>
+                  <Form.Label>Data max entrega</Form.Label>
                   <Form.Control
                     name="dt_max_entrega"
                     type="date"
@@ -559,6 +571,10 @@ class FretesComponent extends Component {
                     onChange={this.handleInputChange}
                   />
                 </Form.Group>
+              </Row>
+              <hr class="hr" />
+              <h5>Veículo de transporte</h5>
+              <Row className="mb-3">
                 <Form.Group>
                   <br />
                   <Button
@@ -584,7 +600,7 @@ class FretesComponent extends Component {
               </Row>
 
               <br />
-              <Form.Label>Local de destino da coleta</Form.Label>
+              <h5>Destino da coleta</h5>
 
               <Row className="mb-3">
                 <Form.Group as={Col}>
@@ -614,13 +630,13 @@ class FretesComponent extends Component {
                   <Form.Control
                     name="cnpj"
                     type="text"
+                    as={IMaskInput}
+                    mask="00.000.000/0000-00"
                     placeholder="CNPJ"
                     value={editFrete.cnpj || ""}
                     onChange={this.handleInputChange}
                   />
                 </Form.Group>
-              </Row>
-              <Row className="mb-3">
                 <Form.Group as={Col} controlId="formGridCity">
                   <Form.Label>Endereço</Form.Label>
                   <Form.Control
@@ -631,6 +647,8 @@ class FretesComponent extends Component {
                     onChange={this.handleInputChange}
                   />
                 </Form.Group>
+              </Row>
+              <Row className="mb-3">
                 <Form.Group as={Col}>
                   <Form.Label>Número</Form.Label>
                   <Form.Control
@@ -661,8 +679,6 @@ class FretesComponent extends Component {
                     onChange={this.handleInputChange}
                   />
                 </Form.Group>
-              </Row>
-              <Row className="mb-3">
                 <Form.Group as={Col} controlId="formGridState">
                   <Form.Label>UF</Form.Label>
                   <Form.Select
@@ -686,23 +702,6 @@ class FretesComponent extends Component {
                     placeholder="IE"
                     value={editFrete.ie || ""}
                     onChange={this.handleInputChange}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} controlId="formGridPassword">
-                  <Form.Label>Produtos</Form.Label>
-                  <Multiselect
-                    options={this.state.options}
-                    selectedValues={this.state.selectedValue}
-                    onSelect={this.onSelect}
-                    onRemove={this.onRemove}
-                    displayValue="name"
-                  />
-                </Form.Group>
-                <Form.Group as={Col}>
-                  <Form.Label>Quantidade (s) por produto</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Quantidade (s) por produto"
                   />
                 </Form.Group>
               </Row>
@@ -755,7 +754,7 @@ class FretesComponent extends Component {
                 <thead>
                   <tr>
                     <th>Tipo Rodado</th>
-                    <th>Tipo Carroceria</th>
+                    <th>Tipo de carroceria</th>
                     <th>Quantidade</th>
                     <th>Ação</th>
                   </tr>
@@ -764,7 +763,23 @@ class FretesComponent extends Component {
                   {this.state.tiposRodadosSelecionados.map((option, index) => (
                     <tr key={index}>
                       <td>{option.tipo_rodado}</td>
-                      <td>{option.tipo_rodado}</td>
+                      <td>
+                        <select
+                          name="tipoCarroceria.select"
+                          value={option.tipo_carroceria}
+                          style={{ textAlign: "center" }}
+                          onChange={(e) =>
+                            this.handleInputCarroceria(e, option)
+                          }
+                        >
+                          <option>Selecione</option>
+                          {tiposCarroceria.map((option, index) => (
+                            <option key={index} value={option.tipo_carroceria}>
+                              {option.tipo_carroceria}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
                       <td>
                         <input
                           className="custom-input"

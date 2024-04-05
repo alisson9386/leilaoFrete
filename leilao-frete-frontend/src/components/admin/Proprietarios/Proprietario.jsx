@@ -1,18 +1,19 @@
 import React, { Component } from "react";
+import { Button, Col, Form, Pagination, Row } from "react-bootstrap";
 import AppServices from "../../../service/app-service";
-import { Button, Form, Pagination } from "react-bootstrap";
+
 import Modal from "react-bootstrap/Modal";
-import Swal from "sweetalert2";
 import {
+  BsArrowCounterclockwise,
   BsFillPencilFill,
   BsFillTrash3Fill,
-  BsArrowCounterclockwise,
-  BsTruck,
   BsFillXCircleFill,
+  BsTruck,
 } from "react-icons/bs";
-import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
-import VeiculoComponent from "../Veiculo/Veiculo";
+import { IMaskInput } from "react-imask";
+import Swal from "sweetalert2";
 import useAlerts from "../../../context/useAlerts";
+import VeiculoComponent from "../Veiculo/Veiculo";
 
 class ProprietariosEditComponent extends Component {
   constructor(props) {
@@ -31,7 +32,8 @@ class ProprietariosEditComponent extends Component {
       modalMode: "add",
       showModalVeiculo: false,
       editVeiculo: {},
-      idProprietarioModalVeiculo: ''
+      idProprietarioModalVeiculo: "",
+      cpfCnpjMask: "000.000.000-00",
     };
   }
 
@@ -78,6 +80,14 @@ class ProprietariosEditComponent extends Component {
       });
     }
   }
+
+  updateCpfCnpjMask = (value) => {
+    if (value.length > 14) {
+      this.setState({ cpfCnpjMask: "00.000.000/0000-00" }); // Muda para CNPJ
+    } else {
+      this.setState({ cpfCnpjMask: "000.000.000-00" }); // Muda para CPF
+    }
+  };
 
   handleSearchChange = (event) => {
     const search = event.target.value;
@@ -132,7 +142,7 @@ class ProprietariosEditComponent extends Component {
   handleShowModalVeiculo = (idProprietario) => {
     this.setState({
       showModalVeiculo: true,
-      idProprietarioModalVeiculo: idProprietario
+      idProprietarioModalVeiculo: idProprietario,
     });
   };
 
@@ -146,6 +156,9 @@ class ProprietariosEditComponent extends Component {
 
   handleInputChange = (event) => {
     const { name, value } = event.target;
+    if (name === "cpf_cnpj") {
+      this.updateCpfCnpjMask(value);
+    }
     if (name === "tipoProprietario") {
       const tipoProprietariosSelecionado = this.state.tipoProprietarios.find(
         (tipo) => tipo.tipo_proprietario === value
@@ -215,7 +228,15 @@ class ProprietariosEditComponent extends Component {
       return;
     }
 
-    editProprietario.tel_whatsapp = this.formatPhoneNumberForSave(editProprietario.tel_whatsapp);
+    editProprietario.tel_whatsapp = this.formatPhoneNumberForSave(
+      editProprietario.tel_whatsapp,
+      true
+    );
+
+    editProprietario.tel_contato = this.formatPhoneNumberForSave(
+      editProprietario.tel_contato,
+      false
+    );
 
     AppServices.saveProprietarios(editProprietario)
       .then((res) => {
@@ -284,7 +305,9 @@ class ProprietariosEditComponent extends Component {
   };
 
   formatPhoneNumber = (phoneNumberString) => {
-    const cleaned = ("" + phoneNumberString).replace(/^55/, "").replace("@c.us","");
+    const cleaned = ("" + phoneNumberString)
+      .replace(/^55/, "")
+      .replace("@c.us", "");
     const match = cleaned.match(/^(\d{2})(\d{5})(\d{4})$/);
     if (match) {
       return "(" + match[1] + ") " + match[2] + "-" + match[3];
@@ -292,16 +315,21 @@ class ProprietariosEditComponent extends Component {
     return null;
   };
 
-  formatPhoneNumberForSave = (phoneNumber) => {
-    let cleaned = phoneNumber.replace(/[()\s-]/g, '').replace(/^55/, '').replace("@c.us","");
+  formatPhoneNumberForSave = (phoneNumber, whatsapp) => {
+    let cleaned = phoneNumber
+      .replace(/[()\s-]/g, "")
+      .replace(/^55/, "")
+      .replace("@c.us", "");
     const match = cleaned.match(/^(\d{2})(\d{9})$/);
-   
+
     if (match[2].length === 8) {
-       cleaned = cleaned.substring(1);
+      cleaned = cleaned.substring(1);
     }
-   
-    return '55' + cleaned + '@c.us';
-   };
+
+    if (!whatsapp) return cleaned;
+
+    return "55" + cleaned + "@c.us";
+  };
 
   renderProprietarios = () => {
     const { currentPage, proprietariosPerPage } = this.state;
@@ -315,7 +343,12 @@ class ProprietariosEditComponent extends Component {
     );
 
     return currentProprietarios.map((proprietario) => (
-      <tr key={proprietario.id} style={{ backgroundColor: proprietario.fl_ativo ? 'transparent' : '#F7AAA9' }}>
+      <tr
+        key={proprietario.id}
+        style={{
+          backgroundColor: proprietario.fl_ativo ? "transparent" : "#F7AAA9",
+        }}
+      >
         <td>{proprietario.id}</td>
         <td>{proprietario.nome}</td>
         <td>{proprietario.cpf_cnpj}</td>
@@ -355,18 +388,23 @@ class ProprietariosEditComponent extends Component {
               <BsFillXCircleFill />
             </Button>
           ) : (
-            <Button variant="secondary" size="sm" title="Ativar" onClick={() => this.serviceAlterarProprietario(proprietario.id)}>
+            <Button
+              variant="secondary"
+              size="sm"
+              title="Ativar"
+              onClick={() => this.serviceAlterarProprietario(proprietario.id)}
+            >
               <BsArrowCounterclockwise />
             </Button>
           )}{" "}
           <Button
-              variant="danger"
-              size="sm"
-              title="Excluir"
-              onClick={() => this.handleDeleteProprietario(proprietario)}
-            >
-              <BsFillTrash3Fill />
-            </Button>
+            variant="danger"
+            size="sm"
+            title="Excluir"
+            onClick={() => this.handleDeleteProprietario(proprietario)}
+          >
+            <BsFillTrash3Fill />
+          </Button>
         </td>
       </tr>
     ));
@@ -379,20 +417,25 @@ class ProprietariosEditComponent extends Component {
     let items = [];
     for (let number = 1; number <= totalPages; number++) {
       items.push(
-        <><Pagination.Item
-          key={number}
-          active={number === currentPage}
-          onClick={() => this.setState({ currentPage: number })}
-        >
-          {number}
-        </Pagination.Item><br /></>
+        <>
+          <Pagination.Item
+            key={number}
+            active={number === currentPage}
+            onClick={() => this.setState({ currentPage: number })}
+          >
+            {number}
+          </Pagination.Item>
+          <br />
+        </>
       );
     }
     return (
-      <><br />
+      <>
+        <br />
         <div>
           <Pagination>{items}</Pagination>
-        </div><br />
+        </div>
+        <br />
       </>
     );
   };
@@ -457,123 +500,127 @@ class ProprietariosEditComponent extends Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
-              <MDBCol sm="5">
-                <MDBInput
-                  id="nomw"
-                  name="nome"
-                  label="Nome"
-                  value={editProprietario.nome || ""}
-                  onChange={this.handleInputChange}
-                />
-              </MDBCol>
-              <MDBCol sm="5">
-                <MDBInput
-                  id="cpf_cnpj"
-                  name="cpf_cnpj"
-                  type="number"
-                  min="11"
-                  max="14"
-                  label="CPF/CNPJ"
-                  value={editProprietario.cpf_cnpj || ""}
-                  onChange={this.handleInputChange}
-                />
-              </MDBCol>
-              <MDBCol sm="5">
-                <MDBInput
-                  id="email"
-                  name="email"
-                  type="email"
-                  min="11"
-                  max="14"
-                  label="Email"
-                  value={editProprietario.email || ""}
-                  onChange={this.handleInputChange}
-                />
-              </MDBCol>
-                <MDBCol sm="5">
-                  <MDBInput
+            <Form>
+              <Row className="gy-2 gx-3 align-items-center">
+                <Col sm="5">
+                  <Form.Control
+                    id="nomw"
+                    name="nome"
+                    placeholder="Nome"
+                    value={editProprietario.nome || ""}
+                    onChange={this.handleInputChange}
+                  />
+                </Col>
+                <Col sm="5">
+                  <Form.Control
+                    id="cpf_cnpj"
+                    name="cpf_cnpj"
+                    type="text"
+                    as={IMaskInput}
+                    mask={this.state.cpfCnpjMask}
+                    placeholder="CPF/CNPJ"
+                    value={editProprietario.cpf_cnpj || ""}
+                    onChange={this.handleInputChange}
+                  />
+                </Col>
+                <Col sm="5">
+                  <Form.Control
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    value={editProprietario.email || ""}
+                    onChange={this.handleInputChange}
+                  />
+                </Col>
+                <Col sm="5">
+                  <Form.Control
                     id="ie"
-                    type="number"
                     name="ie"
-                    label="IE"
+                    type="number"
+                    placeholder="IE"
                     value={editProprietario.ie || ""}
                     onChange={this.handleInputChange}
                   />
-                </MDBCol>
-                <MDBCol sm="5">
-                  <MDBInput
+                </Col>
+                <Col sm="5">
+                  <Form.Control
                     id="tel_whatsapp"
                     type="text"
                     name="tel_whatsapp"
-                    label="Whatsapp"
-                    value={this.formatPhoneNumber(
-                      editProprietario.tel_whatsapp || ""
-                    )}
+                    placeholder="Whatsapp"
+                    as={IMaskInput}
+                    mask="(00) 00000-0000"
                     onChange={this.handleInputChange}
+                    value={editProprietario.tel_whatsapp || ""}
                   />
-                </MDBCol>
-                <MDBCol sm="5">
-                  <MDBInput
+                </Col>
+                <Col sm="5">
+                  <Form.Control
                     id="tel_contato"
                     type="text"
                     name="tel_contato"
-                    label="Contato"
-                    value={this.formatPhoneNumber(
-                      editProprietario.tel_contato || ""
-                    )}
+                    placeholder="Contato"
+                    as={IMaskInput}
+                    mask="(00) 00000-0000"
+                    value={editProprietario.tel_contato || ""}
                     onChange={this.handleInputChange}
                   />
-                </MDBCol>
-                <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
-                <br/>
-                <MDBCol sm="5">
-                <label><small class="form-text text-muted">Tipo de proprietário</small></label>
-                  <select
-                    className="form-control"
-                    name="tipoProprietario"
-                    value={
-                      editProprietario.tipoProprietario
-                        ? editProprietario.tipoProprietario.tipo_proprietario
-                        : ""
-                    }
-                    onChange={this.handleInputChange}
-                  >
-                    <option>Selecione uma função</option>
-                    {tipoProprietarios.map((option, index) => (
-                      <option key={index} value={option.tipo_proprietario}>
-                        {option.tipo_proprietario}
-                      </option>
-                    ))}
-                  </select>
-                </MDBCol>
-                <MDBCol sm="5">
-                <label><small class="form-text text-muted">UF</small></label>
-                  <select
-                    className="form-control"
-                    name="uf"
-                    value={
-                      editProprietario.regiao ? editProprietario.regiao.uf : ""
-                    }
-                    onChange={this.handleInputChange}
-                  >
-                    <option>Selecione uma região</option>
-                    {ufs.map((option, index) => (
-                      <option key={index} value={option.uf}>
-                        {option.uf}
-                      </option>
-                    ))}
-                  </select>
-                </MDBCol>
-              </MDBRow>
-            </MDBRow>
+                </Col>
+                <Row className="gy-2 gx-3 align-items-center">
+                  <Col sm="5">
+                    <Form.Label>
+                      <small className="form-text text-muted">
+                        Tipo de proprietário
+                      </small>
+                    </Form.Label>
+                    <Form.Select
+                      name="tipoProprietario"
+                      value={
+                        editProprietario.tipoProprietario
+                          ? editProprietario.tipoProprietario.tipo_proprietario
+                          : ""
+                      }
+                      onChange={this.handleInputChange}
+                    >
+                      <option>Selecione uma função</option>
+                      {tipoProprietarios.map((option, index) => (
+                        <option key={index} value={option.tipo_proprietario}>
+                          {option.tipo_proprietario}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                  <Col sm="5">
+                    <Form.Label>
+                      <small className="form-text text-muted">UF</small>
+                    </Form.Label>
+                    <Form.Select
+                      name="uf"
+                      value={
+                        editProprietario.regiao
+                          ? editProprietario.regiao.uf
+                          : ""
+                      }
+                      onChange={this.handleInputChange}
+                    >
+                      <option>Selecione uma região</option>
+                      {ufs.map((option, index) => (
+                        <option key={index} value={option.uf}>
+                          {option.uf}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                </Row>
+              </Row>
+            </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button
               variant="success"
               id="termosButton"
               type="submit"
-              data-toggle="modal"
               onClick={this.editOrAddProprietario}
             >
               Salvar
@@ -585,7 +632,6 @@ class ProprietariosEditComponent extends Component {
           </Modal.Footer>
         </Modal>
 
-
         <Modal
           className="modal modal-lg"
           show={this.state.showModalVeiculo}
@@ -593,12 +639,12 @@ class ProprietariosEditComponent extends Component {
           dialogClassName="custom-modal-veiculo"
         >
           <Modal.Header closeButton>
-            <Modal.Title>
-              Veículos
-            </Modal.Title>
+            <Modal.Title>Veículos</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <VeiculoComponent proprietarioId={this.state.idProprietarioModalVeiculo}/>
+            <VeiculoComponent
+              proprietarioId={this.state.idProprietarioModalVeiculo}
+            />
           </Modal.Body>
           <Modal.Footer>
             <span style={{ marginLeft: "10px" }}></span>

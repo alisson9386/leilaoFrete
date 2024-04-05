@@ -347,10 +347,15 @@ tr {
   text-align: center;
 }
 
-.custom-modal-veiculo,
-.custom-modal-leilao {
+.custom-modal-veiculo {
   width: 80% !important; /* Ajuste o valor conforme necessário */
   height: 80% !important; /* Ajuste o valor conforme necessário */
+  max-width: none !important; /* Remove o limite máximo de largura */
+}
+
+.custom-modal-leilao {
+  width: 60% !important; /* Ajuste o valor conforme necessário */
+  height: 60% !important; /* Ajuste o valor conforme necessário */
   max-width: none !important; /* Remove o limite máximo de largura */
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import backgroundImage from "../assets/img/road.jpg"; // Substitua pelo caminho correto da sua imagem
+import backgroundImage from "../assets/img/truck2.jpg"; // Substitua pelo caminho correto da sua imagem
 
 const Layout = ({ children }) => {
   const estiloDeFundo = {
