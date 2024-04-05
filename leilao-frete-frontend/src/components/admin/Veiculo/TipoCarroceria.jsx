@@ -52,7 +52,7 @@ class TipoCarroceriaComponent extends Component {
 
   filterTipoCarrocerias = (search) => {
     const filteredTipoCarrocerias = this.state.tipoCarrocerias.filter((tipoCarroceria) =>
-    tipoCarroceria.tipo.toLowerCase().includes(search.toLowerCase())
+    tipoCarroceria.tipo_carroceria.toLowerCase().includes(search.toLowerCase())
     );
     this.setState({ filteredTipoCarrocerias, currentPage: 1 });
   };

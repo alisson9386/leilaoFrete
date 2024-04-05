@@ -52,7 +52,7 @@ class TipoRodadoVeiculoComponent extends Component {
 
   filterTipoRodados = (search) => {
     const filteredTipoRodados = this.state.tipoRodados.filter((tipoRodado) =>
-    tipoRodado.tipo.toLowerCase().includes(search.toLowerCase())
+    tipoRodado.tipo_rodado.toLowerCase().includes(search.toLowerCase())
     );
     this.setState({ filteredTipoRodados, currentPage: 1 });
   };

@@ -34,6 +34,7 @@ class FretesComponent extends Component {
       editFrete: [],
       showModalTipoVeiculos: false,
       tiposRodados: [],
+      tiposCarroceria: [],
       tiposVeiculos: [],
       tiposRodadosSelecionados: [],
     };
@@ -43,8 +44,12 @@ class FretesComponent extends Component {
     const ufs = await AppServices.listUf();
     const locaisColeta = await AppServices.listLocaisColeta();
     const tiposRodados = await AppServices.listTipoRodado();
+    const tiposCarroceria = await AppServices.listTipoCarroceria();
     tiposRodados.data.sort((a, b) =>
       a.tipo_rodado.localeCompare(b.tipo_rodado)
+    );
+    tiposCarroceria.data.sort((a, b) =>
+      a.tipo_carroceria.localeCompare(b.tipo_carroceria)
     );
     const today = new Date().toISOString().split("T")[0];
     this.setState({
@@ -52,6 +57,7 @@ class FretesComponent extends Component {
       ufs: ufs.data,
       locaisColeta: locaisColeta.data,
       tiposRodados: tiposRodados.data,
+      tiposCarroceria: tiposCarroceria.data,
     });
     const fretes = await AppServices.listFretes();
     if (fretes.data) {
@@ -180,7 +186,7 @@ class FretesComponent extends Component {
       updateState("regiao", tipoUfSelecionado);
     } else if (name === "local_origem") {
       const localColetaSelecionado = findItem(this.state.locaisColeta, "nome");
-      updateState("local_origem", localColetaSelecionado.id);
+      updateState("local_origem", localColetaSelecionado?.id);
       updateState("localDeOrigem", localColetaSelecionado);
     } else if (name === "tiposVeiculos") {
       const tipo = findItem(this.state.tiposRodados, "tipo_rodado");
@@ -556,7 +562,12 @@ class FretesComponent extends Component {
                 <Form.Group>
                   <br />
                   <Button
-                    variant={!editFrete.tiposVeiculos ? "danger" : "success"}
+                    variant={
+                      editFrete.tiposVeiculos &&
+                      editFrete.tiposVeiculos.length > 0
+                        ? "success"
+                        : "danger"
+                    }
                     size="sm"
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
@@ -744,6 +755,7 @@ class FretesComponent extends Component {
                 <thead>
                   <tr>
                     <th>Tipo Rodado</th>
+                    <th>Tipo Carroceria</th>
                     <th>Quantidade</th>
                     <th>Ação</th>
                   </tr>
@@ -751,6 +763,7 @@ class FretesComponent extends Component {
                 <tbody>
                   {this.state.tiposRodadosSelecionados.map((option, index) => (
                     <tr key={index}>
+                      <td>{option.tipo_rodado}</td>
                       <td>{option.tipo_rodado}</td>
                       <td>
                         <input

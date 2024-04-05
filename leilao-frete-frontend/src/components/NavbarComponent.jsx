@@ -120,7 +120,7 @@ class NavbarComponent extends Component {
     const { openBasic } = this.state;
     return (
       <>
-        <MDBNavbar expand="lg" dark bgColor="dark">
+        <MDBNavbar className="fixed-top" expand="lg" dark bgColor="dark">
           <MDBContainer fluid>
             <MDBNavbarBrand href="/index">
               <img

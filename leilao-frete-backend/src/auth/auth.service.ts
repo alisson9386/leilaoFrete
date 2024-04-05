@@ -26,7 +26,7 @@ export class AuthService {
     const payload = { user: authenticatedUser, id: authenticatedUser.id };
     const secretKey = {
       secret: 'zaq12wsxZAQ!@WSXZ0rr0b@tmak',
-      expiresIn: '30m',
+      expiresIn: '6h',
     };
     return {
       token: this.jwtService.sign(payload, secretKey),

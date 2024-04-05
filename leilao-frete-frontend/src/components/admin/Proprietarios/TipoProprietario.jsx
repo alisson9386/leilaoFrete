@@ -52,7 +52,7 @@ class TipoProprietarioComponent extends Component {
 
   filterTipoProprietarios = (search) => {
     const filteredTipoProprietarios = this.state.tipoProprietarios.filter((tipoProprietario) =>
-    tipoProprietario.tipo.toLowerCase().includes(search.toLowerCase())
+    tipoProprietario.tipo_proprietario.toLowerCase().includes(search.toLowerCase())
     );
     this.setState({ filteredTipoProprietarios, currentPage: 1 });
   };
@@ -238,7 +238,7 @@ class TipoProprietarioComponent extends Component {
         <br />
         <Form.Control
           type="text"
-          placeholder="Pesquisar por nome"
+          placeholder="Pesquisar por tipo"
           value={this.state.search}
           onChange={this.handleSearchChange}
         />

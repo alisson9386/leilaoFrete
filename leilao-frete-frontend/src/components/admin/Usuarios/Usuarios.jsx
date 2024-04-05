@@ -341,7 +341,7 @@ class UsuariosEditComponent extends Component {
             <Modal.Title>
               {this.state.modalMode === "add"
                 ? "Adicionar usuário"
-                : "Editar usuário"}
+                : "Editar"}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>

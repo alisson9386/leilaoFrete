@@ -340,7 +340,7 @@ class ProprietariosEditComponent extends Component {
           <Button
             variant="warning"
             size="sm"
-            title="Editar usuário"
+            title="Editar"
             onClick={() => this.handleEditProprietario(proprietario)}
           >
             <BsFillPencilFill />
@@ -389,10 +389,10 @@ class ProprietariosEditComponent extends Component {
       );
     }
     return (
-      <>
+      <><br />
         <div>
           <Pagination>{items}</Pagination>
-        </div>
+        </div><br />
       </>
     );
   };

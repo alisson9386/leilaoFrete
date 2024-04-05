@@ -40,7 +40,7 @@ import { Frete } from './entities/frete.entity';
     ConfigModule.forRoot(),
     JwtModule.register({
       secret: 'zaq12wsxZAQ!@WSXZ0rr0b@tmak',
-      signOptions: { expiresIn: '24h' },
+      signOptions: { expiresIn: '6h' },
     }),
     UsuariosModule,
     TypeOrmModule.forRoot({

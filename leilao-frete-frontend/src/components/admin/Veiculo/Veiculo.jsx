@@ -145,7 +145,7 @@ class VeiculoComponent extends Component {
       updateState("tipoRodado", tipoRodadoSelecionado);
     } else if (name === "uf_veiculo_licenciado") {
       const tipoUfSelecionado = findItem(this.state.ufs, "uf");
-      updateState("uf_veiculo_licenciado", tipoUfSelecionado.id);
+      updateState("uf_veiculo_licenciado", tipoUfSelecionado?.id);
       updateState("uf", tipoUfSelecionado);
     } else if (name === "tipo_carroceria") {
       const tipoCarroceriaSelecionado = findItem(

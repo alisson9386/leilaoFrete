@@ -61,12 +61,20 @@ class LocaisColetaComponent extends Component {
   }
 
   filterLocaisColeta = (search) => {
+    if (!this.state.locaisColeta) {
+       console.error('locaisColeta não está definido');
+       return; // Sai da função se locaisColeta não estiver definido
+    }
+   
     const filteredLocaisColeta = this.state.locaisColeta.filter(
-      (locaisColeta) =>
-        locaisColeta.tipo.toLowerCase().includes(search.toLowerCase())
+       (locaisColeta) =>
+         locaisColeta &&
+         locaisColeta.nome && // Garante que locaisColeta.tipo está definido
+         locaisColeta.nome.toLowerCase().includes(search.toLowerCase())
     );
     this.setState({ filteredLocaisColeta, currentPage: 1 });
-  };
+   };
+   
 
   handleSearchChange = (event) => {
     const search = event.target.value;
@@ -279,7 +287,7 @@ class LocaisColetaComponent extends Component {
         <br />
         <Form.Control
           type="text"
-          placeholder="Pesquisar por nome"
+          placeholder="Pesquisar por razão social"
           value={this.state.search}
           onChange={this.handleSearchChange}
         />
@@ -384,14 +392,18 @@ class LocaisColetaComponent extends Component {
                   onChange={this.handleInputChange}
                 />
               </MDBCol>
-              </MDBRow>
-              <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
+            </MDBRow>
+            <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
               <MDBCol sm="5">
-              <label><small class="form-text text-muted">UF</small></label>
+                <label>
+                  <small class="form-text text-muted">UF</small>
+                </label>
                 <select
                   className="form-control"
                   name="uf"
-                  value={editLocaisColeta.regiao ? editLocaisColeta.regiao.uf : ""}
+                  value={
+                    editLocaisColeta.regiao ? editLocaisColeta.regiao.uf : ""
+                  }
                   onChange={this.handleInputChange}
                 >
                   <option>Selecione uma região</option>

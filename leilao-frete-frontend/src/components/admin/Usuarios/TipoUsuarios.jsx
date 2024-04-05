@@ -176,7 +176,7 @@ class TipoUsuariosComponent extends Component {
           <Button
             variant="warning"
             size="sm"
-            title="Editar usuário"
+            title="Editar"
             onClick={() => this.handleEditTipoUsuario(tipoUser)}
           >
             <BsFillPencilFill />
@@ -238,7 +238,7 @@ class TipoUsuariosComponent extends Component {
         <br />
         <Form.Control
           type="text"
-          placeholder="Pesquisar por nome"
+          placeholder="Pesquisar por tipo"
           value={this.state.search}
           onChange={this.handleSearchChange}
         />
