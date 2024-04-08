@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateFreteDto } from '../dto/fretes_dto/create-frete.dto';
 import { UpdateFreteDto } from '../dto/fretes_dto/update-frete.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Frete } from 'src/entities/frete.entity';
 import { Repository } from 'typeorm';
+import { FreteVeiculoQuantidade } from 'src/entities/frete-veiculo-quantidade.entity';
+import { ExceptionHandler } from 'winston';
 
 @Injectable()
 export class FretesService {
   constructor(
     @InjectRepository(Frete)
     private freteRepository: Repository<Frete>,
+    @InjectRepository(FreteVeiculoQuantidade)
+    private freteVeiculoQuantidadeRepository: Repository<FreteVeiculoQuantidade>,
   ) {}
   async create(createFreteDto: CreateFreteDto) {
     const result = await this.freteRepository.find({
@@ -41,9 +45,23 @@ export class FretesService {
     return this.freteRepository.findOneBy({ id: id });
   }
 
-  update(id: number, updateFreteDto: UpdateFreteDto) {
-    return this.freteRepository.update(id, updateFreteDto);
+  async update(id: number, updateFreteDto: UpdateFreteDto, ...tiposVeiculosFretes: any) {
+    let save =  await this.insertTiposVeiculosFrete(tiposVeiculosFretes);
+    if(save) return this.freteRepository.update(id, updateFreteDto);
+    else return HttpStatus.INTERNAL_SERVER_ERROR;
   }
+
+  async insertTiposVeiculosFrete(tiposVeiculosFretes: any[]) {
+    try{
+      for (const tipoVeiculo of tiposVeiculosFretes[0]) {
+         await this.freteVeiculoQuantidadeRepository.save(tipoVeiculo);
+      }
+      return true
+    }catch (err) {
+      throw new ExceptionHandler(err);
+      return false;
+    }
+   }
 
   remove(id: number) {
     return this.freteRepository.delete(id);

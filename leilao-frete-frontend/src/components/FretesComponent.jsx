@@ -83,6 +83,13 @@ class FretesComponent extends Component {
     }
   }
 
+  formatarComVirgula(numero) {
+    return numero.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
   handleShowModalTiposVeiculos = () => {
     this.setState({
       showModalTipoVeiculos: true,
@@ -411,7 +418,7 @@ class FretesComponent extends Component {
                       <p>
                         Valor do lance máximo:{" "}
                         <Badge variant="primary">
-                          R$ {frete.vl_lance_maximo},00
+                          R$ {this.formatarComVirgula(frete.vl_lance_maximo)}
                         </Badge>
                       </p>
                       <p>
@@ -518,14 +525,20 @@ class FretesComponent extends Component {
 
                 <Form.Group as={Col}>
                   <Form.Label>Lance máximo</Form.Label>
-                  <Form.Control
-                    id="vl_lance_maximo"
-                    name="vl_lance_maximo"
-                    type="number"
-                    placeholder="Lance máximo"
-                    value={editFrete.vl_lance_maximo || ""}
-                    onChange={this.handleInputChange}
-                  />
+                  <div className="input-group">
+                    <div className="input-group-prepend">
+                      <span className="input-group-text">R$</span>
+                    </div>
+                    <Form.Control
+                      id="vl_lance_maximo"
+                      name="vl_lance_maximo"
+                      type="number"
+                      step="0.01"
+                      placeholder="Lance máximo"
+                      value={editFrete.vl_lance_maximo || ""}
+                      onChange={this.handleInputChange}
+                    />
+                  </div>
                 </Form.Group>
 
                 <Form.Group as={Col}>

@@ -34,6 +34,8 @@ import { LocaisColetaModule } from './module/locais-coleta.module';
 import { LocaisColeta } from './entities/locais-coleta.entity';
 import { FretesModule } from './module/fretes.module';
 import { Frete } from './entities/frete.entity';
+import { FreteVeiculoQuantidadeModule } from './module/frete-veiculo-quantidade.module';
+import { FreteVeiculoQuantidade } from './entities/frete-veiculo-quantidade.entity';
 
 @Module({
   imports: [
@@ -60,7 +62,8 @@ import { Frete } from './entities/frete.entity';
         Uf,
         Veiculo,
         LocaisColeta,
-        Frete
+        Frete,
+        FreteVeiculoQuantidade
       ],
       synchronize: false,
     }),
@@ -75,6 +78,7 @@ import { Frete } from './entities/frete.entity';
     WhatsAppModule,
     LocaisColetaModule,
     FretesModule,
+    FreteVeiculoQuantidadeModule,
   ],
   controllers: [],
   providers: [

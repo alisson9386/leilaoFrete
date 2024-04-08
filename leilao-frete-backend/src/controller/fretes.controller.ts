@@ -24,6 +24,21 @@ export class FretesController {
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateFreteDto: UpdateFreteDto) {
+    if(updateFreteDto.tiposVeiculos){
+      let tiposVeiculosFretes = [];
+      for (const tipoVeiculo of updateFreteDto.tiposVeiculos) {
+        let tipoVeiculoFrete = {
+          'num_leilao': updateFreteDto.num_leilao,
+          'id_tipo_veiculo': tipoVeiculo.id,
+          'id_tipo_carroceria': tipoVeiculo.carroceria.id,
+          'quantidade': tipoVeiculo.quantidade
+        };
+    
+        tiposVeiculosFretes.push(tipoVeiculoFrete);
+     }
+     delete updateFreteDto.tiposVeiculos;
+     return this.fretesService.update(+id, updateFreteDto, tiposVeiculosFretes);
+    }
     return this.fretesService.update(+id, updateFreteDto);
   }
 

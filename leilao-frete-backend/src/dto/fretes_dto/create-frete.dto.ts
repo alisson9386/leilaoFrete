@@ -1,3 +1,5 @@
+import { Double } from "typeorm";
+
 export class CreateFreteDto {
     num_leilao: number;
     dt_abertura: Date;

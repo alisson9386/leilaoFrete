@@ -82,12 +82,14 @@ class ProprietariosEditComponent extends Component {
   }
 
   updateCpfCnpjMask = (value) => {
-    if (value.length > 14) {
-      this.setState({ cpfCnpjMask: "00.000.000/0000-00" }); // Muda para CNPJ
-    } else {
+    // Permite até 11 dígitos para CPFs
+    if (value.length > 11 && value.length <= 14) {
       this.setState({ cpfCnpjMask: "000.000.000-00" }); // Muda para CPF
+    } else {
+      this.setState({ cpfCnpjMask: "00.000.000/0000-00" }); // Muda para CNPJ
     }
-  };
+   };
+   
 
   handleSearchChange = (event) => {
     const search = event.target.value;
