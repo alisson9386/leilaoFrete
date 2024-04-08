@@ -9,6 +9,8 @@ import {
   BsFillTrash3Fill,
   BsFillXCircleFill,
   BsTruck,
+  BsSortAlphaDownAlt,
+  BsSortAlphaDown
 } from "react-icons/bs";
 import { IMaskInput } from "react-imask";
 import Swal from "sweetalert2";
@@ -34,6 +36,8 @@ class ProprietariosEditComponent extends Component {
       editVeiculo: {},
       idProprietarioModalVeiculo: "",
       cpfCnpjMask: "000.000.000-00",
+      ordenacaoChave: "nome",
+      ordenacaoDirecao: "asc",
     };
   }
 
@@ -74,9 +78,10 @@ class ProprietariosEditComponent extends Component {
         proprietario.tipoProprietario = tipo;
         proprietario.regiao = uf;
       });
+      const listaOrdenada = prop.sort((a, b) => a.nome.localeCompare(b.nome));
       this.setState({
-        proprietarios: prop,
-        filteredProprietarios: prop,
+        proprietarios: listaOrdenada,
+        filteredProprietarios: listaOrdenada,
       });
     }
   }
@@ -88,14 +93,34 @@ class ProprietariosEditComponent extends Component {
     } else {
       this.setState({ cpfCnpjMask: "00.000.000/0000-00" }); // Muda para CNPJ
     }
-   };
+  };
+
+  ordenarProprietarios = (chave, direcao) => {
+    const filteredProprietarios = [...this.state.filteredProprietarios].sort((a, b) => {
+       if (a[chave] < b[chave]) {
+         return direcao === 'asc' ? -1 : 1;
+       }
+       if (a[chave] > b[chave]) {
+         return direcao === 'asc' ? 1 : -1;
+       }
+       return 0;
+    });
    
+    this.setState({ proprietarios: filteredProprietarios, filteredProprietarios:  filteredProprietarios});
+   };
 
   handleSearchChange = (event) => {
     const search = event.target.value;
     this.setState({ search });
     this.filterProprietarios(search);
   };
+
+  handleClickTitulo = (chave) => {
+    const direcao = this.state.ordenacaoDirecao === 'asc' ? 'desc' : 'asc';
+    this.setState({ ordenacaoChave: chave, ordenacaoDirecao: direcao }, () => {
+       this.ordenarProprietarios(chave, direcao);
+    });
+   };
 
   filterProprietarios = (search) => {
     const filteredProprietarios = this.state.proprietarios.filter(
@@ -306,6 +331,11 @@ class ProprietariosEditComponent extends Component {
       });
   };
 
+  getStatusColor(fl_ativo) {
+    if (fl_ativo) return "";
+    else return "table-danger";
+  }
+
   formatPhoneNumber = (phoneNumberString) => {
     const cleaned = ("" + phoneNumberString)
       .replace(/^55/, "")
@@ -348,20 +378,40 @@ class ProprietariosEditComponent extends Component {
       <tr
         key={proprietario.id}
         style={{
-          backgroundColor: proprietario.fl_ativo ? "transparent" : "#F7AAA9",
+          backgroundColor: proprietario.fl_ativo ? "transparent" : "#F7AAA9 ",
         }}
       >
-        <td>{proprietario.id}</td>
-        <td>{proprietario.nome}</td>
-        <td>{proprietario.cpf_cnpj}</td>
-        <td>{proprietario.email}</td>
-        <td>{proprietario.ie}</td>
-        <td>{proprietario.regiao.uf}</td>
-        <td>{proprietario.tipoProprietario.tipo_proprietario}</td>
-        <td>{this.formatPhoneNumber(proprietario.tel_contato)}</td>
-        <td>{this.formatPhoneNumber(proprietario.tel_whatsapp)}</td>
-        <td>{proprietario.fl_ativo ? "Ativo" : "Suspenso"}</td>
-        <td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {proprietario.id}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {proprietario.nome}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {proprietario.cpf_cnpj}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {proprietario.email}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {proprietario.ie}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {proprietario.regiao.uf}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {proprietario.tipoProprietario.tipo_proprietario}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {this.formatPhoneNumber(proprietario.tel_contato)}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {this.formatPhoneNumber(proprietario.tel_whatsapp)}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
+          {proprietario.fl_ativo ? "Ativo" : "Suspenso"}
+        </td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
           <Button
             variant="info"
             size="sm"
@@ -371,7 +421,7 @@ class ProprietariosEditComponent extends Component {
             <BsTruck />
           </Button>{" "}
         </td>
-        <td>
+        <td className={this.getStatusColor(proprietario.fl_ativo)}>
           <Button
             variant="warning"
             size="sm"
@@ -469,8 +519,8 @@ class ProprietariosEditComponent extends Component {
           <table className="table table-striped table-bordered table-hover table-sm">
             <thead className="thead-dark">
               <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Nome</th>
+                <th scope="col" onClick={() => this.handleClickTitulo('id')}>ID</th>
+                <th scope="col" className="titulo-ordenavel" onClick={() => this.handleClickTitulo('nome')}>Nome <BsSortAlphaDown/></th>
                 <th scope="col">CPF/CNPJ</th>
                 <th scope="col">Email</th>
                 <th scope="col">IE</th>

@@ -12,6 +12,7 @@ import { BsTruck, BsWhatsapp } from "react-icons/bs";
 import { IMaskInput } from "react-imask";
 import useAlerts from "../context/useAlerts";
 import AppServices from "../service/app-service";
+import { buscarEnderecoPorCep } from "../util/viacep";
 
 class FretesComponent extends Component {
   constructor(props) {
@@ -35,9 +36,8 @@ class FretesComponent extends Component {
       showModalTipoVeiculos: false,
       tiposRodados: [],
       tiposCarroceria: [],
-      tiposVeiculos: [],
       tiposRodadosSelecionados: [],
-      tipoCarroceriaSelecionado: [],
+      isDisabled: true
     };
   }
 
@@ -62,23 +62,37 @@ class FretesComponent extends Component {
     });
     const fretes = await AppServices.listFretes();
     if (fretes.data) {
-      let frete = fretes.data;
-      // eslint-disable-next-line
-      frete.map((f) => {
+      const updatedFretes = fretes.data.map((f) => {
+        const tiposVeiculos = f.veiculos.map((veiculo) => {
+          const tipoRodado = tiposRodados.data.find(
+            (tipo) => tipo.id === veiculo.id_tipo_veiculo
+          );
+          const carroceria = tiposCarroceria.data.find(
+            (tipo) => tipo.id === veiculo.id_tipo_carroceria
+          );
+          return {
+            ...tipoRodado,
+            quantidade: veiculo.quantidade,
+            carroceria,
+          };
+        });
         const uf = ufs.data.find((ufs) => ufs.id === f.uf);
         const local = locaisColeta.data.find(
           (local) => local.id === f.local_origem
         );
-        f.dt_validade_leilao = this.formatarData(f.dt_validade_leilao, true);
-        f.dt_max_entrega = this.formatarData(f.dt_validade_leilao, true);
-        f.dt_coleta_ordem = this.formatarData(f.dt_validade_leilao, true);
-        f.regiao = uf;
-        f.localDeOrigem = local;
+        return {
+          ...f,
+          tiposVeiculos,
+          dt_validade_leilao: this.formatarData(f.dt_validade_leilao, true),
+          dt_max_entrega: this.formatarData(f.dt_validade_leilao, true),
+          dt_coleta_ordem: this.formatarData(f.dt_validade_leilao, true),
+          regiao: uf,
+          localDeOrigem: local,
+        };
       });
-      console.log(frete);
       this.setState({
-        fretes: frete,
-        filteredFretes: frete,
+        fretes: updatedFretes,
+        filteredFretes: [...updatedFretes], // Cria uma cópia profunda de updatedFretes
       });
     }
   }
@@ -90,14 +104,24 @@ class FretesComponent extends Component {
     });
   }
 
-  handleShowModalTiposVeiculos = () => {
+  handleShowModalTiposVeiculos = (editFrete) => {
+    const tiposRodadosDisponiveis = this.state.tiposRodados.filter((tipo) => {
+      const jaSelecionado = editFrete.tiposVeiculos.some(
+        (veiculo) => veiculo.id === tipo.id
+      );
+      return !jaSelecionado;
+    });
+
     this.setState({
+      tiposRodadosSelecionados: editFrete.tiposVeiculos,
+      tiposRodados: tiposRodadosDisponiveis,
       showModalTipoVeiculos: true,
     });
   };
 
   handleCloseModalTiposVeiculos = () => {
     this.setState({
+      tiposRodadosSelecionados: false,
       showModalTipoVeiculos: false,
     });
   };
@@ -119,7 +143,6 @@ class FretesComponent extends Component {
     this.setState({
       showModal: false,
       tiposRodadosSelecionados: [],
-      tipoCarroceriaSelecionado: [],
     });
   };
 
@@ -161,13 +184,22 @@ class FretesComponent extends Component {
     }));
   };
 
-  handleInputQuantidade = (event, tipo) => {
-    let value = event.target.value;
-    // eslint-disable-next-line
+  handleInputQuantidade = (event, option) => {
+    const updatedTiposRodadosSelecionados =
+      this.state.tiposRodadosSelecionados.map((tipo) => {
+        if (tipo.id === option.id) {
+          // Supondo que 'id' seja a propriedade única para identificar o tipo de veículo
+          return { ...tipo, quantidade: event.target.value };
+        }
+        return tipo;
+      });
     this.state.tiposRodadosSelecionados.map((t) => {
-      if (t.id === tipo.id) {
-        t.quantidade = Number(value);
+      if (t.id === option.id) {
+        t.quantidade = Number(event.target.value);
       }
+    });
+    this.setState({
+      tiposRodadosSelecionados: updatedTiposRodadosSelecionados,
     });
   };
 
@@ -184,6 +216,31 @@ class FretesComponent extends Component {
       }
     });
   };
+
+  buscarEndereco = async (event) => {
+    const enderecoEncontrado = await buscarEnderecoPorCep(event.target.value);
+    if (!enderecoEncontrado.erro) {
+      const editFreteAtualizado = { ...this.state.editFrete };
+      const ufs = this.state.ufs;
+      const uf = ufs.find((r) => r.uf === enderecoEncontrado.uf);
+
+      editFreteAtualizado.endereco_destino = enderecoEncontrado.logradouro;
+      editFreteAtualizado.cidade_destino = enderecoEncontrado.localidade;
+      editFreteAtualizado.uf = uf.id;
+      editFreteAtualizado.regiao = uf;
+
+      this.setState({ editFrete: editFreteAtualizado });
+    } else {
+      const editFreteAtualizado = { ...this.state.editFrete };
+      delete editFreteAtualizado.endereco_destino;
+      delete editFreteAtualizado.cidade_destino;
+      delete editFreteAtualizado.uf;
+      delete editFreteAtualizado.regiao;
+      delete editFreteAtualizado.numero_destino;
+      this.setState({isDisabled: false, editFrete: editFreteAtualizado})
+    }
+};
+
 
   handleInputChange = (event, ...option) => {
     const { name, type } = event.target;
@@ -253,16 +310,20 @@ class FretesComponent extends Component {
             if (modalMode === "add") {
               useAlerts.addStatus(true);
               this.handleClose();
+              this.componentDidMount();
             } else {
               useAlerts.updateSuccess(true);
               this.handleClose();
+              this.componentDidMount();
             }
           } else {
             useAlerts.showAlertError(res.statusText);
+            this.componentDidMount();
           }
         })
         .catch((error) => {
           useAlerts.addStatus(false, "Veículo", error);
+          this.componentDidMount();
         });
     } else {
       AppServices.updateFrete(editFrete, editFrete.id)
@@ -270,12 +331,15 @@ class FretesComponent extends Component {
           if (res.status === 200) {
             useAlerts.updateSuccess(true);
             this.handleClose();
+            this.componentDidMount();
           } else {
             useAlerts.showAlertError(res.statusText);
+            this.componentDidMount();
           }
         })
         .catch((error) => {
           useAlerts.addStatus(false, "Veículo", error);
+          this.componentDidMount();
         });
     }
   };
@@ -325,6 +389,7 @@ class FretesComponent extends Component {
     const { editFrete } = this.state;
     editFrete.dt_abertura = this.getDataHoje();
     editFrete.dt_emissao_ordem = this.getDataHoje();
+    if(typeof editFrete.vl_lance_maximo === 'string') Number(editFrete.vl_lance_maximo = editFrete.vl_lance_maximo.replace(",", "."));
     delete editFrete.regiao;
     delete editFrete.localDeOrigem;
   };
@@ -347,7 +412,7 @@ class FretesComponent extends Component {
       editFrete.cidade_destino &&
       editFrete.uf &&
       editFrete.ie &&
-      editFrete.tiposVeiculos
+      editFrete.tiposVeiculos.length > 0
     ) {
       return true;
     } else {
@@ -424,12 +489,18 @@ class FretesComponent extends Component {
                       <p>
                         Local de Origem:{" "}
                         <Badge variant="primary">
-                          {frete.localDeOrigem.nome}
+                          {frete.localDeOrigem
+                            ? frete.localDeOrigem.nome
+                            : "Não definido"}
                         </Badge>
                       </p>
                       <p>
                         Local de Destino:{" "}
-                        {`${frete.endereco_destino}, N° ${frete.numero_destino} - ${frete.cidade_destino}, ${frete.regiao.uf} ${frete.cep_destino}`}
+                        {`${frete.endereco_destino}, N° ${
+                          frete.numero_destino
+                        } - ${frete.cidade_destino}, ${
+                          frete.regiao ? frete.regiao.uf : "Não definido"
+                        } ${frete.cep_destino}`}
                       </p>
                       <footer className="custom-footer">
                         <button
@@ -462,7 +533,7 @@ class FretesComponent extends Component {
   };
 
   render() {
-    const { editFrete, ufs, locaisColeta, tiposRodados, tiposCarroceria } =
+    const { editFrete, ufs, locaisColeta, tiposRodados, tiposCarroceria, isDisabled } =
       this.state;
     return (
       <>
@@ -532,10 +603,10 @@ class FretesComponent extends Component {
                     <Form.Control
                       id="vl_lance_maximo"
                       name="vl_lance_maximo"
-                      type="number"
+                      type="text"
                       step="0.01"
                       placeholder="Lance máximo"
-                      value={editFrete.vl_lance_maximo || ""}
+                      value={this.formatarComVirgula(editFrete.vl_lance_maximo || "")}
                       onChange={this.handleInputChange}
                     />
                   </div>
@@ -605,7 +676,7 @@ class FretesComponent extends Component {
                         ? "Adicionar tipos de veículos"
                         : "Tipos adicionados"
                     }
-                    onClick={() => this.handleShowModalTiposVeiculos()}
+                    onClick={() => this.handleShowModalTiposVeiculos(editFrete)}
                   >
                     Tipos de veículos <BsTruck />
                   </Button>
@@ -650,6 +721,19 @@ class FretesComponent extends Component {
                     onChange={this.handleInputChange}
                   />
                 </Form.Group>
+                <Form.Group as={Col}>
+                  <Form.Label>CEP</Form.Label>
+                  <Form.Control
+                    name="cep_destino"
+                    type="number"
+                    placeholder="CEP"
+                    value={editFrete.cep_destino || ""}
+                    onChange={this.handleInputChange}
+                    onBlurCapture={this.buscarEndereco}
+                  />
+                </Form.Group>
+              </Row>
+              <Row className="mb-3">
                 <Form.Group as={Col} controlId="formGridCity">
                   <Form.Label>Endereço</Form.Label>
                   <Form.Control
@@ -658,10 +742,9 @@ class FretesComponent extends Component {
                     placeholder="Endereço"
                     value={editFrete.endereco_destino || ""}
                     onChange={this.handleInputChange}
+                    disabled={isDisabled}
                   />
                 </Form.Group>
-              </Row>
-              <Row className="mb-3">
                 <Form.Group as={Col}>
                   <Form.Label>Número</Form.Label>
                   <Form.Control
@@ -673,16 +756,6 @@ class FretesComponent extends Component {
                   />
                 </Form.Group>
                 <Form.Group as={Col}>
-                  <Form.Label>CEP</Form.Label>
-                  <Form.Control
-                    name="cep_destino"
-                    type="number"
-                    placeholder="CEP"
-                    value={editFrete.cep_destino || ""}
-                    onChange={this.handleInputChange}
-                  />
-                </Form.Group>
-                <Form.Group as={Col}>
                   <Form.Label>Cidade</Form.Label>
                   <Form.Control
                     name="cidade_destino"
@@ -690,6 +763,7 @@ class FretesComponent extends Component {
                     placeholder="Cidade"
                     value={editFrete.cidade_destino || ""}
                     onChange={this.handleInputChange}
+                    disabled={isDisabled}
                   />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formGridState">
@@ -698,6 +772,7 @@ class FretesComponent extends Component {
                     name="uf"
                     value={editFrete.regiao ? editFrete.regiao.uf : ""}
                     onChange={this.handleInputChange}
+                    disabled={isDisabled}
                   >
                     <option>Selecione uma região</option>
                     {ufs.map((option, index) => (
@@ -718,12 +793,7 @@ class FretesComponent extends Component {
                   />
                 </Form.Group>
               </Row>
-
               <br />
-              <Form.Group className="mb-3" id="formGridCheckbox">
-                <Form.Check type="checkbox" label="Check me out" />
-              </Form.Group>
-
               <Button variant="primary" onClick={this.editOrAddFrete}>
                 Salvar
               </Button>
@@ -773,54 +843,64 @@ class FretesComponent extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.tiposRodadosSelecionados.map((option, index) => (
-                    <tr key={index}>
-                      <td>{option.tipo_rodado}</td>
-                      <td>
-                        <select
-                          name="tipoCarroceria.select"
-                          value={option.tipo_carroceria}
-                          style={{ textAlign: "center" }}
-                          onChange={(e) =>
-                            this.handleInputCarroceria(e, option)
-                          }
-                        >
-                          <option>Selecione</option>
-                          {tiposCarroceria.map((option, index) => (
-                            <option key={index} value={option.tipo_carroceria}>
-                              {option.tipo_carroceria}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td>
-                        <input
-                          className="custom-input"
-                          name="tiposVeiculos.quantidade"
-                          type="number"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="top"
-                          title="Caso seja salvo em branco, o padrão será 1"
-                          min={1}
-                          style={{ textAlign: "center" }}
-                          value={option.quantidade}
-                          onChange={(e) =>
-                            this.handleInputQuantidade(e, option)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          title="Remover"
-                          onClick={() => this.handleRemoveTiposVeiculos(option)}
-                        >
-                          Remover
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {Array.isArray(this.state.tiposRodadosSelecionados) &&
+                    this.state.tiposRodadosSelecionados.map((option, index) => (
+                      <tr key={index}>
+                        <td>{option.tipo_rodado}</td>
+                        <td>
+                          <select
+                            name="tipoCarroceria.select"
+                            value={
+                              option.carroceria
+                                ? option.carroceria.tipo_carroceria
+                                : ""
+                            }
+                            style={{ textAlign: "center" }}
+                            onChange={(e) =>
+                              this.handleInputCarroceria(e, option)
+                            }
+                          >
+                            <option>Selecione</option>
+                            {tiposCarroceria.map((option, index) => (
+                              <option
+                                key={index}
+                                value={option.tipo_carroceria}
+                              >
+                                {option.tipo_carroceria}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td>
+                          <input
+                            className="custom-input"
+                            name="tiposVeiculos.quantidade"
+                            type="number"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="Caso seja salvo em branco, o padrão será 1"
+                            min={1}
+                            style={{ textAlign: "center" }}
+                            value={option.quantidade}
+                            onChange={(e) =>
+                              this.handleInputQuantidade(e, option)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            title="Remover"
+                            onClick={() =>
+                              this.handleRemoveTiposVeiculos(option)
+                            }
+                          >
+                            Remover
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

@@ -9,6 +9,22 @@ export class FretesController {
 
   @Post()
   create(@Body() createFreteDto: CreateFreteDto) {
+    if(createFreteDto.tiposVeiculos){
+      let tiposVeiculosFretes = [];
+      for (const tipoVeiculo of createFreteDto.tiposVeiculos) {
+        let tipoVeiculoFrete = {
+          'num_leilao': createFreteDto.num_leilao,
+          'id_tipo_veiculo': tipoVeiculo.id,
+          'id_tipo_carroceria': tipoVeiculo.carroceria.id,
+          'quantidade': tipoVeiculo.quantidade
+        };
+    
+        tiposVeiculosFretes.push(tipoVeiculoFrete);
+     }
+     delete createFreteDto.tiposVeiculos;
+     delete createFreteDto.veiculos;
+     return this.fretesService.create(createFreteDto, tiposVeiculosFretes);
+    }
     return this.fretesService.create(createFreteDto);
   }
 
@@ -37,6 +53,7 @@ export class FretesController {
         tiposVeiculosFretes.push(tipoVeiculoFrete);
      }
      delete updateFreteDto.tiposVeiculos;
+     delete updateFreteDto.veiculos;
      return this.fretesService.update(+id, updateFreteDto, tiposVeiculosFretes);
     }
     return this.fretesService.update(+id, updateFreteDto);

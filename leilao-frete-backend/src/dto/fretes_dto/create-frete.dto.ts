@@ -1,6 +1,7 @@
 import { Double } from "typeorm";
 
 export class CreateFreteDto {
+    [x: string]: any;
     num_leilao: number;
     dt_abertura: Date;
     dt_validade_leilao: Date;

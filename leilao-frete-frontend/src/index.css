@@ -325,8 +325,6 @@ button {
   opacity: 1; /* Mostra ao passar o mouse */
 }
 
-
-
 .navbar-text-spacing {
   margin-right: 30px;
 }
@@ -372,17 +370,24 @@ tr {
   min-height: 100vh; /* Ajustado para 100vh */
   padding: 45px 27px 30px 27px;
   overflow: auto; /* Adicionado para permitir rolagem dentro do container */
- }
- 
+}
 
 .custom-footer {
   display: flex;
   justify-content: center; /* Centraliza os itens horizontalmente */
   align-items: center; /* Centraliza os itens verticalmente */
   gap: 10px; /* Adiciona um espaçamento entre os itens */
- }
+}
 
- .custom-input {
+.custom-input {
   width: 100px;
-  margin: 0 auto; 
+  margin: 0 auto;
+}
+
+.titulo-ordenavel {
+  cursor: pointer; /* Muda o cursor para uma mão */
+ }
+ 
+ .titulo-ordenavel:hover {
+  cursor: pointer; /* Muda o cursor para uma maozinha */
  }
