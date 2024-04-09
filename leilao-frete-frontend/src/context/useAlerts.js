@@ -1,6 +1,44 @@
 import Swal from "sweetalert2";
+import history from "../history";
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: "bottom-end",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+});
 
 class UserAlerts {
+  showAlertUserEmpty = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "Usuário e senha devem ser preenchidos",
+    });
+  };
+
+  showAlertErrorLogin = (err) => {
+    Swal.fire({
+      icon: "error",
+      title: "Falha no login",
+      html: err.response.data.error,
+    });
+  };
+
+  showAlertUserAuthenticated = () => {
+    Toast.fire({
+      icon: "success",
+      title: "Acesso permitido",
+    });
+  };
+
+  showAlertUserAuthenticatedExpired = () => {
+    Toast.fire({
+      icon: "info",
+      title: "Acesso expirado, necessário refazer o login",
+    });
+  };
+
   showLoading = (text) => {
     Swal.fire({
       title: "Aguarde!",
@@ -12,6 +50,17 @@ class UserAlerts {
         Swal.showLoading();
       },
     });
+  };
+
+  updateUserSuccess = () => {
+    Swal.fire({
+      icon: "success",
+      title: "Usuário atualizado!",
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 3000,
+    });
+    return;
   };
 
   deleteStatus = (confirm, ...message) => {
@@ -70,6 +119,25 @@ class UserAlerts {
     });
   };
 
+  showAlertErrorReplace = (err) => {
+    Swal.fire({
+      icon: "error",
+      title: "Erro no envio de email de recuperação",
+      html: err.response.data.message,
+    });
+  };
+
+  showAlertEmailSend = () => {
+    Swal.fire({
+      icon: "success",
+      title: "Nova senha enviada ao email de cadastro do usuário!",
+      confirmButtonText: "Ok",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        history.push("/");
+      }
+    });
+  };
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

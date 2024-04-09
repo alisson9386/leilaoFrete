@@ -30,23 +30,9 @@ import {
   MDBDropdownItem,
   MDBCollapse,
 } from "mdb-react-ui-kit";
-
-const Toast = Swal.mixin({
-  toast: true,
-  position: "top-end",
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true,
-});
+import useAlerts from "../context/useAlerts";
 
 class NavbarComponent extends Component {
-  showAlertUserAuthenticated = () => {
-    Toast.fire({
-      icon: "info",
-      title: "Acesso expirado, necessário refazer o login",
-    });
-  };
-
   constructor(props) {
     super(props);
 
@@ -74,7 +60,7 @@ class NavbarComponent extends Component {
       if (whatsappStatus.data != null) {
         this.setState({ whatsappStatus: whatsappStatus.data[0] });
       }else{
-        this.showAlertUserAuthenticated()
+        useAlerts.showAlertUserAuthenticated();
         this.logout();
       }
   

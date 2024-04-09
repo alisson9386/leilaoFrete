@@ -357,11 +357,8 @@ class FretesComponent extends Component {
 
     const produtoMatch = name.match(/produtos\.(\d+)?\.?(.+)/);
     if (produtoMatch) {
-      const { editFrete } = this.state;
       const [, index, field] = produtoMatch;
-      // Se index não estiver definido, isso significa que o nome do input não incluiu um índice
       if (index === undefined) {
-        // Aqui você pode lidar com a adição de um novo produto
         this.setState((prevState) => ({
           editFrete: {
             ...prevState.editFrete,

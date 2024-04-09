@@ -53,8 +53,8 @@ export const data = {
     ],
 };
 
-const BarChart = () => {
+const BarCharts = () => {
     return <Bar options={options} data={data} />;
 }
 
-export default BarChart;
+export default BarCharts;

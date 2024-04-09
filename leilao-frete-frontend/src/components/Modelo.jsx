@@ -1,38 +1,20 @@
-import React, { useState } from 'react';
+import React, { Component } from "react";
 
-function DynamicSelect() {
- const [options, setOptions] = useState(['Opção 1', 'Opção 2', 'Opção 3']);
- const [selectedOptions, setSelectedOptions] = useState([]);
+class ModeloComponent extends Component {
+ constructor(props) {
+    super(props);
 
- const handleSelectChange = (event) => {
-    const selectedOption = event.target.value;
-    setSelectedOptions(prevOptions => [...prevOptions, selectedOption]);
-    setOptions(prevOptions => prevOptions.filter(option => option !== selectedOption));
- };
+    this.state = {};
+ }
 
- const handleRemoveOption = (optionToRemove) => {
-    setSelectedOptions(prevOptions => prevOptions.filter(option => option !== optionToRemove));
-    setOptions(prevOptions => [...prevOptions, optionToRemove]);
- };
+ componentDidMount() {}
 
- return (
-    <div>
-      <select onChange={handleSelectChange}>
-        {options.map((option, index) => (
-          <option key={index} value={option}>{option}</option>
-        ))}
-      </select>
-
-      <div>
-        {selectedOptions.map((option, index) => (
-          <div key={index}>
-            {option}
-            <button onClick={() => handleRemoveOption(option)}>Remover</button>
-          </div>
-        ))}
-      </div>
-    </div>
- );
+ render() {
+    return (
+        <div className='text-center p-3' style={{ color: 'white' }}>
+        </div>
+    );
+ }
 }
 
-export default DynamicSelect;
+export default ModeloComponent;

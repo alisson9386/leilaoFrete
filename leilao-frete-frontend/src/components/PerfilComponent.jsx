@@ -1,57 +1,25 @@
-import React, { Component } from "react";
-import useAuth from "../context/useAuth";
-import AppServices from "../service/app-service";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import Swal from "sweetalert2";
-import imgPerfil from "../assets/img/perfil.png";
-import { BsEyeSlashFill, BsEyeFill } from "react-icons/bs";
 import {
-  MDBCol,
-  MDBContainer,
-  MDBRow,
+  MDBBtn,
   MDBCard,
-  MDBCardText,
   MDBCardBody,
   MDBCardImage,
-  MDBBtn,
-  MDBTypography,
+  MDBCardText,
+  MDBCol,
+  MDBContainer,
   MDBInput,
+  MDBRow,
+  MDBTypography,
 } from "mdb-react-ui-kit";
+import React, { Component } from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import imgPerfil from "../assets/img/perfil.png";
+import useAuth from "../context/useAuth";
+import AppServices from "../service/app-service";
+import useAlerts from "../context/useAlerts";
 
 class PerfilComponent extends Component {
-  showLoading = (text) => {
-    Swal.fire({
-      title: "Aguarde!",
-      html: text, // add html attribute if you want or remove
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  };
-
-  updateUserSuccess = () => {
-    Swal.fire({
-      icon: "success",
-      title: "Usuário atualizado!",
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 3000,
-    });
-    return;
-  };
-
-  showAlertError = (err) => {
-    Swal.fire({
-      icon: "error",
-      title: "Erro, por favor contate o administrador!",
-      text: err,
-    });
-  };
-
   constructor(props) {
     super(props);
 
@@ -163,8 +131,7 @@ class PerfilComponent extends Component {
   };
 
   editarPerfil = async () => {
-    this.showLoading("Salvando alterações");
-    console.log(this.state);
+    useAlerts.showLoading("Salvando alterações");
     let senha = "";
     if (
       this.state.senha !== "" &&
@@ -188,12 +155,11 @@ class PerfilComponent extends Component {
 
     const updateUser = await AppServices.updateUser(user, id);
     if (updateUser.status === 200) {
-      this.updateUserSuccess();
+      useAlerts.updateUserSuccess();
       this.handleClose();
       window.location.reload();
     } else {
-      console.log(updateUser.statusText);
-      this.showAlertError(updateUser.statusText);
+      useAlerts.showAlertError(updateUser.statusText);
     }
   };
 

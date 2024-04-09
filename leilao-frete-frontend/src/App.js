@@ -26,8 +26,8 @@ function App() {
            <Route>
              <NavbarComponent />
                <Switch>
-                  <Route path="/index" component={HomeComponent} />
                  <Layout>
+                  <Route path="/index" component={HomeComponent} />
                   <Route path="/perfil" component={PerfilComponent} />
                   <Route
                      path="/statusWhatsapp"
