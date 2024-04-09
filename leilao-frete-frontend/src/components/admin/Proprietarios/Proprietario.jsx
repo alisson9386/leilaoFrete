@@ -9,7 +9,6 @@ import {
   BsFillTrash3Fill,
   BsFillXCircleFill,
   BsTruck,
-  BsSortAlphaDownAlt,
   BsSortAlphaDown
 } from "react-icons/bs";
 import { IMaskInput } from "react-imask";

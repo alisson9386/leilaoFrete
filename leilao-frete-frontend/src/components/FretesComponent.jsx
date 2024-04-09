@@ -193,6 +193,7 @@ class FretesComponent extends Component {
         }
         return tipo;
       });
+      // eslint-disable-next-line
     this.state.tiposRodadosSelecionados.map((t) => {
       if (t.id === option.id) {
         t.quantidade = Number(event.target.value);
