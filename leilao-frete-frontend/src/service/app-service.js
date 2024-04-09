@@ -80,6 +80,20 @@ class BackService {
     updateFrete(fretes, idFretes){ return api_leilao.put('/fretes/' + idFretes, fretes); }
     deleteFrete(idFretes){ return api_leilao.delete('/fretes/' + idFretes); }
 
+    //Serviços de unidade de medidas
+    listUnidadeMedidas(){ return api_leilao.get('/unidade-medida/'); }
+    listUnidadeMedidaById(idUnidadeMedida){ return api_leilao.get('/unidade-medida/' + idUnidadeMedida); }
+    saveUnidadeMedida(idUnidadeMedida){ return api_leilao.post('/unidade-medida/', idUnidadeMedida); }
+    updateUnidadeMedida(unidadeMedida, idUnidadeMedida){ return api_leilao.put('/unidade-medida/' + idUnidadeMedida, unidadeMedida); }
+    deleteUnidadeMedida(idUnidadeMedida){ return api_leilao.delete('/unidade-medida/' + idUnidadeMedida); }
+
+    //Serviços de produtos
+    listProdutos(){ return api_leilao.get('/produtos-leilao/'); }
+    listProdutoId(idProduto){ return api_leilao.get('/produtos-leilao/' + idProduto); }
+    saveProduto(idProduto){ return api_leilao.post('/produtos-leilao/', idProduto); }
+    updateProduto(produto, idProduto){ return api_leilao.put('/produtos-leilao/' + idProduto, produto); }
+    deleteProduto(idProduto){ return api_leilao.delete('/produtos-leilao/' + idProduto); }
+
 
 }
 

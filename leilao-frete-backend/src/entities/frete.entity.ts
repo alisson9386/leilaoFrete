@@ -45,6 +45,9 @@ export class Frete {
   endereco_destino: string;
 
   @Column()
+  bairro_destino: string;
+
+  @Column()
   numero_destino: number;
 
   @Column()

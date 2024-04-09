@@ -5,9 +5,10 @@ import { Frete } from 'src/entities/frete.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FreteVeiculoQuantidadeService } from 'src/service/frete-veiculo-quantidade.service';
 import { FreteVeiculoQuantidade } from 'src/entities/frete-veiculo-quantidade.entity';
+import { ProdutosLeilao } from 'src/entities/produtos-leilao.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Frete, FreteVeiculoQuantidade])],
+  imports: [TypeOrmModule.forFeature([Frete, FreteVeiculoQuantidade, ProdutosLeilao])],
   controllers: [FretesController],
   providers: [FretesService, FreteVeiculoQuantidadeService],
 })

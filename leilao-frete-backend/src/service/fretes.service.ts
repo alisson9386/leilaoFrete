@@ -6,6 +6,7 @@ import { Frete } from 'src/entities/frete.entity';
 import { Repository } from 'typeorm';
 import { FreteVeiculoQuantidade } from 'src/entities/frete-veiculo-quantidade.entity';
 import { ExceptionHandler } from 'winston';
+import { ProdutosLeilao } from 'src/entities/produtos-leilao.entity';
 
 @Injectable()
 export class FretesService {
@@ -14,12 +15,50 @@ export class FretesService {
     private freteRepository: Repository<Frete>,
     @InjectRepository(FreteVeiculoQuantidade)
     private freteVeiculoQuantidadeRepository: Repository<FreteVeiculoQuantidade>,
+    @InjectRepository(ProdutosLeilao)
+    private produtosLeilaoRepository: Repository<ProdutosLeilao>,
   ) {}
-  async create(createFreteDto: CreateFreteDto, ...tiposVeiculosFretes: any) {
+  private async insertOrUpdateEntities(
+    repository: Repository<any>,
+    num_leilao: number,
+    entities: any[],
+    uniqueKeys: string[],
+  ) {
+    const existingEntities = await repository.find({ where: { num_leilao } });
+    const entitiesToRemove = existingEntities.filter(
+      (existingEntity) =>
+        !entities.some((entity) =>
+          uniqueKeys.every((key) => entity[key] === existingEntity[key]),
+        ),
+    );
+
+    for (const entityToRemove of entitiesToRemove) {
+      await repository.delete(entityToRemove.id);
+    }
+
+    for (const entity of entities) {
+      const existingRecord = await repository.findOne({
+        where: uniqueKeys.reduce(
+          (acc, key) => ({ ...acc, [key]: entity[key] }),
+          {},
+        ),
+      });
+      if (existingRecord) {
+        await repository.update(existingRecord.id, entity);
+      } else {
+        await repository.save({ ...entity, num_leilao });
+      }
+    }
+    return true;
+  }
+
+  async create(
+    createFreteDto: any,
+    tiposVeiculosFretes: any[],
+    produtosFretes: any[],
+  ) {
     const result = await this.freteRepository.find({
-      order: {
-        id: 'DESC',
-      },
+      order: { id: 'DESC' },
       take: 1,
     });
     const lastLeilao = result[0];
@@ -34,14 +73,27 @@ export class FretesService {
       createFreteDto.num_leilao = Number(num);
     }
     createFreteDto.num_ordem_coleta = createFreteDto.num_leilao;
-    let save = await this.insertTiposVeiculosFrete(createFreteDto.num_leilao, tiposVeiculosFretes);
-    if (save) return this.freteRepository.save(createFreteDto);
+
+    const save1 = await this.insertOrUpdateEntities(
+      this.freteVeiculoQuantidadeRepository,
+      createFreteDto.num_leilao,
+      tiposVeiculosFretes,
+      ['id_tipo_veiculo', 'id_tipo_carroceria'],
+    );
+    const save2 = await this.insertOrUpdateEntities(
+      this.produtosLeilaoRepository,
+      createFreteDto.num_leilao,
+      produtosFretes,
+      ['produto', 'uni_medida'],
+    );
+
+    if (save1 && save2) return this.freteRepository.save(createFreteDto);
     else return HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
   async findAll() {
     const fretes = await this.freteRepository.find();
-    const fretesComVeiculos = await Promise.all(
+    const fretesComVeiculosEProdutos = await Promise.all(
       fretes.map(async (frete) => {
         const num_leilao = frete.num_leilao;
         const veiculos = await this.freteVeiculoQuantidadeRepository
@@ -49,10 +101,15 @@ export class FretesService {
           .where('v.num_leilao = :num_leilao', { num_leilao })
           .getMany();
 
-        return { ...frete, veiculos };
+        const produtos = await this.produtosLeilaoRepository
+          .createQueryBuilder('p')
+          .where('p.num_leilao = :num_leilao', { num_leilao })
+          .getMany();
+
+        return { ...frete, veiculos, produtos };
       }),
     );
-    return fretesComVeiculos;
+    return fretesComVeiculosEProdutos;
   }
 
   findOne(id: number) {
@@ -62,14 +119,24 @@ export class FretesService {
   async update(
     id: number,
     updateFreteDto: UpdateFreteDto,
-    ...tiposVeiculosFretes: any
+    tiposVeiculosFretes: any[],
+    produtosFretes: any[],
   ) {
-    let save = await this.insertTiposVeiculosFrete(
+    await this.insertOrUpdateEntities(
+      this.freteVeiculoQuantidadeRepository,
       updateFreteDto.num_leilao,
       tiposVeiculosFretes,
+      ['id_tipo_veiculo', 'id_tipo_carroceria'],
     );
-    if (save) return this.freteRepository.update(id, updateFreteDto);
-    else return HttpStatus.INTERNAL_SERVER_ERROR;
+
+    await this.insertOrUpdateEntities(
+      this.produtosLeilaoRepository,
+      updateFreteDto.num_leilao,
+      produtosFretes,
+      ['produto', 'uni_medida'],
+    );
+
+    return this.freteRepository.update(id, updateFreteDto);
   }
 
   async insertTiposVeiculosFrete(
@@ -94,10 +161,12 @@ export class FretesService {
       );
 
       for (const tipoVeiculoParaRemover of tiposVeiculosParaRemover) {
-        await this.freteVeiculoQuantidadeRepository.delete(tipoVeiculoParaRemover.id);
+        await this.freteVeiculoQuantidadeRepository.delete(
+          tipoVeiculoParaRemover.id,
+        );
       }
 
-      for (const tipoVeiculo of tiposVeiculosFretes[0]) {
+      for (const tipoVeiculo of tiposVeiculosFretes) {
         const existingRecord =
           await this.freteVeiculoQuantidadeRepository.findOne({
             where: {
@@ -119,7 +188,69 @@ export class FretesService {
     }
   }
 
-  remove(id: number) {
-    return this.freteRepository.delete(id);
+  async insertProdutosFrete(num_leilao: number, produtos: any[]) {
+    try {
+      const existingProdutos = await this.produtosLeilaoRepository.find({
+        where: { num_leilao: num_leilao },
+      });
+
+      const produtosParaRemover = existingProdutos.filter(
+        (existingTipoVeiculo) =>
+          !produtos.some(
+            (prod) =>
+              prod.produto === existingTipoVeiculo.produto &&
+              prod.uni_medida === existingTipoVeiculo.uni_medida,
+          ),
+      );
+
+      for (const produtoParaRemover of produtosParaRemover) {
+        await this.produtosLeilaoRepository.delete(produtoParaRemover.id);
+      }
+
+      for (const produto of produtos) {
+        const existingRecord = await this.produtosLeilaoRepository.findOne({
+          where: {
+            num_leilao: produto.num_leilao,
+            produto: produto.produto,
+            uni_medida: produto.uni_medida,
+          },
+        });
+        if (existingRecord) {
+          existingRecord.quantidade = produto.quantidade;
+          await this.produtosLeilaoRepository.save(existingRecord);
+        } else {
+          await this.produtosLeilaoRepository.save(produto);
+        }
+      }
+      return true;
+    } catch (err) {
+      throw new ExceptionHandler(err);
+    }
+  }
+
+  async remove(id: number) {
+    const frete = await this.freteRepository.findOneBy({ id: id });
+    if (!frete) {
+      throw new Error('Frete não encontrado');
+    }
+    const existingProdutos = await this.produtosLeilaoRepository.find({
+      where: { num_leilao: frete.num_leilao },
+    });
+    for (const produtoParaRemover of existingProdutos) {
+      await this.produtosLeilaoRepository.delete(produtoParaRemover.id);
+    }
+    const existingTiposVeiculos =
+      await this.freteVeiculoQuantidadeRepository.find({
+        where: { num_leilao: frete.num_leilao },
+      });
+    for (const tipoVeiculoParaRemover of existingTiposVeiculos) {
+      await this.freteVeiculoQuantidadeRepository.delete(
+        tipoVeiculoParaRemover.id,
+      );
+    }
+
+    await this.freteRepository.delete(id);
+
+    return { message: 'Frete removido com sucesso' };
   }
 }

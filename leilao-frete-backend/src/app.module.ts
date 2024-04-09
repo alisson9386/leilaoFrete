@@ -36,6 +36,10 @@ import { FretesModule } from './module/fretes.module';
 import { Frete } from './entities/frete.entity';
 import { FreteVeiculoQuantidadeModule } from './module/frete-veiculo-quantidade.module';
 import { FreteVeiculoQuantidade } from './entities/frete-veiculo-quantidade.entity';
+import { ProdutosLeilaoModule } from './module/produtos-leilao.module';
+import { UnidadeMedidaModule } from './module/unidade-medida.module';
+import { UnidadeMedida } from './entities/unidade-medida.entity';
+import { ProdutosLeilao } from './entities/produtos-leilao.entity';
 
 @Module({
   imports: [
@@ -63,7 +67,9 @@ import { FreteVeiculoQuantidade } from './entities/frete-veiculo-quantidade.enti
         Veiculo,
         LocaisColeta,
         Frete,
-        FreteVeiculoQuantidade
+        FreteVeiculoQuantidade,
+        UnidadeMedida,
+        ProdutosLeilao
       ],
       synchronize: false,
     }),
@@ -79,6 +85,8 @@ import { FreteVeiculoQuantidade } from './entities/frete-veiculo-quantidade.enti
     LocaisColetaModule,
     FretesModule,
     FreteVeiculoQuantidadeModule,
+    ProdutosLeilaoModule,
+    UnidadeMedidaModule,
   ],
   controllers: [],
   providers: [

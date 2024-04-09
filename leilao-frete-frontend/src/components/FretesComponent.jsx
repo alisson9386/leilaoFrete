@@ -8,11 +8,17 @@ import {
   Pagination,
   Row,
 } from "react-bootstrap";
-import { BsTruck, BsWhatsapp } from "react-icons/bs";
+import {
+  BsTruck,
+  BsWhatsapp,
+  BsFillGrid3X3GapFill,
+  BsFillPlusCircleFill,
+} from "react-icons/bs";
 import { IMaskInput } from "react-imask";
 import useAlerts from "../context/useAlerts";
 import AppServices from "../service/app-service";
 import { buscarEnderecoPorCep } from "../util/viacep";
+import Swal from "sweetalert2";
 
 class FretesComponent extends Component {
   constructor(props) {
@@ -31,21 +37,43 @@ class FretesComponent extends Component {
       filteredFretes: [],
       fretes: [],
       ufs: [],
+      unidadesMedida: [],
       locaisColeta: [],
-      editFrete: [],
+      editFrete: {
+        produtos: [],
+      },
       showModalTipoVeiculos: false,
+      showModalProdutos: false,
       tiposRodados: [],
       tiposCarroceria: [],
       tiposRodadosSelecionados: [],
-      isDisabled: true
+      isDisabled: true,
+      produtosAdicionados: [],
     };
   }
+
+  confirmDeleteFrete = (frete) => {
+    Swal.fire({
+      text: `Você está prestes a deletar o frete ${frete.num_leilao}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, deletar!",
+      cancelButtonText: "Não",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.serviceDeleteFrete(frete.id);
+      }
+    });
+  };
 
   async componentDidMount() {
     const ufs = await AppServices.listUf();
     const locaisColeta = await AppServices.listLocaisColeta();
     const tiposRodados = await AppServices.listTipoRodado();
     const tiposCarroceria = await AppServices.listTipoCarroceria();
+    const unidadesMedida = await AppServices.listUnidadeMedidas();
     tiposRodados.data.sort((a, b) =>
       a.tipo_rodado.localeCompare(b.tipo_rodado)
     );
@@ -59,6 +87,7 @@ class FretesComponent extends Component {
       locaisColeta: locaisColeta.data,
       tiposRodados: tiposRodados.data,
       tiposCarroceria: tiposCarroceria.data,
+      unidadesMedida: unidadesMedida.data,
     });
     const fretes = await AppServices.listFretes();
     if (fretes.data) {
@@ -76,6 +105,15 @@ class FretesComponent extends Component {
             carroceria,
           };
         });
+        const produtosAtualizados = f.produtos.map((produto) => {
+          const unidadeMedida = unidadesMedida.data.find(
+            (un) => un.id === produto.uni_medida
+          );
+          return {
+            ...produto,
+            medida: unidadeMedida,
+          };
+        });
         const uf = ufs.data.find((ufs) => ufs.id === f.uf);
         const local = locaisColeta.data.find(
           (local) => local.id === f.local_origem
@@ -88,11 +126,12 @@ class FretesComponent extends Component {
           dt_coleta_ordem: this.formatarData(f.dt_validade_leilao, true),
           regiao: uf,
           localDeOrigem: local,
+          produtos: produtosAtualizados,
         };
       });
       this.setState({
         fretes: updatedFretes,
-        filteredFretes: [...updatedFretes], // Cria uma cópia profunda de updatedFretes
+        filteredFretes: [...updatedFretes],
       });
     }
   }
@@ -121,10 +160,33 @@ class FretesComponent extends Component {
 
   handleCloseModalTiposVeiculos = () => {
     this.setState({
-      tiposRodadosSelecionados: false,
+      //tiposRodadosSelecionados: false,
       showModalTipoVeiculos: false,
     });
   };
+
+  handleShowModalProdutos = () => {
+    this.setState({
+      showModalProdutos: true,
+    });
+  };
+
+  handleCloseModalProdutos = () => {
+    const { editFrete } = this.state;
+    const filteredProdutos = editFrete.produtos.filter(produto => {
+       return produto.produto !== '' && produto.uni_medida && produto.quantidade;
+    });
+   
+    this.setState(prevState => ({
+       ...prevState,
+       editFrete: {
+         ...prevState.editFrete,
+         produtos: filteredProdutos,
+       },
+       showModalProdutos: false,
+    }));
+   };
+   
 
   handleShow = (freteData = {}, mode) => {
     this.setState({
@@ -138,11 +200,16 @@ class FretesComponent extends Component {
     this.handleShow(frete, "edit");
   };
 
+  handleDeleteFrete = (frete) => {
+    this.confirmDeleteFrete(frete);
+  };
+
   handleClose = () => {
     this.componentDidMount();
     this.setState({
       showModal: false,
       tiposRodadosSelecionados: [],
+      produtosAdicionados: [],
     });
   };
 
@@ -184,38 +251,67 @@ class FretesComponent extends Component {
     }));
   };
 
+  handleAddNovoProduto = () => {
+    this.setState((prevState) => {
+      const produtos = Array.isArray(prevState.editFrete.produtos)
+        ? [...prevState.editFrete.produtos, {}]
+        : [{}];
+
+      return {
+        editFrete: {
+          ...prevState.editFrete,
+          produtos: produtos,
+        },
+      };
+    });
+  };
+
+  handleRemoveProdutos = (optionToRemove) => {
+    this.setState((prevState) => ({
+      editFrete: {
+        ...prevState.editFrete,
+        produtos: prevState.editFrete.produtos.filter(
+          (option) => option !== optionToRemove
+        ),
+      },
+    }));
+  };
+
   handleInputQuantidade = (event, option) => {
     const updatedTiposRodadosSelecionados =
       this.state.tiposRodadosSelecionados.map((tipo) => {
         if (tipo.id === option.id) {
-          // Supondo que 'id' seja a propriedade única para identificar o tipo de veículo
           return { ...tipo, quantidade: event.target.value };
         }
         return tipo;
       });
-      // eslint-disable-next-line
-    this.state.tiposRodadosSelecionados.map((t) => {
-      if (t.id === option.id) {
-        t.quantidade = Number(event.target.value);
-      }
-    });
-    this.setState({
+    this.setState((prevState) => ({
       tiposRodadosSelecionados: updatedTiposRodadosSelecionados,
-    });
+      editFrete: {
+        ...prevState.editFrete,
+        tiposVeiculos: updatedTiposRodadosSelecionados,
+      },
+    }));
   };
 
   handleInputCarroceria = (event, rodado) => {
-    const { tiposCarroceria } = this.state;
-    let value = event.target.value;
-    // eslint-disable-next-line
-    this.state.tiposRodadosSelecionados.map((t) => {
-      if (t.id === rodado.id) {
-        const tipoCarroceria = tiposCarroceria.find(
-          (tipos) => tipos.tipo_carroceria === value
-        );
-        t.carroceria = tipoCarroceria;
-      }
-    });
+    const updatedTiposRodadosSelecionados =
+      this.state.tiposRodadosSelecionados.map((tipo) => {
+        if (tipo.id === rodado.id) {
+          const tipoCarroceria = this.state.tiposCarroceria.find(
+            (tipos) => tipos.tipo_carroceria === event.target.value
+          );
+          return { ...tipo, carroceria: tipoCarroceria };
+        }
+        return tipo;
+      });
+    this.setState((prevState) => ({
+      tiposRodadosSelecionados: updatedTiposRodadosSelecionados,
+      editFrete: {
+        ...prevState.editFrete,
+        tiposVeiculos: updatedTiposRodadosSelecionados,
+      },
+    }));
   };
 
   buscarEndereco = async (event) => {
@@ -227,10 +323,11 @@ class FretesComponent extends Component {
 
       editFreteAtualizado.endereco_destino = enderecoEncontrado.logradouro;
       editFreteAtualizado.cidade_destino = enderecoEncontrado.localidade;
+      editFreteAtualizado.bairro_destino = enderecoEncontrado.bairro;
       editFreteAtualizado.uf = uf.id;
       editFreteAtualizado.regiao = uf;
 
-      this.setState({ editFrete: editFreteAtualizado });
+      this.setState({ isDisabled: true, editFrete: editFreteAtualizado });
     } else {
       const editFreteAtualizado = { ...this.state.editFrete };
       delete editFreteAtualizado.endereco_destino;
@@ -238,10 +335,9 @@ class FretesComponent extends Component {
       delete editFreteAtualizado.uf;
       delete editFreteAtualizado.regiao;
       delete editFreteAtualizado.numero_destino;
-      this.setState({isDisabled: false, editFrete: editFreteAtualizado})
+      this.setState({ isDisabled: false, editFrete: editFreteAtualizado });
     }
-};
-
+  };
 
   handleInputChange = (event, ...option) => {
     const { name, type } = event.target;
@@ -259,7 +355,46 @@ class FretesComponent extends Component {
       }));
     };
 
-    if (name === "uf") {
+    const produtoMatch = name.match(/produtos\.(\d+)?\.?(.+)/);
+    if (produtoMatch) {
+      const { editFrete } = this.state;
+      const [, index, field] = produtoMatch;
+      // Se index não estiver definido, isso significa que o nome do input não incluiu um índice
+      if (index === undefined) {
+        // Aqui você pode lidar com a adição de um novo produto
+        this.setState((prevState) => ({
+          editFrete: {
+            ...prevState.editFrete,
+            produtos: [...prevState.editFrete.produtos, { [field]: value }],
+          },
+        }));
+      } else {
+        this.setState((prevState) => {
+          var unidade = [];
+          const produtosAtualizados = prevState.editFrete.produtos.map(
+            (produto, i) => {
+              if (i === parseInt(index)) {
+                if (field === "uni_medida") {
+                  unidade = this.state.unidadesMedida.find(
+                    (u) => u.uni_medida === value
+                  );
+
+                  return { ...produto, [field]: unidade.id, medida: unidade };
+                }
+                return { ...produto, [field]: value };
+              }
+              return produto;
+            }
+          );
+          return {
+            editFrete: {
+              ...prevState.editFrete,
+              produtos: produtosAtualizados,
+            },
+          };
+        });
+      }
+    } else if (name === "uf") {
       const tipoUfSelecionado = findItem(this.state.ufs, "uf");
       updateState("uf", tipoUfSelecionado.id);
       updateState("regiao", tipoUfSelecionado);
@@ -345,6 +480,26 @@ class FretesComponent extends Component {
     }
   };
 
+  serviceDeleteFrete = (idFrete) => {
+    useAlerts.showLoading("Excluindo");
+    AppServices.deleteFrete(idFrete)
+      .then((res) => {
+        Swal.close();
+        if (res.status === 200) {
+          useAlerts.deleteStatus(true);
+          this.componentDidMount();
+        } else {
+          useAlerts.deleteStatus(false, res.data.message);
+          this.componentDidMount();
+        }
+      })
+      .catch((error) => {
+        Swal.close();
+        useAlerts.showAlertError(error);
+        this.componentDidMount();
+      });
+  };
+
   getStatusAndBadgeBg(status) {
     const statusDescricoes = {
       1: "Aberto",
@@ -390,7 +545,17 @@ class FretesComponent extends Component {
     const { editFrete } = this.state;
     editFrete.dt_abertura = this.getDataHoje();
     editFrete.dt_emissao_ordem = this.getDataHoje();
-    if(typeof editFrete.vl_lance_maximo === 'string') Number(editFrete.vl_lance_maximo = editFrete.vl_lance_maximo.replace(",", "."));
+    if (typeof editFrete.vl_lance_maximo === "string")
+      Number(
+        (editFrete.vl_lance_maximo = editFrete.vl_lance_maximo.replace(
+          ",",
+          "."
+        ))
+      );
+    editFrete.produtos = editFrete.produtos.filter((produto) => {
+      return produto.produto !== "" && produto.uni_medida && produto.quantidade;
+    });
+
     delete editFrete.regiao;
     delete editFrete.localDeOrigem;
   };
@@ -504,13 +669,6 @@ class FretesComponent extends Component {
                         } ${frete.cep_destino}`}
                       </p>
                       <footer className="custom-footer">
-                        <button
-                          type="button"
-                          class="btn btn-warning btn-sm"
-                          onClick={() => this.handleEditFrete(frete)}
-                        >
-                          Editar frete
-                        </button>{" "}
                         <button type="button" class="btn btn-outline-light">
                           <BsWhatsapp
                             color="green"
@@ -519,7 +677,21 @@ class FretesComponent extends Component {
                             data-bs-placement="top"
                             title="Enviar mensagem de whatsapp para todos os proprietários aptos"
                           ></BsWhatsapp>
-                        </button>
+                        </button>{" "}
+                        <button
+                          type="button"
+                          class="btn btn-warning btn-sm"
+                          onClick={() => this.handleEditFrete(frete)}
+                        >
+                          Editar frete
+                        </button>{" "}
+                        <button
+                          type="button"
+                          class="btn btn-danger btn-sm"
+                          onClick={() => this.handleDeleteFrete(frete)}
+                        >
+                          Excluir frete
+                        </button>{" "}
                       </footer>
                     </blockquote>
                   </div>
@@ -534,8 +706,15 @@ class FretesComponent extends Component {
   };
 
   render() {
-    const { editFrete, ufs, locaisColeta, tiposRodados, tiposCarroceria, isDisabled } =
-      this.state;
+    const {
+      editFrete,
+      ufs,
+      locaisColeta,
+      tiposRodados,
+      tiposCarroceria,
+      isDisabled,
+      unidadesMedida,
+    } = this.state;
     return (
       <>
         <div className="containerCard">
@@ -607,7 +786,9 @@ class FretesComponent extends Component {
                       type="text"
                       step="0.01"
                       placeholder="Lance máximo"
-                      value={this.formatarComVirgula(editFrete.vl_lance_maximo || "")}
+                      value={this.formatarComVirgula(
+                        editFrete.vl_lance_maximo || ""
+                      )}
                       onChange={this.handleInputChange}
                     />
                   </div>
@@ -722,6 +903,8 @@ class FretesComponent extends Component {
                     onChange={this.handleInputChange}
                   />
                 </Form.Group>
+              </Row>
+              <Row className="mb-3">
                 <Form.Group as={Col}>
                   <Form.Label>CEP</Form.Label>
                   <Form.Control
@@ -730,11 +913,9 @@ class FretesComponent extends Component {
                     placeholder="CEP"
                     value={editFrete.cep_destino || ""}
                     onChange={this.handleInputChange}
-                    onBlurCapture={this.buscarEndereco}
+                    onBlur={this.buscarEndereco}
                   />
                 </Form.Group>
-              </Row>
-              <Row className="mb-3">
                 <Form.Group as={Col} controlId="formGridCity">
                   <Form.Label>Endereço</Form.Label>
                   <Form.Control
@@ -756,6 +937,19 @@ class FretesComponent extends Component {
                     onChange={this.handleInputChange}
                   />
                 </Form.Group>
+                <Form.Group as={Col} controlId="formGridCity">
+                  <Form.Label>Bairro</Form.Label>
+                  <Form.Control
+                    name="bairro_destino"
+                    type="text"
+                    placeholder="Bairro"
+                    value={editFrete.bairro_destino || ""}
+                    onChange={this.handleInputChange}
+                    disabled={isDisabled}
+                  />
+                </Form.Group>
+              </Row>
+              <Row className="mb-3">
                 <Form.Group as={Col}>
                   <Form.Label>Cidade</Form.Label>
                   <Form.Control
@@ -792,6 +986,29 @@ class FretesComponent extends Component {
                     value={editFrete.ie || ""}
                     onChange={this.handleInputChange}
                   />
+                </Form.Group>
+              </Row>
+              <Row className="mb-3">
+                <Form.Group>
+                  <br />
+                  <Button
+                    variant={
+                      editFrete.produtos && editFrete.produtos.length > 0
+                        ? "success"
+                        : "danger"
+                    }
+                    size="sm"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title={
+                      !editFrete.tiposVeiculos
+                        ? "Adicionar produtos"
+                        : "Produtos adicionados"
+                    }
+                    onClick={() => this.handleShowModalProdutos()}
+                  >
+                    Produtos <BsFillGrid3X3GapFill />
+                  </Button>
                 </Form.Group>
               </Row>
               <br />
@@ -909,6 +1126,107 @@ class FretesComponent extends Component {
           <Modal.Footer>
             <span style={{ marginLeft: "10px" }}></span>
             <Button variant="info" onClick={this.handleCloseModalTiposVeiculos}>
+              Fechar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          className="modal modal-lg"
+          show={this.state.showModalProdutos}
+          onHide={this.handleCloseModalProdutos}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Produtos</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Button
+              variant="primary"
+              size="sm"
+              name="produtos"
+              title="Novo produto"
+              onClick={this.handleAddNovoProduto}
+            >
+              <BsFillPlusCircleFill />
+            </Button>
+            <br />
+            <br />
+            <div className="table-responsive">
+              <table className="table table-striped table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Unidade de medida</th>
+                    <th>Quantidade</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.isArray(editFrete.produtos) &&
+                    editFrete.produtos.map((option, index) => (
+                      <tr key={index}>
+                        <td>
+                          <input
+                            type="text"
+                            class="form-control"
+                            name={`produtos.${index}.produto`}
+                            value={option.produto || ""}
+                            placeholder="Produto"
+                            onChange={this.handleInputChange}
+                          />
+                        </td>
+                        <td>
+                          <select
+                            name={`produtos.${index}.uni_medida`}
+                            class="form-control"
+                            value={
+                              option.medida ? option.medida.uni_medida : ""
+                            }
+                            style={{ textAlign: "center" }}
+                            onChange={this.handleInputChange}
+                          >
+                            <option>Selecione</option>
+                            {unidadesMedida.map((option, index) => (
+                              <option key={index} value={option.uni_medida}>
+                                {option.uni_medida}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td>
+                          <input
+                            className="custom-input"
+                            name={`produtos.${index}.quantidade`}
+                            class="form-control"
+                            type="number"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="Caso seja salvo em branco, o padrão será 1"
+                            min={1}
+                            style={{ textAlign: "center" }}
+                            value={option.quantidade}
+                            onChange={this.handleInputChange}
+                          />
+                        </td>
+                        <td>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            title="Remover"
+                            onClick={() => this.handleRemoveProdutos(option)}
+                          >
+                            Remover
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <span style={{ marginLeft: "10px" }}></span>
+            <Button variant="info" onClick={this.handleCloseModalProdutos}>
               Fechar
             </Button>
           </Modal.Footer>

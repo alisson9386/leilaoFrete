@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+  HttpStatus,
+} from '@nestjs/common';
 import { FretesService } from '../service/fretes.service';
 import { CreateFreteDto } from '../dto/fretes_dto/create-frete.dto';
 import { UpdateFreteDto } from '../dto/fretes_dto/update-frete.dto';
@@ -7,25 +17,38 @@ import { UpdateFreteDto } from '../dto/fretes_dto/update-frete.dto';
 export class FretesController {
   constructor(private readonly fretesService: FretesService) {}
 
+  private prepareFreteData(freteDto: CreateFreteDto | UpdateFreteDto) {
+    const { tiposVeiculos, produtos, num_leilao } = freteDto;
+    const tiposVeiculosFretes = tiposVeiculos.map((tipoVeiculo) => ({
+      num_leilao,
+      id_tipo_veiculo: tipoVeiculo.id,
+      id_tipo_carroceria: tipoVeiculo.carroceria.id,
+      quantidade: tipoVeiculo.quantidade,
+    }));
+
+    const produtosFretes = produtos.map((produto) => ({
+      num_leilao,
+      produto: produto.produto,
+      uni_medida: produto.uni_medida,
+      quantidade: produto.quantidade,
+    }));
+
+    delete freteDto.tiposVeiculos;
+    delete freteDto.veiculos;
+    delete freteDto.produtos;
+
+    return { freteDto, tiposVeiculosFretes, produtosFretes };
+  }
+
   @Post()
   create(@Body() createFreteDto: CreateFreteDto) {
-    if(createFreteDto.tiposVeiculos){
-      let tiposVeiculosFretes = [];
-      for (const tipoVeiculo of createFreteDto.tiposVeiculos) {
-        let tipoVeiculoFrete = {
-          'num_leilao': createFreteDto.num_leilao,
-          'id_tipo_veiculo': tipoVeiculo.id,
-          'id_tipo_carroceria': tipoVeiculo.carroceria.id,
-          'quantidade': tipoVeiculo.quantidade
-        };
-    
-        tiposVeiculosFretes.push(tipoVeiculoFrete);
-     }
-     delete createFreteDto.tiposVeiculos;
-     delete createFreteDto.veiculos;
-     return this.fretesService.create(createFreteDto, tiposVeiculosFretes);
-    }
-    return this.fretesService.create(createFreteDto);
+    const { freteDto, tiposVeiculosFretes, produtosFretes } =
+      this.prepareFreteData(createFreteDto);
+    return this.fretesService.create(
+      freteDto,
+      tiposVeiculosFretes,
+      produtosFretes,
+    );
   }
 
   @Get()
@@ -40,27 +63,23 @@ export class FretesController {
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateFreteDto: UpdateFreteDto) {
-    if(updateFreteDto.tiposVeiculos){
-      let tiposVeiculosFretes = [];
-      for (const tipoVeiculo of updateFreteDto.tiposVeiculos) {
-        let tipoVeiculoFrete = {
-          'num_leilao': updateFreteDto.num_leilao,
-          'id_tipo_veiculo': tipoVeiculo.id,
-          'id_tipo_carroceria': tipoVeiculo.carroceria.id,
-          'quantidade': tipoVeiculo.quantidade
-        };
-    
-        tiposVeiculosFretes.push(tipoVeiculoFrete);
-     }
-     delete updateFreteDto.tiposVeiculos;
-     delete updateFreteDto.veiculos;
-     return this.fretesService.update(+id, updateFreteDto, tiposVeiculosFretes);
-    }
-    return this.fretesService.update(+id, updateFreteDto);
+    const { freteDto, tiposVeiculosFretes, produtosFretes } =
+      this.prepareFreteData(updateFreteDto);
+    return this.fretesService.update(
+      +id,
+      freteDto,
+      tiposVeiculosFretes,
+      produtosFretes,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fretesService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      const result = await this.fretesService.remove(+id);
+      return { message: 'Frete removido com sucesso', data: result };
+    } catch (error) {
+      return { message: 'Erro ao remover o frete', error: error.message };
+    }
   }
 }

@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { BsFillPencilFill, BsFillTrash3Fill } from "react-icons/bs";
 import { MDBCol, MDBRow, MDBInput } from "mdb-react-ui-kit";
 import useAlerts from "../../../context/useAlerts";
+import { buscarEnderecoPorCep } from "../../../util/viacep";
 
 class LocaisColetaComponent extends Component {
   constructor(props) {
@@ -21,6 +22,7 @@ class LocaisColetaComponent extends Component {
       locaisColetaPerPage: 10,
       editLocaisColeta: {},
       modalMode: "add",
+      isDisabled: true,
     };
   }
 
@@ -104,6 +106,32 @@ class LocaisColetaComponent extends Component {
       editLocaisColeta: {},
     });
     this.componentDidMount();
+  };
+
+  buscarEndereco = async (event) => {
+    const enderecoEncontrado = await buscarEnderecoPorCep(event.target.value);
+    if (!enderecoEncontrado.erro) {
+      const editLocaisColeta = { ...this.state.editLocaisColeta };
+      const ufs = this.state.ufs;
+      const uf = ufs.find((r) => r.uf === enderecoEncontrado.uf);
+
+      editLocaisColeta.endereco = enderecoEncontrado.logradouro;
+      editLocaisColeta.cidade = enderecoEncontrado.localidade;
+      editLocaisColeta.bairro = enderecoEncontrado.bairro;
+      editLocaisColeta.uf = uf.id;
+      editLocaisColeta.regiao = uf;
+
+      this.setState({ isDisabled: true, editLocaisColeta: editLocaisColeta });
+    } else {
+      const editLocaisColeta = { ...this.state.editFrete };
+      delete editLocaisColeta.endereco;
+      delete editLocaisColeta.bairro;
+      delete editLocaisColeta.cidade;
+      delete editLocaisColeta.uf;
+      delete editLocaisColeta.regiao;
+      delete editLocaisColeta.numero;
+      this.setState({ isDisabled: false, editLocaisColeta: editLocaisColeta });
+    }
   };
 
   handleInputChange = (event) => {
@@ -269,7 +297,7 @@ class LocaisColetaComponent extends Component {
   };
 
   render() {
-    const { editLocaisColeta, ufs } = this.state;
+    const { editLocaisColeta, ufs, isDisabled } = this.state;
     return (
       <>
         <br />
@@ -338,11 +366,43 @@ class LocaisColetaComponent extends Component {
               </MDBCol>
               <MDBCol sm="5">
                 <MDBInput
+                  id="cep"
+                  name="cep"
+                  label="CEP"
+                  type="number"
+                  value={editLocaisColeta.cep || ""}
+                  onChange={this.handleInputChange}
+                  onBlur={this.buscarEndereco}
+                />
+              </MDBCol>
+              <MDBCol sm="5">
+                <MDBInput
                   id="endereco"
                   name="endereco"
                   label="Endereço"
                   value={editLocaisColeta.endereco || ""}
                   onChange={this.handleInputChange}
+                  disabled={isDisabled}
+                />
+              </MDBCol>
+              <MDBCol sm="5">
+                <MDBInput
+                  id="bairro"
+                  name="bairro"
+                  label="Bairro"
+                  value={editLocaisColeta.bairro || ""}
+                  onChange={this.handleInputChange}
+                  disabled={isDisabled}
+                />
+              </MDBCol>
+              <MDBCol sm="5">
+                <MDBInput
+                  id="cidade"
+                  name="cidade"
+                  label="Cidade"
+                  value={editLocaisColeta.cidade || ""}
+                  onChange={this.handleInputChange}
+                  disabled={isDisabled}
                 />
               </MDBCol>
               <MDBCol sm="5">
@@ -364,34 +424,6 @@ class LocaisColetaComponent extends Component {
                   onChange={this.handleInputChange}
                 />
               </MDBCol>
-              <MDBCol sm="5">
-                <MDBInput
-                  id="bairro"
-                  name="bairro"
-                  label="Bairro"
-                  value={editLocaisColeta.bairro || ""}
-                  onChange={this.handleInputChange}
-                />
-              </MDBCol>
-              <MDBCol sm="5">
-                <MDBInput
-                  id="cep"
-                  name="cep"
-                  label="CEP"
-                  type="number"
-                  value={editLocaisColeta.cep || ""}
-                  onChange={this.handleInputChange}
-                />
-              </MDBCol>
-              <MDBCol sm="5">
-                <MDBInput
-                  id="cidade"
-                  name="cidade"
-                  label="Cidade"
-                  value={editLocaisColeta.cidade || ""}
-                  onChange={this.handleInputChange}
-                />
-              </MDBCol>
             </MDBRow>
             <MDBRow tag="form" className="gy-2 gx-3 align-items-center">
               <MDBCol sm="5">
@@ -405,6 +437,7 @@ class LocaisColetaComponent extends Component {
                     editLocaisColeta.regiao ? editLocaisColeta.regiao.uf : ""
                   }
                   onChange={this.handleInputChange}
+                  disabled={isDisabled}
                 >
                   <option>Selecione uma região</option>
                   {ufs.map((option, index) => (

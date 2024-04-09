@@ -15,6 +15,7 @@ export class CreateFreteDto {
     razao_social: string;
     cnpj: string;
     endereco_destino: string;
+    bairro_destino: string;
     numero_destino: number;
     cep_destino: number;
     cidade_destino: string;
