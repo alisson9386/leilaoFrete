@@ -22,4 +22,5 @@ export class CreateFreteDto {
     uf: number;
     ie: number;
     status: number;
+    wp_enviado: number;
 }

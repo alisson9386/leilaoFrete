@@ -40,6 +40,7 @@ import { ProdutosLeilaoModule } from './module/produtos-leilao.module';
 import { UnidadeMedidaModule } from './module/unidade-medida.module';
 import { UnidadeMedida } from './entities/unidade-medida.entity';
 import { ProdutosLeilao } from './entities/produtos-leilao.entity';
+import { LancesFreteModule } from './module/lances-frete.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { ProdutosLeilao } from './entities/produtos-leilao.entity';
     FreteVeiculoQuantidadeModule,
     ProdutosLeilaoModule,
     UnidadeMedidaModule,
+    LancesFreteModule,
   ],
   controllers: [],
   providers: [

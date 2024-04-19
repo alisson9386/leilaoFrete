@@ -62,6 +62,9 @@ export class Frete {
   @Column()
   ie: number;
 
-  @Column()
+  @Column({default: 1})
   status: number;
+
+  @Column({default: 0})
+  wp_enviado: number;
 }
