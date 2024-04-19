@@ -34,7 +34,6 @@ const ReplacePasswordComponent = () => {
             email: dadosUser.email,
             senha: randomPassword
         };
-        console.log(updatedDadosUser);
         appServices.updateUser(updatedDadosUser, dadosUser.id).then().catch((err) => {
             useAlerts.showAlertErrorReplace(err);
             return;

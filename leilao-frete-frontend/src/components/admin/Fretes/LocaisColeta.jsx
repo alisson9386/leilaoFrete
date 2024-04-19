@@ -201,7 +201,6 @@ class LocaisColetaComponent extends Component {
       .catch((error) => {
         Swal.close();
         useAlerts.deleteStatus(false);
-        console.log(error);
         this.componentDidMount();
       });
   };
@@ -222,7 +221,6 @@ class LocaisColetaComponent extends Component {
       .catch((error) => {
         Swal.close();
         useAlerts.deleteStatus(false);
-        console.log(error);
         this.componentDidMount();
       });
   };

@@ -3,22 +3,26 @@ import {
   Badge,
   Button,
   Col,
+  Container,
   Form,
   Modal,
   Pagination,
   Row,
 } from "react-bootstrap";
 import {
+  BsFillGrid3X3GapFill,
+  BsFillPencilFill,
+  BsFillPlusCircleFill,
+  BsFillTrash3Fill,
+  BsListOl,
   BsTruck,
   BsWhatsapp,
-  BsFillGrid3X3GapFill,
-  BsFillPlusCircleFill,
 } from "react-icons/bs";
 import { IMaskInput } from "react-imask";
+import Swal from "sweetalert2";
 import useAlerts from "../context/useAlerts";
 import AppServices from "../service/app-service";
 import { buscarEnderecoPorCep } from "../util/viacep";
-import Swal from "sweetalert2";
 
 class FretesComponent extends Component {
   constructor(props) {
@@ -27,13 +31,9 @@ class FretesComponent extends Component {
     this.state = {
       showModal: false,
       modalMode: "add",
-      options: [
-        { name: "Option 1️", id: 1 },
-        { name: "Option 2️", id: 2 },
-      ],
       minDate: "",
       currentPage: 1,
-      fretesPerPage: 2,
+      fretesPerPage: 4,
       filteredFretes: [],
       fretes: [],
       ufs: [],
@@ -144,25 +144,44 @@ class FretesComponent extends Component {
   }
 
   handleShowModalTiposVeiculos = (editFrete) => {
-    const tiposRodadosDisponiveis = this.state.tiposRodados.filter((tipo) => {
-      const jaSelecionado = editFrete.tiposVeiculos.some(
-        (veiculo) => veiculo.id === tipo.id
-      );
-      return !jaSelecionado;
-    });
+    var tiposRodadosDisponiveis;
+    if (editFrete.tiposVeiculos) {
+      tiposRodadosDisponiveis = this.state.tiposRodados.filter((tipo) => {
+        var jaSelecionado = editFrete.tiposVeiculos.some(
+          (veiculo) => veiculo.id === tipo.id
+        );
+        return !jaSelecionado;
+      });
+    } else {
+      tiposRodadosDisponiveis = this.state.tiposRodados;
+    }
 
     this.setState({
-      tiposRodadosSelecionados: editFrete.tiposVeiculos,
+      tiposRodadosSelecionados: editFrete.tiposVeiculos
+        ? editFrete.tiposVeiculos
+        : "",
       tiposRodados: tiposRodadosDisponiveis,
       showModalTipoVeiculos: true,
     });
   };
 
   handleCloseModalTiposVeiculos = () => {
-    this.setState({
-      //tiposRodadosSelecionados: false,
+    const { editFrete } = this.state;
+    if (editFrete.tiposVeiculos) {
+      var filteredTiposVeiculos = editFrete.tiposVeiculos.filter((tipo) => {
+        return (
+          tipo.tipo_rodado !== "" && tipo.carroceria && tipo.quantidade
+        );
+      });
+    }
+    this.setState((prevState) => ({
+      ...prevState,
+      editFrete: {
+        ...prevState.editFrete,
+        tiposVeiculos: filteredTiposVeiculos,
+      },
       showModalTipoVeiculos: false,
-    });
+    }));
   };
 
   handleShowModalProdutos = () => {
@@ -173,20 +192,22 @@ class FretesComponent extends Component {
 
   handleCloseModalProdutos = () => {
     const { editFrete } = this.state;
-    const filteredProdutos = editFrete.produtos.filter(produto => {
-       return produto.produto !== '' && produto.uni_medida && produto.quantidade;
-    });
-   
-    this.setState(prevState => ({
-       ...prevState,
-       editFrete: {
-         ...prevState.editFrete,
-         produtos: filteredProdutos,
-       },
-       showModalProdutos: false,
+    if (editFrete.produtos) {
+      var filteredProdutos = editFrete.produtos.filter((produto) => {
+        return (
+          produto.produto !== "" && produto.uni_medida && produto.quantidade
+        );
+      });
+    }
+    this.setState((prevState) => ({
+      ...prevState,
+      editFrete: {
+        ...prevState.editFrete,
+        produtos: filteredProdutos,
+      },
+      showModalProdutos: false,
     }));
-   };
-   
+  };
 
   handleShow = (freteData = {}, mode) => {
     this.setState({
@@ -626,7 +647,7 @@ class FretesComponent extends Component {
 
           return (
             <>
-              <div class="col-sm-6" key={frete.id}>
+              <div className="col-6" key={frete.id}>
                 <div className="card text-white bg-dark small-card">
                   <div className="card-header">
                     <Badge variant="primary">N° {frete.num_leilao}</Badge> Data
@@ -639,60 +660,85 @@ class FretesComponent extends Component {
                   </div>
                   <div className="card-body">
                     <blockquote className="blockquote mb-0">
-                      <p>
-                        Número da ordem de venda:{" "}
-                        <Badge variant="primary">{frete.nm_ordem_venda}</Badge>
-                      </p>
-                      <p>
-                        Valor do lance máximo:{" "}
-                        <Badge variant="primary">
-                          R$ {this.formatarComVirgula(frete.vl_lance_maximo)}
-                        </Badge>
-                      </p>
-                      <p>
-                        Local de Origem:{" "}
-                        <Badge variant="primary">
-                          {frete.localDeOrigem
-                            ? frete.localDeOrigem.nome
-                            : "Não definido"}
-                        </Badge>
-                      </p>
-                      <p>
-                        Local de Destino:{" "}
-                        {`${frete.endereco_destino}, N° ${
-                          frete.numero_destino
-                        } - ${frete.cidade_destino}, ${
-                          frete.regiao ? frete.regiao.uf : "Não definido"
-                        } ${frete.cep_destino}`}
-                      </p>
+                      <Row>
+                        <Container>
+                          <p>
+                            Número da ordem de venda:{" "}
+                            <Badge variant="primary">
+                              {frete.nm_ordem_venda}
+                            </Badge>
+                          </p>
+                          <p>
+                            Valor do lance máximo:{" "}
+                            <Badge variant="primary">
+                              R${" "}
+                              {this.formatarComVirgula(frete.vl_lance_maximo)}
+                            </Badge>
+                          </p>
+                          <p>
+                            Local de Origem:{" "}
+                            <Badge variant="primary">
+                              {frete.localDeOrigem
+                                ? frete.localDeOrigem.nome
+                                : "Não definido"}
+                            </Badge>
+                          </p>
+                          <p>
+                            Local de Destino:{" "}
+                            {`${frete.endereco_destino}, N° ${
+                              frete.numero_destino
+                            } - ${frete.cidade_destino}, ${
+                              frete.regiao ? frete.regiao.uf : "Não definido"
+                            } ${frete.cep_destino}`}
+                          </p>
+                        </Container>
+                      </Row>
                       <footer className="custom-footer">
-                        <button type="button" class="btn btn-outline-light">
+                        {descricao === "Em lance" ? (
+                          <button
+                            type="button"
+                            className="btn btn-outline btn-sm"
+                          >
+                            <BsListOl
+                              color="white"
+                              size={25}
+                              title="Verificar ranking dos lances"
+                            ></BsListOl>
+                          </button>
+                        ) : (
+                          ""
+                        )}
+                        <button
+                          type="button"
+                          className="btn btn-outline btn-sm"
+                        >
                           <BsWhatsapp
-                            color="green"
-                            size={30}
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
+                            color={frete.wp_enviado ? "green" : "gray"}
+                            size={25}
                             title="Enviar mensagem de whatsapp para todos os proprietários aptos"
                           ></BsWhatsapp>
                         </button>{" "}
                         <button
                           type="button"
-                          class="btn btn-warning btn-sm"
+                          className="btn btn-warning btn-sm"
+                          title="Editar"
                           onClick={() => this.handleEditFrete(frete)}
                         >
-                          Editar frete
+                          <BsFillPencilFill />
                         </button>{" "}
                         <button
                           type="button"
-                          class="btn btn-danger btn-sm"
+                          className="btn btn-danger btn-sm"
+                          title="Excluir"
                           onClick={() => this.handleDeleteFrete(frete)}
                         >
-                          Excluir frete
+                          <BsFillTrash3Fill />
                         </button>{" "}
                       </footer>
                     </blockquote>
                   </div>
                 </div>
+                <br />
               </div>
               <br />
             </>
@@ -737,9 +783,12 @@ class FretesComponent extends Component {
             onChange={this.handleSearchChange}
           />
 
-          <br />
-          <div className="card-container">{this.renderFretes()}</div>
+          <div className="card-container" style={{ width: "100%" }}>
+            {this.renderFretes()}
+          </div>
           <div>{this.renderPagination()}</div>
+          <br />
+          <br />
         </div>
 
         <Modal
@@ -835,7 +884,7 @@ class FretesComponent extends Component {
                   />
                 </Form.Group>
               </Row>
-              <hr class="hr" />
+              <hr className="hr" />
               <h5>Veículo de transporte</h5>
               <Row className="mb-3">
                 <Form.Group>
@@ -1032,7 +1081,7 @@ class FretesComponent extends Component {
           </Modal.Header>
           <Modal.Body>
             <label>
-              <small class="form-text text-muted">Tipo de Veículo</small>
+              <small className="form-text text-muted">Tipo de Veículo</small>
             </label>
             <select
               className="form-control"
@@ -1041,11 +1090,12 @@ class FretesComponent extends Component {
               onChange={this.handleInputChange}
             >
               <option>Selecione um tipo de veiculo</option>
-              {tiposRodados.map((option, index) => (
-                <option key={index} value={option.tipo_rodado}>
-                  {option.tipo_rodado}
-                </option>
-              ))}
+              {Array.isArray(tiposRodados) &&
+                tiposRodados.map((option, index) => (
+                  <option key={index} value={option.tipo_rodado}>
+                    {option.tipo_rodado}
+                  </option>
+                ))}
             </select>
             <div className="table-responsive">
               <table className="table table-striped table-hover table-sm">
@@ -1061,9 +1111,14 @@ class FretesComponent extends Component {
                   {Array.isArray(this.state.tiposRodadosSelecionados) &&
                     this.state.tiposRodadosSelecionados.map((option, index) => (
                       <tr key={index}>
-                        <td>{option.tipo_rodado}</td>
+                        <td style={{ verticalAlign: "middle" }}>
+                          <h6>
+                            <Badge bg="dark">{option.tipo_rodado}</Badge>
+                          </h6>
+                        </td>
                         <td>
                           <select
+                            className="form-control"
                             name="tipoCarroceria.select"
                             value={
                               option.carroceria
@@ -1088,7 +1143,8 @@ class FretesComponent extends Component {
                         </td>
                         <td>
                           <input
-                            className="custom-input"
+                            //className="custom-input"
+                            className="form-control"
                             name="tiposVeiculos.quantidade"
                             type="number"
                             data-bs-toggle="tooltip"
@@ -1165,7 +1221,7 @@ class FretesComponent extends Component {
                         <td>
                           <input
                             type="text"
-                            class="form-control"
+                            className="form-control"
                             name={`produtos.${index}.produto`}
                             value={option.produto || ""}
                             placeholder="Produto"
@@ -1175,7 +1231,7 @@ class FretesComponent extends Component {
                         <td>
                           <select
                             name={`produtos.${index}.uni_medida`}
-                            class="form-control"
+                            className="form-control"
                             value={
                               option.medida ? option.medida.uni_medida : ""
                             }
@@ -1192,9 +1248,9 @@ class FretesComponent extends Component {
                         </td>
                         <td>
                           <input
-                            className="custom-input"
+                            //className="custom-input"
                             name={`produtos.${index}.quantidade`}
-                            class="form-control"
+                            className="form-control"
                             type="number"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"

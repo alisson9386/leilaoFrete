@@ -32,6 +32,13 @@ class UserAlerts {
     });
   };
 
+  showAlertExclusaoCancelada = () => {
+    Toast.fire({
+      icon: "error",
+      title: "Exclusão cancelada",
+    });
+  };
+
   showAlertUserAuthenticatedExpired = () => {
     Toast.fire({
       icon: "info",

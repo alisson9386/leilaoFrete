@@ -158,9 +158,6 @@ button {
   float: right;
 }
 
-.container {
-  display: inline-block;
-}
 .btn-primary {
   margin-right: 10px;
 }
@@ -188,18 +185,18 @@ button {
 
 .containerCenterHome {
   color: black;
-  width: 70%; /* Define a largura do container */
-  max-width: 1200px; /* Define uma largura máxima para evitar que o container fique muito grande em telas grandes */
-  margin: 0 auto; /* Centraliza o container horizontalmente */
-  padding: 45px 27px 30px 27px; /* Adiciona padding ao container */
-  text-align: center; /* Centraliza o texto dentro do container */
-  overflow: auto; /* Permite rolagem se o conteúdo exceder o tamanho do container */
-  display: flex; /* Define o container como um flexbox */
-  flex-direction: column; /* Alinha os itens do container em uma coluna */
-  justify-content: center; /* Centraliza os itens do container verticalmente */
-  align-items: center; /* Centraliza os itens do container horizontalmente */
-  gap: 65px; /* Define o espaço entre os itens do container */
-  height: 100vh; /* Define a altura do container como 100% da altura da viewport */
+  width: 70%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 45px 27px 30px 27px;
+  text-align: center;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 65px;
+  height: 100vh;
 }
 
 /*.card {
@@ -207,8 +204,9 @@ button {
 }*/
 
 .table-responsive {
-  max-height: 500px; /* Ajuste este valor conforme necessário */
-  overflow-y: auto; /* Habilita a rolagem vertical */
+  max-height: 500px;
+  max-width: 1500px !important;
+  overflow-y: auto;
 }
 
 .btn {
@@ -226,7 +224,6 @@ button {
 
 .containerAdmin {
   color: black;
-  width: 100%;
   margin: auto;
   justify-content: space-between;
   gap: 65px;
@@ -367,16 +364,20 @@ tr {
   margin: auto;
   justify-content: space-between;
   gap: 65px;
-  min-height: 100vh; /* Ajustado para 100vh */
+  min-height: 100vh;
   padding: 45px 27px 30px 27px;
   overflow: auto; /* Adicionado para permitir rolagem dentro do container */
 }
 
+.containerCard p {
+  font-size: 1.1rem;
+}
+
 .custom-footer {
   display: flex;
-  justify-content: center; /* Centraliza os itens horizontalmente */
-  align-items: center; /* Centraliza os itens verticalmente */
-  gap: 10px; /* Adiciona um espaçamento entre os itens */
+  justify-content: end;
+  align-items: end;
+  gap: 10px;
 }
 
 .custom-input {
@@ -385,9 +386,9 @@ tr {
 }
 
 .titulo-ordenavel {
-  cursor: pointer; /* Muda o cursor para uma mão */
- }
- 
- .titulo-ordenavel:hover {
-  cursor: pointer; /* Muda o cursor para uma maozinha */
- }
+  cursor: pointer;
+}
+
+.titulo-ordenavel:hover {
+  cursor: pointer;
+}
