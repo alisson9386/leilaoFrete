@@ -1,5 +1,5 @@
 import React from "react";
-import backgroundImage from "../assets/img/truck2.jpg"; // Substitua pelo caminho correto da sua imagem
+import backgroundImage from "../assets/img/wallpaper.jpg"; // Substitua pelo caminho correto da sua imagem
 
 const Layout = ({ children }) => {
   const estiloDeFundo = {
@@ -14,7 +14,7 @@ const Layout = ({ children }) => {
     left: 0,
     zIndex: -1,
     overflowY: "auto",
-    opacity: 0.5, // Ajuste a opacidade conforme necessário
+    //opacity: 0.5, // Ajuste a opacidade conforme necessário
   };
 
   return (

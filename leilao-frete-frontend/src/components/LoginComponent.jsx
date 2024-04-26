@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from "js-cookie";
 import Button from "react-bootstrap/Button";
-import logo from "../assets/img/logo-buritti.png";
+import logo from "../assets/img/Smoove.png";
 import useAlerts from "../context/useAlerts";
 import useAuth from "../context/useAuth";
 import history from "../history";
@@ -60,12 +60,12 @@ const LoginComponent = () => {
       <form method="POST" className="formLogin">
         <img
           src={logo}
-          className="img-thumbnail"
           alt="..."
           width="150"
           height="150"
           style={{ borderRadius: "50%", margin: "auto" }}
         ></img>
+        <h2 id="centralized-text">Transitt</h2>
         <h6 id="centralized-text">Leilão de fretes</h6>
         <p>Digite os seus dados de acesso no campo abaixo.</p>
         <label htmlFor="usuario">Usuario</label>

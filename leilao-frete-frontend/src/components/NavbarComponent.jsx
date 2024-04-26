@@ -1,36 +1,34 @@
-import React, { Component } from "react";
 import Cookies from "js-cookie";
-import history from "../history";
-import useAuth from "../context/useAuth";
-import Swal from "sweetalert2";
-import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import logo from "../assets/img/logo-buritti.png";
 import {
-  BsPersonCircle,
-  BsFillGearFill,
-  BsDashCircle,
-  BsTruck,
-  BsPersonGear,
-} from "react-icons/bs";
-import AppServices from "../service/app-service";
-import { FcOk, FcHighPriority } from "react-icons/fc";
-import {
+  MDBCollapse,
   MDBContainer,
+  MDBDropdown,
+  MDBDropdownItem,
+  MDBDropdownMenu,
+  MDBDropdownToggle,
+  MDBIcon,
   MDBNavbar,
   MDBNavbarBrand,
-  MDBNavbarToggler,
-  MDBIcon,
-  MDBNavbarNav,
   MDBNavbarItem,
   MDBNavbarLink,
-  MDBDropdown,
-  MDBDropdownToggle,
-  MDBDropdownMenu,
-  MDBDropdownItem,
-  MDBCollapse,
+  MDBNavbarNav,
+  MDBNavbarToggler,
 } from "mdb-react-ui-kit";
+import React, { Component } from "react";
+import { NavDropdown, Navbar } from 'react-bootstrap';
+import {
+  BsDashCircle,
+  BsFillGearFill,
+  BsPersonCircle,
+  BsPersonGear,
+  BsTruck,
+} from "react-icons/bs";
+import { FcHighPriority, FcOk } from "react-icons/fc";
+import logo from "../assets/img/Smoove.png";
 import useAlerts from "../context/useAlerts";
+import useAuth from "../context/useAuth";
+import history from "../history";
+import AppServices from "../service/app-service";
 
 class NavbarComponent extends Component {
   constructor(props) {
@@ -45,6 +43,7 @@ class NavbarComponent extends Component {
       imgPerfil: "",
       whatsappStatus: false,
       openBasic: false,
+      
     };
   }
 
@@ -111,7 +110,6 @@ class NavbarComponent extends Component {
             <MDBNavbarBrand href="/index">
               <img
                 src={logo}
-                className="img-thumbnail"
                 alt="..."
                 width="50"
                 height="50"

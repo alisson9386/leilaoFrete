@@ -22,7 +22,8 @@ class LocaisColetaComponent extends Component {
       locaisColetaPerPage: 10,
       editLocaisColeta: {},
       modalMode: "add",
-      isDisabled: true,
+      isDisabled1: true,
+      isDisabled2: true,
     };
   }
 
@@ -64,19 +65,18 @@ class LocaisColetaComponent extends Component {
 
   filterLocaisColeta = (search) => {
     if (!this.state.locaisColeta) {
-       console.error('locaisColeta não está definido');
-       return; // Sai da função se locaisColeta não estiver definido
+      console.error("locaisColeta não está definido");
+      return; // Sai da função se locaisColeta não estiver definido
     }
-   
+
     const filteredLocaisColeta = this.state.locaisColeta.filter(
-       (locaisColeta) =>
-         locaisColeta &&
-         locaisColeta.nome && // Garante que locaisColeta.tipo está definido
-         locaisColeta.nome.toLowerCase().includes(search.toLowerCase())
+      (locaisColeta) =>
+        locaisColeta &&
+        locaisColeta.nome && // Garante que locaisColeta.tipo está definido
+        locaisColeta.nome.toLowerCase().includes(search.toLowerCase())
     );
     this.setState({ filteredLocaisColeta, currentPage: 1 });
-   };
-   
+  };
 
   handleSearchChange = (event) => {
     const search = event.target.value;
@@ -109,28 +109,47 @@ class LocaisColetaComponent extends Component {
   };
 
   buscarEndereco = async (event) => {
-    const enderecoEncontrado = await buscarEnderecoPorCep(event.target.value);
-    if (!enderecoEncontrado.erro) {
-      const editLocaisColeta = { ...this.state.editLocaisColeta };
-      const ufs = this.state.ufs;
-      const uf = ufs.find((r) => r.uf === enderecoEncontrado.uf);
+    if (event.target.value !== "") {
+      const enderecoEncontrado = await buscarEnderecoPorCep(event.target.value);
+      if (enderecoEncontrado != null && !enderecoEncontrado.erro) {
+        const editLocaisColeta = { ...this.state.editLocaisColeta };
+        const ufs = this.state.ufs;
+        const uf = ufs.find((r) => r.uf === enderecoEncontrado.uf);
 
-      editLocaisColeta.endereco = enderecoEncontrado.logradouro;
-      editLocaisColeta.cidade = enderecoEncontrado.localidade;
-      editLocaisColeta.bairro = enderecoEncontrado.bairro;
-      editLocaisColeta.uf = uf.id;
-      editLocaisColeta.regiao = uf;
+        editLocaisColeta.uf = uf.id;
+        editLocaisColeta.regiao = uf;
+        editLocaisColeta.cidade = enderecoEncontrado.localidade;
 
-      this.setState({ isDisabled: true, editLocaisColeta: editLocaisColeta });
-    } else {
-      const editLocaisColeta = { ...this.state.editFrete };
-      delete editLocaisColeta.endereco;
-      delete editLocaisColeta.bairro;
-      delete editLocaisColeta.cidade;
-      delete editLocaisColeta.uf;
-      delete editLocaisColeta.regiao;
-      delete editLocaisColeta.numero;
-      this.setState({ isDisabled: false, editLocaisColeta: editLocaisColeta });
+        let disable2;
+        if (enderecoEncontrado.logradouro && enderecoEncontrado.bairro) {
+          editLocaisColeta.endereco = enderecoEncontrado.logradouro;
+          editLocaisColeta.bairro = enderecoEncontrado.bairro;
+          disable2 = true;
+        } else {
+          editLocaisColeta.endereco = "";
+          editLocaisColeta.bairro = "";
+          disable2 = false;
+        }
+
+        this.setState({
+          isDisabled1: true,
+          isDisabled2: disable2,
+          editLocaisColeta: editLocaisColeta,
+        });
+      } else {
+        const editLocaisColeta = { ...this.state.editLocaisColeta };
+        delete editLocaisColeta.endereco;
+        delete editLocaisColeta.bairro;
+        delete editLocaisColeta.cidade;
+        delete editLocaisColeta.uf;
+        delete editLocaisColeta.regiao;
+        delete editLocaisColeta.numero;
+        this.setState({
+          isDisabled1: false,
+          isDisabled2: false,
+          editLocaisColeta: editLocaisColeta,
+        });
+      }
     }
   };
 
@@ -295,7 +314,7 @@ class LocaisColetaComponent extends Component {
   };
 
   render() {
-    const { editLocaisColeta, ufs, isDisabled } = this.state;
+    const { editLocaisColeta, ufs, isDisabled1, isDisabled2 } = this.state;
     return (
       <>
         <br />
@@ -367,7 +386,7 @@ class LocaisColetaComponent extends Component {
                   id="cep"
                   name="cep"
                   label="CEP"
-                  type="number"
+                  type="text"
                   value={editLocaisColeta.cep || ""}
                   onChange={this.handleInputChange}
                   onBlur={this.buscarEndereco}
@@ -380,7 +399,7 @@ class LocaisColetaComponent extends Component {
                   label="Endereço"
                   value={editLocaisColeta.endereco || ""}
                   onChange={this.handleInputChange}
-                  disabled={isDisabled}
+                  disabled={isDisabled2}
                 />
               </MDBCol>
               <MDBCol sm="5">
@@ -390,7 +409,7 @@ class LocaisColetaComponent extends Component {
                   label="Bairro"
                   value={editLocaisColeta.bairro || ""}
                   onChange={this.handleInputChange}
-                  disabled={isDisabled}
+                  disabled={isDisabled2}
                 />
               </MDBCol>
               <MDBCol sm="5">
@@ -400,7 +419,7 @@ class LocaisColetaComponent extends Component {
                   label="Cidade"
                   value={editLocaisColeta.cidade || ""}
                   onChange={this.handleInputChange}
-                  disabled={isDisabled}
+                  disabled={isDisabled1}
                 />
               </MDBCol>
               <MDBCol sm="5">
@@ -435,7 +454,7 @@ class LocaisColetaComponent extends Component {
                     editLocaisColeta.regiao ? editLocaisColeta.regiao.uf : ""
                   }
                   onChange={this.handleInputChange}
-                  disabled={isDisabled}
+                  disabled={isDisabled1}
                 >
                   <option>Selecione uma região</option>
                   {ufs.map((option, index) => (

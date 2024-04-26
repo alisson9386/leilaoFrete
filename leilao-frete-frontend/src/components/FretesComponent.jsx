@@ -47,7 +47,8 @@ class FretesComponent extends Component {
       tiposRodados: [],
       tiposCarroceria: [],
       tiposRodadosSelecionados: [],
-      isDisabled: true,
+      isDisabled1: true,
+      isDisabled2: true,
       produtosAdicionados: [],
     };
   }
@@ -342,13 +343,19 @@ class FretesComponent extends Component {
       const ufs = this.state.ufs;
       const uf = ufs.find((r) => r.uf === enderecoEncontrado.uf);
 
-      editFreteAtualizado.endereco_destino = enderecoEncontrado.logradouro;
-      editFreteAtualizado.cidade_destino = enderecoEncontrado.localidade;
-      editFreteAtualizado.bairro_destino = enderecoEncontrado.bairro;
       editFreteAtualizado.uf = uf.id;
       editFreteAtualizado.regiao = uf;
+      editFreteAtualizado.cidade_destino = enderecoEncontrado.localidade;
+      if(enderecoEncontrado.logradouro && enderecoEncontrado.bairro){
+        editFreteAtualizado.endereco_destino = enderecoEncontrado.logradouro;
+        editFreteAtualizado.bairro_destino = enderecoEncontrado.bairro;
+      }else{
+        editFreteAtualizado.endereco_destino = '';
+        editFreteAtualizado.bairro_destino = '';
+        this.setState({ isDisabled2: false });
+      }
 
-      this.setState({ isDisabled: true, editFrete: editFreteAtualizado });
+      this.setState({ isDisabled1: true, editFrete: editFreteAtualizado });
     } else {
       const editFreteAtualizado = { ...this.state.editFrete };
       delete editFreteAtualizado.endereco_destino;
@@ -356,7 +363,7 @@ class FretesComponent extends Component {
       delete editFreteAtualizado.uf;
       delete editFreteAtualizado.regiao;
       delete editFreteAtualizado.numero_destino;
-      this.setState({ isDisabled: false, editFrete: editFreteAtualizado });
+      this.setState({ isDisabled1: false, isDisabled2: false, editFrete: editFreteAtualizado });
     }
   };
 
@@ -596,7 +603,8 @@ class FretesComponent extends Component {
       editFrete.cidade_destino &&
       editFrete.uf &&
       editFrete.ie &&
-      editFrete.tiposVeiculos.length > 0
+      editFrete.tiposVeiculos.length > 0 &&
+      editFrete.produtos.length > 0
     ) {
       return true;
     } else {
@@ -755,7 +763,8 @@ class FretesComponent extends Component {
       locaisColeta,
       tiposRodados,
       tiposCarroceria,
-      isDisabled,
+      isDisabled1,
+      isDisabled2,
       unidadesMedida,
     } = this.state;
     return (
@@ -955,7 +964,7 @@ class FretesComponent extends Component {
                   <Form.Label>CEP</Form.Label>
                   <Form.Control
                     name="cep_destino"
-                    type="number"
+                    type="text"
                     placeholder="CEP"
                     value={editFrete.cep_destino || ""}
                     onChange={this.handleInputChange}
@@ -970,7 +979,7 @@ class FretesComponent extends Component {
                     placeholder="Endereço"
                     value={editFrete.endereco_destino || ""}
                     onChange={this.handleInputChange}
-                    disabled={isDisabled}
+                    disabled={isDisabled2}
                   />
                 </Form.Group>
                 <Form.Group as={Col}>
@@ -991,7 +1000,7 @@ class FretesComponent extends Component {
                     placeholder="Bairro"
                     value={editFrete.bairro_destino || ""}
                     onChange={this.handleInputChange}
-                    disabled={isDisabled}
+                    disabled={isDisabled2}
                   />
                 </Form.Group>
               </Row>
@@ -1004,7 +1013,7 @@ class FretesComponent extends Component {
                     placeholder="Cidade"
                     value={editFrete.cidade_destino || ""}
                     onChange={this.handleInputChange}
-                    disabled={isDisabled}
+                    disabled={isDisabled1}
                   />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formGridState">
@@ -1013,7 +1022,7 @@ class FretesComponent extends Component {
                     name="uf"
                     value={editFrete.regiao ? editFrete.regiao.uf : ""}
                     onChange={this.handleInputChange}
-                    disabled={isDisabled}
+                    disabled={isDisabled1}
                   >
                     <option>Selecione uma região</option>
                     {ufs.map((option, index) => (
@@ -1047,7 +1056,7 @@ class FretesComponent extends Component {
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
                     title={
-                      !editFrete.tiposVeiculos
+                      editFrete.produtos <= 0
                         ? "Adicionar produtos"
                         : "Produtos adicionados"
                     }
