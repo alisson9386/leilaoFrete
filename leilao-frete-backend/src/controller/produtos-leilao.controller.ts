@@ -22,6 +22,11 @@ export class ProdutosLeilaoController {
     return this.produtosLeilaoService.findOne(+id);
   }
 
+  @Get('numLeilao/:numLeilao')
+  findByLeilao(@Param('numLeilao') numLeilao: number) {
+    return this.produtosLeilaoService.findByLeilao(numLeilao);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProdutosLeilaoDto: UpdateProdutosLeilaoDto) {
     return this.produtosLeilaoService.update(+id, updateProdutosLeilaoDto);

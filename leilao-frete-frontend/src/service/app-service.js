@@ -12,7 +12,7 @@ class BackService {
     getUser(user){return api_leilao.get('/users/user/' + user); }
 
     //Serviços de whatsapp
-    senderAll(){ return api_leilao.get('/whatsapp/all');}
+    senderAll(data){ return api_leilao.post('/whatsapp/all', data);}
     statusServidor(){ return api_leilao.get('/whatsapp/statusServidor');}
 
     //Serviços de tipo_user
@@ -25,6 +25,7 @@ class BackService {
     //Serviços de proprietários
     listProprietarios(){ return api_leilao.get('/proprietario/'); }
     listProprietariosById(idProprietario){ return api_leilao.get('/proprietario/' + idProprietario); }
+    listProprietariosPorVeiculos(veiculos){ return api_leilao.post('/proprietario/porveiculos', veiculos)}
     saveProprietarios(idProprietario){ return api_leilao.post('/proprietario/', idProprietario); }
     updateProprietarios(proprietario, idProprietario){ return api_leilao.patch('/proprietario/' + idProprietario, proprietario); }
     deleteProprietarios(idProprietario){ return api_leilao.delete('/proprietario/' + idProprietario); }
@@ -90,9 +91,13 @@ class BackService {
     //Serviços de produtos
     listProdutos(){ return api_leilao.get('/produtos-leilao/'); }
     listProdutoId(idProduto){ return api_leilao.get('/produtos-leilao/' + idProduto); }
+    listProdutoByLeilao(numLeilao){ return api_leilao.get('produtos-leilao/numLeilao/' + numLeilao)}
     saveProduto(idProduto){ return api_leilao.post('/produtos-leilao/', idProduto); }
     updateProduto(produto, idProduto){ return api_leilao.put('/produtos-leilao/' + idProduto, produto); }
     deleteProduto(idProduto){ return api_leilao.delete('/produtos-leilao/' + idProduto); }
+
+    //Serviços de frete-veiculos-quantidade
+    listFreteVeiQNumLeilao(numLeilao){ return api_leilao.get('/frete-veiculo-quantidade/byLeilao/' + numLeilao); }
 
 
 }

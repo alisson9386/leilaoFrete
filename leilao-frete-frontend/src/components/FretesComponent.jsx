@@ -23,6 +23,8 @@ import Swal from "sweetalert2";
 import useAlerts from "../context/useAlerts";
 import AppServices from "../service/app-service";
 import { buscarEnderecoPorCep } from "../util/viacep";
+import SendMsgComponent from "./SendMsgComponent";
+import LancesFreteComponent from "./LancesFretes";
 
 class FretesComponent extends Component {
   constructor(props) {
@@ -44,12 +46,15 @@ class FretesComponent extends Component {
       },
       showModalTipoVeiculos: false,
       showModalProdutos: false,
+      showModalWp: false,
+      showModalLances: false,
       tiposRodados: [],
       tiposCarroceria: [],
       tiposRodadosSelecionados: [],
       isDisabled1: true,
       isDisabled2: true,
       produtosAdicionados: [],
+      idLeilaoFrete: ''
     };
   }
 
@@ -190,6 +195,37 @@ class FretesComponent extends Component {
       showModalProdutos: true,
     });
   };
+
+  handleShowModalWp = (idFrete) => {
+    this.setState({
+      idLeilaoFrete: idFrete,
+      showModalWp: true,
+    });
+  };
+
+  handleShowModalLances = (idFrete) => {
+    this.setState({
+      idLeilaoFrete: idFrete,
+      showModalLances: true,
+    });
+  };
+
+  handleCloseModalWp = () => {
+    this.setState({
+      idLeilaoFrete: '',
+      showModalWp: false,
+    });
+    this.componentDidMount();
+  };
+
+  handleCloseModalLances = () => {
+    this.setState({
+      idLeilaoFrete: '',
+      showModalLances: false,
+    });
+    this.componentDidMount();
+  };
+
 
   handleCloseModalProdutos = () => {
     const { editFrete } = this.state;
@@ -337,33 +373,35 @@ class FretesComponent extends Component {
   };
 
   buscarEndereco = async (event) => {
-    const enderecoEncontrado = await buscarEnderecoPorCep(event.target.value);
-    if (!enderecoEncontrado.erro) {
-      const editFreteAtualizado = { ...this.state.editFrete };
-      const ufs = this.state.ufs;
-      const uf = ufs.find((r) => r.uf === enderecoEncontrado.uf);
-
-      editFreteAtualizado.uf = uf.id;
-      editFreteAtualizado.regiao = uf;
-      editFreteAtualizado.cidade_destino = enderecoEncontrado.localidade;
-      if(enderecoEncontrado.logradouro && enderecoEncontrado.bairro){
-        editFreteAtualizado.endereco_destino = enderecoEncontrado.logradouro;
-        editFreteAtualizado.bairro_destino = enderecoEncontrado.bairro;
-      }else{
-        editFreteAtualizado.endereco_destino = '';
-        editFreteAtualizado.bairro_destino = '';
-        this.setState({ isDisabled2: false });
+    if (event.target.value !== "") {
+      const enderecoEncontrado = await buscarEnderecoPorCep(event.target.value);
+      if (enderecoEncontrado != null && !enderecoEncontrado.erro) {
+        const editFreteAtualizado = { ...this.state.editFrete };
+        const ufs = this.state.ufs;
+        const uf = ufs.find((r) => r.uf === enderecoEncontrado.uf);
+  
+        editFreteAtualizado.uf = uf.id;
+        editFreteAtualizado.regiao = uf;
+        editFreteAtualizado.cidade_destino = enderecoEncontrado.localidade;
+        if(enderecoEncontrado.logradouro && enderecoEncontrado.bairro){
+          editFreteAtualizado.endereco_destino = enderecoEncontrado.logradouro;
+          editFreteAtualizado.bairro_destino = enderecoEncontrado.bairro;
+        }else{
+          editFreteAtualizado.endereco_destino = '';
+          editFreteAtualizado.bairro_destino = '';
+          this.setState({ isDisabled2: false });
+        }
+  
+        this.setState({ isDisabled1: true, isDisabled2: true, editFrete: editFreteAtualizado });
+      } else {
+        const editFreteAtualizado = { ...this.state.editFrete };
+        delete editFreteAtualizado.endereco_destino;
+        delete editFreteAtualizado.cidade_destino;
+        delete editFreteAtualizado.uf;
+        delete editFreteAtualizado.regiao;
+        delete editFreteAtualizado.numero_destino;
+        this.setState({ isDisabled1: false, isDisabled2: false, editFrete: editFreteAtualizado });
       }
-
-      this.setState({ isDisabled1: true, editFrete: editFreteAtualizado });
-    } else {
-      const editFreteAtualizado = { ...this.state.editFrete };
-      delete editFreteAtualizado.endereco_destino;
-      delete editFreteAtualizado.cidade_destino;
-      delete editFreteAtualizado.uf;
-      delete editFreteAtualizado.regiao;
-      delete editFreteAtualizado.numero_destino;
-      this.setState({ isDisabled1: false, isDisabled2: false, editFrete: editFreteAtualizado });
     }
   };
 
@@ -709,6 +747,7 @@ class FretesComponent extends Component {
                           >
                             <BsListOl
                               color="white"
+                              onClick={() => this.handleShowModalLances(frete.id)}
                               size={25}
                               title="Verificar ranking dos lances"
                             ></BsListOl>
@@ -722,6 +761,7 @@ class FretesComponent extends Component {
                         >
                           <BsWhatsapp
                             color={frete.wp_enviado ? "green" : "gray"}
+                            onClick={() => this.handleShowModalWp(frete.id)}
                             size={25}
                             title="Enviar mensagem de whatsapp para todos os proprietários aptos"
                           ></BsWhatsapp>
@@ -1289,6 +1329,48 @@ class FretesComponent extends Component {
           <Modal.Footer>
             <span style={{ marginLeft: "10px" }}></span>
             <Button variant="info" onClick={this.handleCloseModalProdutos}>
+              Fechar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          className="modal modal-lg"
+          show={this.state.showModalWp}
+          onHide={this.handleCloseModalWp}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Mensagens</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <SendMsgComponent
+              leilaoId={this.state.idLeilaoFrete} showModalWp={this.state.showModalWp} fecharModal={this.handleCloseModalWp}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <span style={{ marginLeft: "10px" }}></span>
+            <Button variant="info" onClick={this.handleCloseModalWp}>
+              Fechar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          className="modal modal-lg"
+          show={this.state.showModalLances}
+          onHide={this.handleCloseModalLances}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Lances</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <LancesFreteComponent
+              leilaoId={this.state.idLeilaoFrete} showModalWp={this.state.showModalLances} fecharModal={this.handleCloseModalLances}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <span style={{ marginLeft: "10px" }}></span>
+            <Button variant="info" onClick={this.handleCloseModalLances}>
               Fechar
             </Button>
           </Modal.Footer>

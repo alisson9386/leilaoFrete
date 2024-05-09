@@ -8,9 +8,11 @@ export class WhatsAppService {
   private statusServidor: boolean;
   private qrcode: string;
   private logger: LoggerService;
+  private cacheNumeros: Map<number, string[]>;
 
   constructor(private readonly loggerService: LoggerService) {
     this.logger = loggerService;
+    this.cacheNumeros = new Map<number, string[]>();
     const options: ClientOptions = {};
     this.client = new Client(options);
     this.initialize();
@@ -18,13 +20,23 @@ export class WhatsAppService {
     this.statusServidor = false;
   }
 
-  senderAll(variosNumeros: any[]) {
-    const message = 'Olá! Esta é uma mensagem de teste.';
-    variosNumeros.map(async (numero) => {
+  async senderAll(variosNumeros: any[], texto: any[], numLeilao: number) {
+    const message = texto;
+    await Promise.all(variosNumeros.map(async (numero) => {
       await this.client.sendMessage(numero, message);
       this.logger.log('Nova mensagem enviada ao numero: ' + numero);
-    });
+    }));
+    this.addToCache(numLeilao, variosNumeros);
     return HttpStatus.OK;
+  }
+
+  private addToCache(numLeilao: number, numeros: string[]) {
+    const existingNumbers = this.cacheNumeros.get(numLeilao) || [];
+    this.cacheNumeros.set(numLeilao, [...existingNumbers, ...numeros]);
+  }
+
+  getNumbersByLeilao(numLeilao: number): string[] {
+    return this.cacheNumeros.get(numLeilao) || [];
   }
 
   getStatus() {

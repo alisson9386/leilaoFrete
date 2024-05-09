@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { ProprietarioService } from '../service/proprietario.service';
 import { CreateProprietarioDto } from '../dto/proprietario_dto/create-proprietario.dto';
 import { UpdateProprietarioDto } from '../dto/proprietario_dto/update-proprietario.dto';
@@ -23,8 +33,16 @@ export class ProprietarioController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFreteiroDto: UpdateProprietarioDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateFreteiroDto: UpdateProprietarioDto,
+  ) {
     return this.proprietarioService.update(+id, updateFreteiroDto);
+  }
+
+  @Post('/porveiculos')
+  porVeiculos(@Body() veiculos: any[]) {
+    return this.proprietarioService.porVeiculos(veiculos);
   }
 
   @Get('status/:id')

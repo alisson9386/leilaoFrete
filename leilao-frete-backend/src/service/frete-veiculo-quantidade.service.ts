@@ -19,6 +19,13 @@ export class FreteVeiculoQuantidadeService {
     return this.freteVeiculoQuantidadeRepository.find();
   }
 
+  async findAllByLeilao(num_leilao: number) {
+    return await this.freteVeiculoQuantidadeRepository
+    .createQueryBuilder('fvq')
+    .where('fvq.num_leilao = :num_leilao', { num_leilao })
+    .getMany();
+  }
+
   findOne(id: number) {
     return this.freteVeiculoQuantidadeRepository.findOneBy({ id: id });
   }

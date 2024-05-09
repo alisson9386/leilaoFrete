@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateProdutosLeilaoDto } from '../dto/produtos-leilao_dto/create-produtos-leilao.dto';
 import { UpdateProdutosLeilaoDto } from '../dto/produtos-leilao_dto/update-produtos-leilao.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ProdutosLeilao } from 'src/entities/produtos-leilao.entity';
 
 @Injectable()
@@ -21,6 +21,10 @@ export class ProdutosLeilaoService {
 
   findOne(id: number) {
     return this.produtosLeilaoRepository.findOneBy({ id: id });
+  }
+
+  findByLeilao(numLeilao: number){
+    return this.produtosLeilaoRepository.findBy({num_leilao: numLeilao})
   }
 
   update(id: number, updateProdutosLeilaoDto: UpdateProdutosLeilaoDto) {

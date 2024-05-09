@@ -22,6 +22,11 @@ export class FreteVeiculoQuantidadeController {
     return this.freteVeiculoQuantidadeService.findOne(+id);
   }
 
+  @Get('byLeilao/:numLeilao')
+  findAllByLeilao(@Param('numLeilao') numLeilao: number) {
+    return this.freteVeiculoQuantidadeService.findAllByLeilao(numLeilao);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFreteVeiculoQuantidadeDto: UpdateFreteVeiculoQuantidadeDto) {
     return this.freteVeiculoQuantidadeService.update(+id, updateFreteVeiculoQuantidadeDto);

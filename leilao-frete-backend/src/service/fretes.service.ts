@@ -74,6 +74,8 @@ export class FretesService {
     }
     createFreteDto.num_ordem_coleta = createFreteDto.num_leilao;
 
+    const objeto = await this.freteRepository.save(createFreteDto);
+
     const save1 = await this.insertOrUpdateEntities(
       this.freteVeiculoQuantidadeRepository,
       createFreteDto.num_leilao,
@@ -87,8 +89,12 @@ export class FretesService {
       ['produto', 'uni_medida'],
     );
 
-    if (save1 && save2) return this.freteRepository.save(createFreteDto);
-    else return HttpStatus.INTERNAL_SERVER_ERROR;
+    if (save1 && save2) {
+      return objeto;
+    } else {
+      this.freteRepository.delete(objeto.id);
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
   }
 
   async findAll() {
@@ -122,19 +128,23 @@ export class FretesService {
     tiposVeiculosFretes: any[],
     produtosFretes: any[],
   ) {
-    await this.insertOrUpdateEntities(
-      this.freteVeiculoQuantidadeRepository,
-      updateFreteDto.num_leilao,
-      tiposVeiculosFretes,
-      ['id_tipo_veiculo', 'id_tipo_carroceria'],
-    );
+    if (tiposVeiculosFretes) {
+      await this.insertOrUpdateEntities(
+        this.freteVeiculoQuantidadeRepository,
+        updateFreteDto.num_leilao,
+        tiposVeiculosFretes,
+        ['id_tipo_veiculo', 'id_tipo_carroceria'],
+      );
+    }
 
-    await this.insertOrUpdateEntities(
-      this.produtosLeilaoRepository,
-      updateFreteDto.num_leilao,
-      produtosFretes,
-      ['produto', 'uni_medida'],
-    );
+    if (produtosFretes) {
+      await this.insertOrUpdateEntities(
+        this.produtosLeilaoRepository,
+        updateFreteDto.num_leilao,
+        produtosFretes,
+        ['produto', 'uni_medida'],
+      );
+    }
 
     return this.freteRepository.update(id, updateFreteDto);
   }

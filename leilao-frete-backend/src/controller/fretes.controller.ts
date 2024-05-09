@@ -19,23 +19,29 @@ export class FretesController {
 
   private prepareFreteData(freteDto: CreateFreteDto | UpdateFreteDto) {
     const { tiposVeiculos, produtos, num_leilao } = freteDto;
-    const tiposVeiculosFretes = tiposVeiculos.map((tipoVeiculo) => ({
-      num_leilao,
-      id_tipo_veiculo: tipoVeiculo.id,
-      id_tipo_carroceria: tipoVeiculo.carroceria.id,
-      quantidade: tipoVeiculo.quantidade,
-    }));
+    var tiposVeiculosFretes: any;
+    var produtosFretes: any;
+    if(tiposVeiculos){
+      tiposVeiculosFretes = tiposVeiculos.map((tipoVeiculo) => ({
+        num_leilao,
+        id_tipo_veiculo: tipoVeiculo.id,
+        id_tipo_carroceria: tipoVeiculo.carroceria.id,
+        quantidade: tipoVeiculo.quantidade,
+      }));
+      delete freteDto.tiposVeiculos;
+      delete freteDto.veiculos;
+    }
 
-    const produtosFretes = produtos.map((produto) => ({
-      num_leilao,
-      produto: produto.produto,
-      uni_medida: produto.uni_medida,
-      quantidade: produto.quantidade,
-    }));
+    if(produtos){
+      produtosFretes = produtos.map((produto) => ({
+        num_leilao,
+        produto: produto.produto,
+        uni_medida: produto.uni_medida,
+        quantidade: produto.quantidade,
+      }));
+      delete freteDto.produtos;
+    }
 
-    delete freteDto.tiposVeiculos;
-    delete freteDto.veiculos;
-    delete freteDto.produtos;
 
     return { freteDto, tiposVeiculosFretes, produtosFretes };
   }

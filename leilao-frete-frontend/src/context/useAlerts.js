@@ -59,6 +59,10 @@ class UserAlerts {
     });
   };
 
+  closeSwal = () => {
+    Swal.close();
+  }
+
   updateUserSuccess = () => {
     Swal.fire({
       icon: "success",
@@ -144,6 +148,17 @@ class UserAlerts {
         history.push("/");
       }
     });
+  };
+
+  senderMsgSuccess = () => {
+    Swal.fire({
+      icon: "success",
+      title: "Mensagens enviadas!",
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 3000,
+    });
+    return;
   };
 }
 

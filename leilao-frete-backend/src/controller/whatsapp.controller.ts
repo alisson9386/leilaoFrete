@@ -8,13 +8,13 @@ export class WhatsappController {
     private readonly whatsappService: WhatsAppService,
     ) {}
 
-  @Get('all')
-  async senderAll(data: any) {
+  @Post('all')
+  async senderAll(@Body() data: any) {
     let numeros = [];
-    data.map((freteiro: { tel_whatsapp: any; }) => {
-      if(freteiro.tel_whatsapp) numeros.push(freteiro.tel_whatsapp)
+    data.proprietariosAptos.map((prop: { tel_whatsapp: any; }) => {
+      if(prop.tel_whatsapp) numeros.push(prop.tel_whatsapp)
     })
-    return this.whatsappService.senderAll(numeros);
+    return this.whatsappService.senderAll(numeros, data.texto, data.numLeilao);
   }
 
   @Get('statusServidor')
