@@ -74,10 +74,13 @@ class ProprietariosEditComponent extends Component {
         const uf = responseUfs.data.find(
           (tipos) => tipos.id === proprietario.uf
         );
+        proprietario.tel_whatsapp = this.formatPhoneNumber(proprietario.tel_whatsapp)
+        proprietario.tel_contato = this.formatPhoneNumber(proprietario.tel_contato)
         proprietario.tipoProprietario = tipo;
         proprietario.regiao = uf;
       });
       const listaOrdenada = prop.sort((a, b) => a.nome.localeCompare(b.nome));
+      
       this.setState({
         proprietarios: listaOrdenada,
         filteredProprietarios: listaOrdenada,
@@ -248,7 +251,8 @@ class ProprietariosEditComponent extends Component {
       !editProprietario.cpf_cnpj ||
       !editProprietario.tipoProprietario ||
       !editProprietario.uf ||
-      !editProprietario.tel_whatsapp
+      !editProprietario.tel_whatsapp ||
+      !editProprietario.tel_contato
     ) {
       useAlerts.alertCamposObrigatorios();
       return;
@@ -402,10 +406,10 @@ class ProprietariosEditComponent extends Component {
           {proprietario.tipoProprietario.tipo_proprietario}
         </td>
         <td className={this.getStatusColor(proprietario.fl_ativo)}>
-          {this.formatPhoneNumber(proprietario.tel_contato)}
+          {proprietario.tel_contato}
         </td>
         <td className={this.getStatusColor(proprietario.fl_ativo)}>
-          {this.formatPhoneNumber(proprietario.tel_whatsapp)}
+          {proprietario.tel_whatsapp}
         </td>
         <td className={this.getStatusColor(proprietario.fl_ativo)}>
           {proprietario.fl_ativo ? "Ativo" : "Suspenso"}
@@ -612,8 +616,8 @@ class ProprietariosEditComponent extends Component {
                     type="text"
                     name="tel_contato"
                     placeholder="Contato"
-                    as={IMaskInput}
-                    mask="(00) 00000-0000"
+                    //as={IMaskInput}
+                    //mask="(00) 00000-0000"
                     value={editProprietario.tel_contato || ""}
                     onChange={this.handleInputChange}
                   />

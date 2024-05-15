@@ -5,11 +5,11 @@ import useAlerts from "../context/useAlerts";
 
 const SendMsgComponent = ({ leilaoId, showModalWp, fecharModal }) => {
   const [frete, setFrete] = useState([]);
+  // eslint-disable-next-line
   const [veiculosFrete, setVeiculosFrete] = useState([]);
   const [texto, setTexto] = useState("");
   const [proprietariosAptos, setProprietariosAptos] = useState("");
 
-  var textoInicial = "";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +34,7 @@ const SendMsgComponent = ({ leilaoId, showModalWp, fecharModal }) => {
           const unidadeMedida = await AppServices.listUnidadeMedidas();
 
           produtos.data.map((p) => {
-            p.unidadeMedida = unidadeMedida.data.filter(
+            return p.unidadeMedida = unidadeMedida.data.filter(
               (uni) => p.uni_medida === uni.id
             );
           });
@@ -67,10 +67,10 @@ const SendMsgComponent = ({ leilaoId, showModalWp, fecharModal }) => {
           frete.regiaoDestino = ufDestino.data;
           frete.produtos = produtos.data;
 
-          textoInicial = `*Prezado transportador*,
-Informo que abrimos o leilão n°: ${
+          let textoIn = `*Prezado transportador*,
+Informamos que abrimos o leilão n°: ${
             frete.num_leilao
-          } e convidamos V.Sa. para enviar seu lance. 
+          } e convidamos para enviar seu lance. 
 _Data da coleta na empresa:_ ${formatarData(frete.dt_coleta_ordem, true)}
 
 _Data limite do lance:_ ${formatarData(frete.dt_validade_leilao, true)}
@@ -112,10 +112,12 @@ _Produtos_
 ${frete.produtos.map(
   (p) => `
 - Conteúdo: ${p.produto} - ${p.quantidade} ${p.unidadeMedida[0].uni_medida}`
-)}`;
+)}
+
+*O valor do lance deve ser enviada juntamente com o número do leilão assim 'numeroLeilao;lance', exemplo: 99999;750 *`;
 
           setVeiculosFrete(veiculos);
-          setTexto(textoInicial);
+          setTexto(textoIn);
           setFrete(frete);
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -182,22 +184,22 @@ ${frete.produtos.map(
   const enviarWhatsapp = async () => {
     try {
       proprietariosAptos.map((pa) => {
-        pa.tel_whatsapp = formatarNumeroParaEnvio(pa.tel_whatsapp);
+        return pa.tel_whatsapp = formatarNumeroParaEnvio(pa.tel_whatsapp);
       });
-      var numLeilao = frete.numLeilao;
+      var numLeilao = frete.num_leilao;
       var data = { proprietariosAptos, texto , numLeilao};
       const res = await AppServices.senderAll(data);
-      if (res.status === 201) {
+      if (res.status === 201 && res.data.status !== 404) {
         useAlerts.senderMsgSuccess();
         frete.status = 2;
         frete.wp_enviado = 1;
         delete frete.localDeColeta;
         delete frete.regiaoDestino;
         delete frete.produtos;
-        const alter = await AppServices.updateFrete(frete, frete.id);
+        await AppServices.updateFrete(frete, frete.id);
         fecharModal();
       } else {
-        useAlerts.showAlertError(res.statusText);
+        useAlerts.showAlertError(res.data.message);
       }
     } catch (error) {
       useAlerts.showAlertError(error);

@@ -1,46 +1,41 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtModule } from '@nestjs/jwt';
-import { JwtMiddleware } from './auth/jwt.middleware';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { UsuariosModule } from './module/usuarios.module';
-import { Usuario } from './entities/usuario.entity';
-import { ProprietarioModule } from './module/proprietario.module';
-import { LoggingInterceptor } from './logging.interceptor';
-import { LoggerService } from './service/logger.service';
-import { WhatsAppService } from './service/whatsapp.service';
-import { ProprietarioService } from './service/proprietario.service';
+import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtMiddleware } from './auth/jwt.middleware';
+import { FreteVeiculoQuantidade } from './entities/frete-veiculo-quantidade.entity';
+import { Frete } from './entities/frete.entity';
+import { LancesFrete } from './entities/lances-frete.entity';
+import { LocaisColeta } from './entities/locais-coleta.entity';
+import { ProdutosLeilao } from './entities/produtos-leilao.entity';
 import { Proprietario } from './entities/proprietario.entity';
-import { TipoUsersModule } from './module/tipo-users.module';
 import { TipoUser } from './entities/tipo-user.entity';
-import { VeiculoModule } from './module/veiculo.module';
-import { ProprietarioController } from './controller/proprietario.controller';
-import { TipoUsersController } from './controller/tipo-users.controller';
-import { UsuariosController } from './controller/usuarios.controller';
-import { VeiculoController } from './controller/veiculo.controller';
-import { WhatsappController } from './controller/whatsapp.controller';
-import { TipoProprietarioModule } from './module/tipo_proprietario.module';
-import { TipoCarroceriaVeiculoModule } from './module/tipo_carroceria_veiculo.module';
-import { TipoRodadoVeiculoModule } from './module/tipo_rodado_veiculo.module';
-import { UfModule } from './module/uf.module';
-import { WhatsAppModule } from './module/whatsapp.module';
-import { TipoProprietario } from './entities/tipo_proprietario.entity';
 import { TipoCarroceriaVeiculo } from './entities/tipo_carroceria_veiculo.entity';
+import { TipoProprietario } from './entities/tipo_proprietario.entity';
 import { TipoRodadoVeiculo } from './entities/tipo_rodado_veiculo.entity';
 import { Uf } from './entities/uf.entity';
-import { Veiculo } from './entities/veiculo.entity';
-import { LocaisColetaModule } from './module/locais-coleta.module';
-import { LocaisColeta } from './entities/locais-coleta.entity';
-import { FretesModule } from './module/fretes.module';
-import { Frete } from './entities/frete.entity';
-import { FreteVeiculoQuantidadeModule } from './module/frete-veiculo-quantidade.module';
-import { FreteVeiculoQuantidade } from './entities/frete-veiculo-quantidade.entity';
-import { ProdutosLeilaoModule } from './module/produtos-leilao.module';
-import { UnidadeMedidaModule } from './module/unidade-medida.module';
 import { UnidadeMedida } from './entities/unidade-medida.entity';
-import { ProdutosLeilao } from './entities/produtos-leilao.entity';
+import { Usuario } from './entities/usuario.entity';
+import { Veiculo } from './entities/veiculo.entity';
+import { LoggingInterceptor } from './logging.interceptor';
+import { FreteVeiculoQuantidadeModule } from './module/frete-veiculo-quantidade.module';
+import { FretesModule } from './module/fretes.module';
 import { LancesFreteModule } from './module/lances-frete.module';
+import { LocaisColetaModule } from './module/locais-coleta.module';
+import { ProdutosLeilaoModule } from './module/produtos-leilao.module';
+import { ProprietarioModule } from './module/proprietario.module';
+import { TipoUsersModule } from './module/tipo-users.module';
+import { TipoCarroceriaVeiculoModule } from './module/tipo_carroceria_veiculo.module';
+import { TipoProprietarioModule } from './module/tipo_proprietario.module';
+import { TipoRodadoVeiculoModule } from './module/tipo_rodado_veiculo.module';
+import { UfModule } from './module/uf.module';
+import { UnidadeMedidaModule } from './module/unidade-medida.module';
+import { UsuariosModule } from './module/usuarios.module';
+import { VeiculoModule } from './module/veiculo.module';
+import { WhatsAppModule } from './module/whatsapp.module';
+import { LoggerService } from './service/logger.service';
+import { WhatsAppService } from './service/whatsapp.service';
 
 @Module({
   imports: [
@@ -49,7 +44,6 @@ import { LancesFreteModule } from './module/lances-frete.module';
       secret: 'zaq12wsxZAQ!@WSXZ0rr0b@tmak',
       signOptions: { expiresIn: '6h' },
     }),
-    UsuariosModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DATABASE_HOST,
@@ -70,7 +64,8 @@ import { LancesFreteModule } from './module/lances-frete.module';
         Frete,
         FreteVeiculoQuantidade,
         UnidadeMedida,
-        ProdutosLeilao
+        ProdutosLeilao,
+        LancesFrete
       ],
       synchronize: false,
     }),

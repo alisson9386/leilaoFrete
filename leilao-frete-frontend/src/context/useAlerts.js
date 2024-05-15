@@ -109,7 +109,7 @@ class UserAlerts {
   showAlertError = (err) => {
     Swal.fire({
       icon: "error",
-      title: "Erro, por favor contate o administrador!",
+      title: "Erro!",
       text: err,
     });
   };

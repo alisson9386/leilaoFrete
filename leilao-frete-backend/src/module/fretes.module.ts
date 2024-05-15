@@ -10,6 +10,6 @@ import { ProdutosLeilao } from 'src/entities/produtos-leilao.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Frete, FreteVeiculoQuantidade, ProdutosLeilao])],
   controllers: [FretesController],
-  providers: [FretesService, FreteVeiculoQuantidadeService],
+  providers: [FretesService],
 })
 export class FretesModule {}

@@ -4,12 +4,19 @@ import useAlerts from "../context/useAlerts";
 
 const LancesFreteComponent = ({ leilaoId, showModalLances, fecharModal }) => {
   const [frete, setFrete] = useState([]);
+
   useEffect(() => {
-    console.log(leilaoId, showModalLances, fecharModal);
-    return () => {
-      // Equivalente a componentWillUnmount
+    const fetchData = async () =>{
+      if(showModalLances){
+        useAlerts.showLoading('Aguarde!');
+        const freteResponse = await AppServices.listFreteById(leilaoId);
+        setFrete(freteResponse.data);
+        useAlerts.closeSwal();
+      }
     };
-  }, []); // Array vazio como segundo argumento para garantir que o efeito seja executado apenas uma vez, equivalente a componentDidMount
+
+    fetchData();
+  }, [leilaoId, showModalLances, fecharModal]); // Array vazio como segundo argumento para garantir que o efeito seja executado apenas uma vez, equivalente a componentDidMount
 
   return (
     <div>

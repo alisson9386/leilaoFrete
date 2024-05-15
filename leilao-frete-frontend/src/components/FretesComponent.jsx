@@ -386,13 +386,14 @@ class FretesComponent extends Component {
         if(enderecoEncontrado.logradouro && enderecoEncontrado.bairro){
           editFreteAtualizado.endereco_destino = enderecoEncontrado.logradouro;
           editFreteAtualizado.bairro_destino = enderecoEncontrado.bairro;
+          this.setState({ isDisabled1: true, isDisabled2: true });
         }else{
           editFreteAtualizado.endereco_destino = '';
           editFreteAtualizado.bairro_destino = '';
           this.setState({ isDisabled2: false });
         }
   
-        this.setState({ isDisabled1: true, isDisabled2: true, editFrete: editFreteAtualizado });
+        this.setState({ editFrete: editFreteAtualizado });
       } else {
         const editFreteAtualizado = { ...this.state.editFrete };
         delete editFreteAtualizado.endereco_destino;
@@ -1365,7 +1366,7 @@ class FretesComponent extends Component {
           </Modal.Header>
           <Modal.Body>
             <LancesFreteComponent
-              leilaoId={this.state.idLeilaoFrete} showModalWp={this.state.showModalLances} fecharModal={this.handleCloseModalLances}
+              leilaoId={this.state.idLeilaoFrete} showModalLances={this.state.showModalLances} fecharModal={this.handleCloseModalLances}
             />
           </Modal.Body>
           <Modal.Footer>

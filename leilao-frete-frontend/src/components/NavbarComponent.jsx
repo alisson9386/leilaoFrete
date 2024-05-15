@@ -24,7 +24,7 @@ import {
   BsTruck,
 } from "react-icons/bs";
 import { FcHighPriority, FcOk } from "react-icons/fc";
-import logo from "../assets/img/Smoove.png";
+import logo from "../assets/img/transitti.jpeg";
 import useAlerts from "../context/useAlerts";
 import useAuth from "../context/useAuth";
 import history from "../history";

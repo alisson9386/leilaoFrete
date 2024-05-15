@@ -1,6 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Client, ClientOptions, Location } from 'whatsapp-web.js';
 import { LoggerService } from './logger.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { LancesFrete } from 'src/entities/lances-frete.entity';
+import { Repository } from 'typeorm';
+import { CreateLancesFreteDto } from 'src/dto/lances-frete_dto/create-lances-frete.dto';
 
 @Injectable()
 export class WhatsAppService {
@@ -10,7 +14,11 @@ export class WhatsAppService {
   private logger: LoggerService;
   private cacheNumeros: Map<number, string[]>;
 
-  constructor(private readonly loggerService: LoggerService) {
+  constructor(
+    private readonly loggerService: LoggerService,
+    @InjectRepository(LancesFrete)
+    private lancesFreteRepository: Repository<LancesFrete>,
+  ) {
     this.logger = loggerService;
     this.cacheNumeros = new Map<number, string[]>();
     const options: ClientOptions = {};
@@ -22,10 +30,12 @@ export class WhatsAppService {
 
   async senderAll(variosNumeros: any[], texto: any[], numLeilao: number) {
     const message = texto;
-    await Promise.all(variosNumeros.map(async (numero) => {
-      await this.client.sendMessage(numero, message);
-      this.logger.log('Nova mensagem enviada ao numero: ' + numero);
-    }));
+    await Promise.all(
+      variosNumeros.map(async (numero) => {
+        await this.client.sendMessage(numero, message);
+        this.logger.log('Nova mensagem enviada ao numero: ' + numero);
+      }),
+    );
     this.addToCache(numLeilao, variosNumeros);
     return HttpStatus.OK;
   }
@@ -70,14 +80,59 @@ export class WhatsAppService {
     });
 
     this.client.on('message', async (msg) => {
-      const desiredNumber = '553192178417@c.us'; // Número de telefone desejado
+      if (msg.from === '553192178417@c.us') {
+        if (!msg.body.includes(';')) {
+          await this.client.sendMessage(
+            msg.from,
+            'ERRO: A mensagem precisa estar no formato "numero do leilao;valor do lance". Exemplo: "12024;600".',
+          );
+          return;
+        }
+
+        const [numLeilao, valorLance] = msg.body.split(';');
+
+        if (this.cacheNumeros.has(Number(numLeilao))) {
+          const numerosParticipantes = this.cacheNumeros.get(Number(numLeilao));
+
+          if (numerosParticipantes.includes(msg.from)) {
+            try {
+              var createLancesFreteDto = new CreateLancesFreteDto();
+              createLancesFreteDto.num_leilao = Number(numLeilao);
+              createLancesFreteDto.valor_lance = Number(valorLance);
+              createLancesFreteDto.wp_lance = msg.from;
+              //await this.lancesFreteRepository.save(createLancesFreteDto);
+              await this.client.sendMessage(
+                msg.from,
+                `Seu lance foi registrado para o leilão ${numLeilao} no valor de R$${valorLance}! Aguarde retorno dos resultados.`,
+              );
+            } catch (error) {
+              await this.client.sendMessage(
+                msg.from,
+                `Erro ao registrar seu lance. Tente novamente dentro de alguns minutos.`,
+              );
+              this.logger.error(error);
+            }
+          } else {
+            await this.client.sendMessage(
+              msg.from,
+              `Infelizmente você não está apto para participar do leilão *${numLeilao}*.`,
+            );
+          }
+        } else {
+          await this.client.sendMessage(
+            msg.from,
+            `ERRO: O leilão ${numLeilao} não foi encontrado no cache.`,
+          );
+        }
+      }
+      /*const desiredNumber = '553192178417@c.us'; // Número de telefone desejado
       if (msg.from === desiredNumber) {
         this.logger.log(
           `Mensagem recebida do número ${desiredNumber}: ${msg.body}`,
         );
         let location = new Location(48.86214, 2.289971);
         await this.client.sendMessage(msg.from, location);
-      }
+      }*/
     });
 
     this.client.initialize();

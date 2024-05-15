@@ -10,4 +10,7 @@ export class LancesFrete {
 
   @Column()
   valor_oferta: number;
+
+  @Column()
+  oferta_vencedora: number;
 }
