@@ -1,12 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateFreteDto } from '../dto/fretes_dto/create-frete.dto';
-import { UpdateFreteDto } from '../dto/fretes_dto/update-frete.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Frete } from 'src/entities/frete.entity';
-import { Repository } from 'typeorm';
 import { FreteVeiculoQuantidade } from 'src/entities/frete-veiculo-quantidade.entity';
-import { ExceptionHandler } from 'winston';
+import { Frete } from 'src/entities/frete.entity';
 import { ProdutosLeilao } from 'src/entities/produtos-leilao.entity';
+import { Repository } from 'typeorm';
+import { ExceptionHandler } from 'winston';
+import { UpdateFreteDto } from '../dto/fretes_dto/update-frete.dto';
 
 @Injectable()
 export class FretesService {

@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Client, ClientOptions, Location } from 'whatsapp-web.js';
+import { CreateLancesFreteDto } from 'src/dto/lances-frete_dto/create-lances-frete.dto';
+import { Client, ClientOptions } from 'whatsapp-web.js';
+import { LancesFreteService } from './lances-frete.service';
 import { LoggerService } from './logger.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LancesFrete } from 'src/entities/lances-frete.entity';
 import { Repository } from 'typeorm';
-import { CreateLancesFreteDto } from 'src/dto/lances-frete_dto/create-lances-frete.dto';
 
 @Injectable()
 export class WhatsAppService {
@@ -15,9 +16,9 @@ export class WhatsAppService {
   private cacheNumeros: Map<number, string[]>;
 
   constructor(
-    private readonly loggerService: LoggerService,
     @InjectRepository(LancesFrete)
     private lancesFreteRepository: Repository<LancesFrete>,
+    private readonly loggerService: LoggerService,
   ) {
     this.logger = loggerService;
     this.cacheNumeros = new Map<number, string[]>();
@@ -100,7 +101,7 @@ export class WhatsAppService {
               createLancesFreteDto.num_leilao = Number(numLeilao);
               createLancesFreteDto.valor_lance = Number(valorLance);
               createLancesFreteDto.wp_lance = msg.from;
-              //await this.lancesFreteRepository.save(createLancesFreteDto);
+              await this.lancesFreteRepository.save(createLancesFreteDto);
               await this.client.sendMessage(
                 msg.from,
                 `Seu lance foi registrado para o leilão ${numLeilao} no valor de R$${valorLance}! Aguarde retorno dos resultados.`,
