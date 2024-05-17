@@ -35,7 +35,6 @@ import { UsuariosModule } from './module/usuarios.module';
 import { VeiculoModule } from './module/veiculo.module';
 import { WhatsAppModule } from './module/whatsapp.module';
 import { LoggerService } from './service/logger.service';
-import { WhatsAppService } from './service/whatsapp.service';
 
 @Module({
   imports: [
@@ -88,7 +87,6 @@ import { WhatsAppService } from './service/whatsapp.service';
   controllers: [],
   providers: [
     JwtMiddleware,
-    WhatsAppService,
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
     LoggerService,
   ],

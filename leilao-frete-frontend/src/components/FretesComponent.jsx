@@ -11,20 +11,21 @@ import {
 } from "react-bootstrap";
 import {
   BsFillGrid3X3GapFill,
-  BsFillPencilFill,
+  BsPencilSquare ,
   BsFillPlusCircleFill,
   BsFillTrash3Fill,
-  BsListOl,
+  BsTrophyFill,
   BsTruck,
-  BsWhatsapp,
+  BsWhatsapp
 } from "react-icons/bs";
+import { GiPodium } from "react-icons/gi";
 import { IMaskInput } from "react-imask";
 import Swal from "sweetalert2";
 import useAlerts from "../context/useAlerts";
 import AppServices from "../service/app-service";
 import { buscarEnderecoPorCep } from "../util/viacep";
+import LancesFreteComponent from "./LancesFretesComponent";
 import SendMsgComponent from "./SendMsgComponent";
-import LancesFreteComponent from "./LancesFretes";
 
 class FretesComponent extends Component {
   constructor(props) {
@@ -695,12 +696,12 @@ class FretesComponent extends Component {
           return (
             <>
               <div className="col-6" key={frete.id}>
-                <div className="card text-white bg-dark small-card">
+                <div className="card text-black  small-card">
                   <div className="card-header">
                     <Badge variant="primary">N° {frete.num_leilao}</Badge> Data
-                    de abertura: {this.formatarData(frete.dt_abertura, false)} |
+                    de abertura: <strong>{this.formatarData(frete.dt_abertura, false)}</strong> |
                     Data de validade:{" "}
-                    {this.formatarData(frete.dt_validade_leilao, false)}
+                    <strong>{this.formatarData(frete.dt_validade_leilao, false)}</strong> 
                     <span className="float-end">
                       <Badge bg={bg}>{descricao}</Badge>
                     </span>
@@ -742,47 +743,38 @@ class FretesComponent extends Component {
                       </Row>
                       <footer className="custom-footer">
                         {descricao === "Em lance" ? (
-                          <button
-                            type="button"
-                            className="btn btn-outline btn-sm"
-                          >
-                            <BsListOl
-                              color="white"
+                            <GiPodium
+                            className="clickable-icon"
+                              color="gold"
                               onClick={() => this.handleShowModalLances(frete.id)}
                               size={25}
                               title="Verificar ranking dos lances"
-                            ></BsListOl>
-                          </button>
+                            ></GiPodium>   
                         ) : (
                           ""
                         )}
-                        <button
-                          type="button"
-                          className="btn btn-outline btn-sm"
-                        >
                           <BsWhatsapp
+                           className="clickable-icon"
                             color={frete.wp_enviado ? "green" : "gray"}
                             onClick={() => this.handleShowModalWp(frete.id)}
                             size={25}
                             title="Enviar mensagem de whatsapp para todos os proprietários aptos"
                           ></BsWhatsapp>
-                        </button>{" "}
-                        <button
-                          type="button"
-                          className="btn btn-warning btn-sm"
+                        {" "}
+                          <BsPencilSquare 
+                          className="clickable-icon"
                           title="Editar"
-                          onClick={() => this.handleEditFrete(frete)}
-                        >
-                          <BsFillPencilFill />
-                        </button>{" "}
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-sm"
+                          color="black"
+                          size={23}
+                          onClick={() => this.handleEditFrete(frete)}>
+                          </BsPencilSquare >
+                          <BsFillTrash3Fill 
+                          className="clickable-icon"
                           title="Excluir"
+                          color="red"
+                          size={23}
                           onClick={() => this.handleDeleteFrete(frete)}
-                        >
-                          <BsFillTrash3Fill />
-                        </button>{" "}
+                          />
                       </footer>
                     </blockquote>
                   </div>
@@ -1362,7 +1354,7 @@ class FretesComponent extends Component {
           onHide={this.handleCloseModalLances}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Lances</Modal.Title>
+            <Modal.Title>Ranking de lances <BsTrophyFill color="gold"/></Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <LancesFreteComponent

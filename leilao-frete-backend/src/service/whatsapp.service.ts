@@ -1,11 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateLancesFreteDto } from 'src/dto/lances-frete_dto/create-lances-frete.dto';
-import { Client, ClientOptions } from 'whatsapp-web.js';
-import { LancesFreteService } from './lances-frete.service';
-import { LoggerService } from './logger.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LancesFrete } from 'src/entities/lances-frete.entity';
+import { CreateLancesFreteDto } from 'src/dto/lances-frete_dto/create-lances-frete.dto';
+import { ProdutosLeilao } from 'src/entities/produtos-leilao.entity';
 import { Repository } from 'typeorm';
+import { Client, ClientOptions } from 'whatsapp-web.js';
+import { LoggerService } from './logger.service';
+import { LancesFrete } from 'src/entities/lances-frete.entity';
 
 @Injectable()
 export class WhatsAppService {

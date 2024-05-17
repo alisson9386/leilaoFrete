@@ -98,6 +98,9 @@ class BackService {
 
     //Serviços de frete-veiculos-quantidade
     listFreteVeiQNumLeilao(numLeilao){ return api_leilao.get('/frete-veiculo-quantidade/byLeilao/' + numLeilao); }
+    
+    //Serviços de lances-frete
+    listLancesFreteByLeilao(numLeilao){ return api_leilao.get('/lances-frete/byLeilao/' + numLeilao); }
 
 
 }

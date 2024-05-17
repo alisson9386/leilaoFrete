@@ -17,6 +17,11 @@ export class LancesFreteController {
     return this.lancesFreteService.findAll();
   }
 
+  @Get('byLeilao/:numLeilao')
+  findAllByLeilao(@Param('numLeilao') numLeilao: number) {
+    return this.lancesFreteService.findAllByLeilao(numLeilao);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.lancesFreteService.findOne(+id);

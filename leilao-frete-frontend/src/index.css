@@ -392,3 +392,7 @@ tr {
 .titulo-ordenavel:hover {
   cursor: pointer;
 }
+
+.clickable-icon {
+  cursor: pointer;
+}

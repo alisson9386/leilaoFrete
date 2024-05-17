@@ -19,6 +19,13 @@ export class LancesFreteService {
     return this.lancesFreteRepository.find();
   }
 
+  async findAllByLeilao(num_leilao: number) {
+    return await this.lancesFreteRepository
+    .createQueryBuilder('lf')
+    .where('lf.num_leilao = :num_leilao', { num_leilao })
+    .getMany();
+  }
+
   findOne(id: number) {
     return this.lancesFreteRepository.findOneBy({ id: id });
   }

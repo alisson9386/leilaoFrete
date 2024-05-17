@@ -9,7 +9,10 @@ export class LancesFrete {
   num_leilao: number;
 
   @Column()
-  valor_oferta: number;
+  valor_lance: number;
+
+  @Column()
+  wp_lance: string;
 
   @Column()
   oferta_vencedora: number;
