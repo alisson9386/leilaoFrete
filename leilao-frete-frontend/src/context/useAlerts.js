@@ -32,6 +32,13 @@ class UserAlerts {
     });
   };
 
+  showAlertSuccess = () => {
+    Toast.fire({
+      icon: "success",
+      title: "Sucesso",
+    });
+  };
+
   showAlertExclusaoCancelada = () => {
     Toast.fire({
       icon: "error",

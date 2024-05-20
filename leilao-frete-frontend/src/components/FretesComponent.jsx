@@ -742,7 +742,7 @@ class FretesComponent extends Component {
                         </Container>
                       </Row>
                       <footer className="custom-footer">
-                        {descricao === "Em lance" ? (
+                        {frete.status >= 2 ? (
                             <GiPodium
                             className="clickable-icon"
                               color="silver"

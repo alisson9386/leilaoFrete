@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { motion } from 'framer-motion';
+import { Badge } from 'react-bootstrap';
 export default function PodiumStep({ podium, winner }) {
   const offset = podium.length - winner.position
   const formatarComVirgula = (numero) => {
@@ -47,7 +48,7 @@ export default function PodiumStep({ podium, winner }) {
           }}
         /><br/>
         {winner.proprietario.nome}<br/>
-        R$ {formatarComVirgula(winner.valor_lance)}
+        <Badge>R$ {formatarComVirgula(winner.valor_lance)}</Badge> 
       </motion.div>
       <motion.div
         style={{

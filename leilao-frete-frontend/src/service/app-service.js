@@ -79,6 +79,7 @@ class BackService {
     listFreteById(idFretes){ return api_leilao.get('/fretes/' + idFretes); }
     saveFrete(idFretes){ return api_leilao.post('/fretes/', idFretes); }
     updateFrete(fretes, idFretes){ return api_leilao.put('/fretes/' + idFretes, fretes); }
+    updateOneFrete(fretes, idFretes){ return api_leilao.patch('/fretes/' + idFretes, fretes); }
     deleteFrete(idFretes){ return api_leilao.delete('/fretes/' + idFretes); }
 
     //Serviços de unidade de medidas
@@ -101,6 +102,8 @@ class BackService {
     
     //Serviços de lances-frete
     listLancesFreteByLeilao(numLeilao){ return api_leilao.get('/lances-frete/byLeilao/' + numLeilao); }
+    saveLancesFrete(lanceFrete){ return api_leilao.post('/lances-frete/', lanceFrete)}
+    updateLancesFrete(idLance, lanceFrete){ return api_leilao.patch('/lances-frete/' + idLance, lanceFrete)}
     deleteLancesFrete(idLance){ return api_leilao.delete('/lances-frete/' + idLance); }
 
 

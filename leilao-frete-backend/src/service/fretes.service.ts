@@ -197,6 +197,10 @@ export class FretesService {
     }
   }
 
+  updateOne(id: number, updateFreteDto: UpdateFreteDto) {
+    return this.freteRepository.update(id, updateFreteDto);
+  }
+
   async insertProdutosFrete(num_leilao: number, produtos: any[]) {
     try {
       const existingProdutos = await this.produtosLeilaoRepository.find({

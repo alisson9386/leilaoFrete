@@ -79,6 +79,11 @@ export class FretesController {
     );
   }
 
+  @Patch(':id')
+  updateOne(@Param('id') id: string, @Body() updateFreteDto: UpdateFreteDto) {
+    return this.fretesService.updateOne(+id, updateFreteDto);
+  }
+
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {
