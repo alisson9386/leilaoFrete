@@ -745,9 +745,9 @@ class FretesComponent extends Component {
                         {descricao === "Em lance" ? (
                             <GiPodium
                             className="clickable-icon"
-                              color="gold"
+                              color="silver"
                               onClick={() => this.handleShowModalLances(frete.id)}
-                              size={25}
+                              size={30}
                               title="Verificar ranking dos lances"
                             ></GiPodium>   
                         ) : (
@@ -764,7 +764,7 @@ class FretesComponent extends Component {
                           <BsPencilSquare 
                           className="clickable-icon"
                           title="Editar"
-                          color="black"
+                          color="gold"
                           size={23}
                           onClick={() => this.handleEditFrete(frete)}>
                           </BsPencilSquare >

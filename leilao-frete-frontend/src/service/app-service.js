@@ -101,6 +101,7 @@ class BackService {
     
     //Serviços de lances-frete
     listLancesFreteByLeilao(numLeilao){ return api_leilao.get('/lances-frete/byLeilao/' + numLeilao); }
+    deleteLancesFrete(idLance){ return api_leilao.delete('/lances-frete/' + idLance); }
 
 
 }

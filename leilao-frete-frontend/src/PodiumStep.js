@@ -1,6 +1,14 @@
 import { motion } from 'framer-motion'
 export default function PodiumStep({ podium, winner }) {
   const offset = podium.length - winner.position
+  const formatarComVirgula = (numero) => {
+    if (numero) {
+      return numero.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+  };
   return (
     <div
       style={{
@@ -39,7 +47,7 @@ export default function PodiumStep({ podium, winner }) {
           }}
         /><br/>
         {winner.proprietario.nome}<br/>
-        R$ {winner.valor_lance}
+        R$ {formatarComVirgula(winner.valor_lance)}
       </motion.div>
       <motion.div
         style={{
