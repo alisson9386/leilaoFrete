@@ -14,6 +14,7 @@ class BackService {
     //Serviços de whatsapp
     senderAll(data){ return api_leilao.post('/whatsapp/all', data);}
     statusServidor(){ return api_leilao.get('/whatsapp/statusServidor');}
+    vencedorLeilao(data, numLeilao){ return api_leilao.post('/whatsapp/vencedor/' + numLeilao, data); }
 
     //Serviços de tipo_user
     listTipoUser(){ return api_leilao.get('/tipo-users/'); }

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Button, Card, ListGroup, Modal } from "react-bootstrap";
+import { Badge, Button, Card, ListGroup } from "react-bootstrap";
 import {
   BsCheck,
   BsFillTrash3Fill,
-  BsInfoCircle,
   BsTrophyFill
 } from "react-icons/bs";
 import Swal from "sweetalert2";
@@ -14,8 +13,6 @@ import AppServices from "../service/app-service";
 const LancesFreteComponent = ({ leilaoId, showModalLances, fecharModal }) => {
   const [frete, setFrete] = useState([]);
   const [lancesFrete, setLancesFrete] = useState([]);
-  const [showModalInfo, setShowModalInfo] = useState(false);
-  const [lanceSel, setLanceSel] = useState([]);
   const [vencedor, setVencedor] = useState([]);
 
   useEffect(() => {
@@ -65,16 +62,6 @@ const LancesFreteComponent = ({ leilaoId, showModalLances, fecharModal }) => {
         maximumFractionDigits: 2,
       });
     }
-  };
-
-  const showModal = (lf) => {
-    setShowModalInfo(true);
-    setLanceSel(lf);
-  };
-
-  const closeModal = () => {
-    setShowModalInfo(false);
-    setLanceSel([]);
   };
 
   const confirmDeleteLance = (lance) => {
@@ -141,6 +128,12 @@ const LancesFreteComponent = ({ leilaoId, showModalLances, fecharModal }) => {
           const saveFrete = await AppServices.updateOneFrete(f, frete.id);
           if (saveFrete.status !== 200) {
             useAlerts.showAlertError("Erro ao atualizar frete!");
+            return;
+          }
+          const notificaVencedor = await AppServices.vencedorLeilao(lance, lance.num_leilao)
+          if (notificaVencedor.data !== 200) {
+            useAlerts.showAlertError("Erro ao notificar vencedor!");
+            return;
           }
         } else {
           useAlerts.showAlertError(update.statusText);
@@ -218,14 +211,6 @@ const LancesFreteComponent = ({ leilaoId, showModalLances, fecharModal }) => {
                             <BsCheck />
                           </Button>{" "}
                           <Button
-                            variant="warning"
-                            size="sm"
-                            title="Ver informações do lance"
-                            onClick={() => showModal(lf)}
-                          >
-                            <BsInfoCircle />
-                          </Button>{" "}
-                          <Button
                             variant="danger"
                             size="sm"
                             title="Eliminar lance"
@@ -254,42 +239,6 @@ const LancesFreteComponent = ({ leilaoId, showModalLances, fecharModal }) => {
           <h5>Este leilão ainda não possui lances registrados</h5>
         </div>
       )}
-
-      <Modal
-        className="modal modal-sm"
-        show={showModalInfo}
-        onHide={closeModal}
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Info</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {lanceSel.id ? (
-            <>
-              <p>
-                <strong>Posição:</strong> {lanceSel.position + 1}°
-              </p>
-              <p>
-                <strong>Proprietário:</strong> {lanceSel.proprietario.nome}
-              </p>
-              <p>
-                <strong>Valor:</strong> R$
-                {formatarComVirgula(lanceSel.valor_lance)}
-              </p>
-            </>
-          ) : (
-            ""
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <span style={{ marginLeft: "10px" }}></span>
-          <Button variant="info" onClick={closeModal}>
-            Fechar
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };
