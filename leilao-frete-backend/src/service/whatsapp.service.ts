@@ -55,6 +55,23 @@ export class WhatsAppService {
     return data;
   }
 
+  async vencedorLeilao(data, numLeilao){
+    try{
+
+      await this.client.sendMessage(data.wp_lance, `*Parabéns!!* 
+O seu lance de R$${data.valor_lance} foi selecionado como vencedor do leilão ${numLeilao}. 
+Em breve você receberá mais informações.`);
+
+      this.cacheNumeros.delete(numLeilao);
+      return HttpStatus.OK;
+
+    }catch(error){
+      this.logger.error(error);
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+  }
+
   initialize() {
     this.client.on('qr', async (qrCode) => {
       this.qrcode = qrCode;
@@ -81,6 +98,7 @@ export class WhatsAppService {
     });
 
     this.client.on('message', async (msg) => {
+      //if para testes
       if (msg.from === '553192178417@c.us') {
         if (!msg.body.includes(';')) {
           await this.client.sendMessage(
@@ -122,7 +140,7 @@ export class WhatsAppService {
         } else {
           await this.client.sendMessage(
             msg.from,
-            `ERRO: O leilão ${numLeilao} não foi encontrado no cache.`,
+            `ERRO: O leilão ${numLeilao} não foi encontrado ou já foi finalizado.`,
           );
         }
       }

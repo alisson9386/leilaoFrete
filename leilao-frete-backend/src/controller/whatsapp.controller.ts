@@ -24,6 +24,11 @@ export class WhatsappController {
     };
   }
 
+  @Post('vencedor/:numLeilao')
+  vencedorLeilao(@Body() data: any, @Param('numLeilao') numLeilao: number){
+    return this.whatsappService.vencedorLeilao(data, numLeilao);
+  }
+
   @Get('statusServidor')
   async getStatus() {
     return this.whatsappService.getStatus();
