@@ -79,7 +79,7 @@ export class FretesService {
       this.freteVeiculoQuantidadeRepository,
       createFreteDto.num_leilao,
       tiposVeiculosFretes,
-      ['id_tipo_veiculo', 'id_tipo_carroceria'],
+      ['id_tipo_veiculo', 'id_tipo_carroceria', 'num_leilao'],
     );
     const save2 = await this.insertOrUpdateEntities(
       this.produtosLeilaoRepository,
