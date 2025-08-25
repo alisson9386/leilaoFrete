@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsuariosService } from 'src/service/usuarios.service';
+import { UsuariosService } from '../service/usuarios.service';
 
 @Injectable()
 export class AuthService {
@@ -16,14 +16,17 @@ export class AuthService {
     );
     if (!authenticatedUser) {
       throw new HttpException(
-        'Usuário ou senha inválidos',
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Usuário ou senha inválidos',
+        },
         HttpStatus.UNAUTHORIZED,
       );
     }
     const payload = { user: authenticatedUser, id: authenticatedUser.id };
     const secretKey = {
       secret: 'zaq12wsxZAQ!@WSXZ0rr0b@tmak',
-      expiresIn: '30m',
+      expiresIn: '6h',
     };
     return {
       token: this.jwtService.sign(payload, secretKey),

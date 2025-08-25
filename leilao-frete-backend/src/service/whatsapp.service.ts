@@ -1,64 +1,158 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Client, ClientOptions, Location, Status } from 'whatsapp-web.js';
-import * as QrCode from 'qrcode-terminal';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateLancesFreteDto } from 'src/dto/lances-frete_dto/create-lances-frete.dto';
+import { ProdutosLeilao } from 'src/entities/produtos-leilao.entity';
+import { Repository } from 'typeorm';
+import { Client, ClientOptions } from 'whatsapp-web.js';
+import { LoggerService } from './logger.service';
+import { LancesFrete } from 'src/entities/lances-frete.entity';
 
 @Injectable()
 export class WhatsAppService {
   private client: Client;
-  private qrCodeGenerated: boolean = false;
-  private statusServidor: boolean = false;
+  private statusServidor: boolean;
+  private qrcode: string;
+  private logger: LoggerService;
+  private cacheNumeros: Map<number, string[]>;
 
-  constructor() {
-    const options: ClientOptions = {
-
-    };
+  constructor(
+    @InjectRepository(LancesFrete)
+    private lancesFreteRepository: Repository<LancesFrete>,
+    private readonly loggerService: LoggerService,
+  ) {
+    this.logger = loggerService;
+    this.cacheNumeros = new Map<number, string[]>();
+    const options: ClientOptions = {};
     this.client = new Client(options);
     this.initialize();
+    this.qrcode = '';
+    this.statusServidor = false;
   }
 
-  senderAll(variosNumeros: any[]){
-    const message = 'Olá! Esta é uma mensagem de teste.';
-    variosNumeros.map(async (numero) => {
+  async senderAll(variosNumeros: any[], texto: any[], numLeilao: number) {
+    const message = texto;
+    await Promise.all(
+      variosNumeros.map(async (numero) => {
         await this.client.sendMessage(numero, message);
-        console.log('Nova mensagem enviada ao numero: ', numero);
-    })
+        this.logger.log('Nova mensagem enviada ao numero: ' + numero);
+      }),
+    );
+    this.addToCache(numLeilao, variosNumeros);
     return HttpStatus.OK;
   }
 
-  getStatus(){
-    return this.statusServidor;
+  private addToCache(numLeilao: number, numeros: string[]) {
+    const existingNumbers = this.cacheNumeros.get(numLeilao) || [];
+    this.cacheNumeros.set(numLeilao, [...existingNumbers, ...numeros]);
   }
-  
 
-  private initialize() {
+  getNumbersByLeilao(numLeilao: number): string[] {
+    return this.cacheNumeros.get(numLeilao) || [];
+  }
+
+  getStatus() {
+    let data = [this.statusServidor, this.qrcode];
+    return data;
+  }
+
+  async vencedorLeilao(data, numLeilao){
+    try{
+
+      await this.client.sendMessage(data.wp_lance, `*Parabéns!!* 
+O seu lance de R$${data.valor_lance} foi selecionado como vencedor do leilão ${numLeilao}. 
+Em breve você receberá mais informações.`);
+
+      this.cacheNumeros.delete(numLeilao);
+      return HttpStatus.OK;
+
+    }catch(error){
+      this.logger.error(error);
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+  }
+
+  initialize() {
     this.client.on('qr', async (qrCode) => {
-      if (!this.qrCodeGenerated) {
-        // Lógica para exibir o QR code
-        QrCode.generate(qrCode, { small: true });
-        console.log('QR Code recebido, faça o scan:');
-        this.qrCodeGenerated = true;
-      }
+      this.qrcode = qrCode;
+      //QrCode.generate(qrCode, { small: true });
+      //this.logger.log('QR Code recebido, faça o scan:');
     });
 
     this.client.on('ready', () => {
-      console.log('Cliente WhatsApp está pronto!');
+      this.logger.log('Cliente WhatsApp está pronto!');
       this.statusServidor = true;
     });
 
     this.client.on('disconnected', () => {
-      console.log('Cliente WhatsApp desconectado!');
-      this.statusServidor = false; // Emitir evento quando o WhatsApp Web estiver desconectado
+      this.logger.log('Cliente WhatsApp desconectado!');
+      this.statusServidor = false;
+
+      setTimeout(() => {
+        this.logger.log('Tentando reconectar...');
+        this.client.initialize().catch((error) => {
+          console.error('Falha ao tentar reconectar:', error);
+          this.client.initialize();
+        });
+      }, 5000);
     });
 
     this.client.on('message', async (msg) => {
-      // Verificar se a mensagem é do número específico desejado
-      const desiredNumber = '553192178417@c.us'; // Número de telefone desejado
-      if (msg.from === desiredNumber) {
-          console.log(`Mensagem recebida do número ${desiredNumber}: ${msg.body}`);
-          let location = new Location(48.862140, 2.289971)
-          await this.client.sendMessage(msg.from, location);
+      //if para testes
+      if (msg.from === '553192178417@c.us') {
+        if (!msg.body.includes(';')) {
+          await this.client.sendMessage(
+            msg.from,
+            'ERRO: A mensagem precisa estar no formato "numero do leilao;valor do lance". Exemplo: "12024;600".',
+          );
+          return;
+        }
+
+        const [numLeilao, valorLance] = msg.body.split(';');
+
+        if (this.cacheNumeros.has(Number(numLeilao))) {
+          const numerosParticipantes = this.cacheNumeros.get(Number(numLeilao));
+
+          if (numerosParticipantes.includes(msg.from)) {
+            try {
+              var createLancesFreteDto = new CreateLancesFreteDto();
+              createLancesFreteDto.num_leilao = Number(numLeilao);
+              createLancesFreteDto.valor_lance = Number(valorLance);
+              createLancesFreteDto.wp_lance = msg.from;
+              await this.lancesFreteRepository.save(createLancesFreteDto);
+              await this.client.sendMessage(
+                msg.from,
+                `Seu lance foi registrado para o leilão ${numLeilao} no valor de R$${valorLance}! Aguarde retorno dos resultados.`,
+              );
+            } catch (error) {
+              await this.client.sendMessage(
+                msg.from,
+                `Erro ao registrar seu lance. Tente novamente dentro de alguns minutos.`,
+              );
+              this.logger.error(error);
+            }
+          } else {
+            await this.client.sendMessage(
+              msg.from,
+              `Infelizmente você não está apto para participar do leilão *${numLeilao}*.`,
+            );
+          }
+        } else {
+          await this.client.sendMessage(
+            msg.from,
+            `ERRO: O leilão ${numLeilao} não foi encontrado ou já foi finalizado.`,
+          );
+        }
       }
-  });
+      /*const desiredNumber = '553192178417@c.us'; // Número de telefone desejado
+      if (msg.from === desiredNumber) {
+        this.logger.log(
+          `Mensagem recebida do número ${desiredNumber}: ${msg.body}`,
+        );
+        let location = new Location(48.86214, 2.289971);
+        await this.client.sendMessage(msg.from, location);
+      }*/
+    });
 
     this.client.initialize();
   }

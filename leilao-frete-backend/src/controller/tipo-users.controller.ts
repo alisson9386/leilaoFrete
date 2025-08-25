@@ -40,7 +40,6 @@ export class TipoUsersController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    const desactivate = this.tipoUsersService.desactivateTipoUser(+id);
-    return desactivate ? 'Tipo deletado' : 'Erro ao deletar';
+    return this.tipoUsersService.remove(+id);
   }
 }

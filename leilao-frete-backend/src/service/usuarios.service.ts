@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from '../dto/usuarios_dto/create-usuario.dto'
 import { UpdateUsuarioDto } from '../dto/usuarios_dto/update-usuario.dto';
 import * as bcrypt from 'bcryptjs';
-import { Usuario } from 'src/entities/usuario.entity';
+import { Usuario } from '../entities/usuario.entity';
 
 @Injectable()
 export class UsuariosService {
@@ -18,7 +18,11 @@ export class UsuariosService {
   }
 
   findAll() {
-    return this.userRepository.find();
+    return this.userRepository.find({
+      where: {
+      fl_ativo: true
+    }
+    });
   }
 
   findOne(id: number) {

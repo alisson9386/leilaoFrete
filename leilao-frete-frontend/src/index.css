@@ -1,16 +1,398 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+body {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+body {
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #023047;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  background: #6a11cb;
+  background: -webkit-linear-gradient(
+    to right,
+    rgba(106, 17, 203, 1),
+    rgba(37, 117, 252, 1)
+  );
+  background: linear-gradient(
+    to right,
+    rgba(106, 17, 203, 1),
+    rgba(37, 117, 252, 1)
+  );
+}
+
+.formLogin {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 7px;
+  padding: 40px;
+  box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.4);
+  gap: 5px;
+}
+
+.areaLogin img {
+  width: 420px;
+}
+
+.formLogin h1 {
+  padding: 0;
+  margin: 0;
+  font-weight: 500;
+  font-size: 2.3em;
+}
+
+.formLogin p {
+  display: inline-block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.formLogin input {
+  padding: 15px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  margin-top: 5px;
+  border-radius: 4px;
+  transition: all linear 160ms;
+  outline: none;
+}
+
+.formLogin input:focus {
+  border: 1px solid #f72585;
+}
+
+.formLogin label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.formLogin a {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #555;
+  transition: all linear 160ms;
+}
+
+.formLogin a:hover {
+  color: #f72585;
+}
+
+.btn {
+  background-color: #f72585;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none !important;
+  transition: all linear 160ms;
+  cursor: pointer;
+  margin: 0 !important;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  background-color: #ff0676;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.parent img {
+  width: 60%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: -1;
+  size: 60%;
+  position: center;
+}
+.parent {
+  background-color: #212529;
+  color: white;
+  display: flex;
+  justify-content: center;
+}
+
+.parent input,
+button {
+  margin-right: 10px;
+}
+
+button {
+  text-transform: none;
+}
+
+.imgReserva {
+  float: right;
+}
+
+.btn-primary {
+  margin-right: 10px;
+}
+
+.formReserva {
+  margin-left: 50px;
+  z-index: 1;
+}
+
+.label-with-spacing {
+  margin-right: 10px;
+}
+
+.containerCenter {
+  color: black;
+  width: 70%;
+  margin: auto;
+  justify-content: space-between;
+  gap: 65px;
+  padding: 45px 27px 30px 27px;
+  text-align: center;
+  overflow: auto;
+  height: 100%;
+}
+
+.containerCenterHome {
+  color: black;
+  width: 70%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 45px 27px 30px 27px;
+  text-align: center;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 65px;
+  height: 100vh;
+}
+
+/*.card {
+  width: 18rem;
+}*/
+
+.table-responsive {
+  max-height: 500px;
+  max-width: 1500px !important;
+  overflow-y: auto;
+}
+
+.btn {
+  text-transform: none !important;
+}
+
+.containerUsually {
+  color: black;
+  width: 80%;
+  margin: auto;
+  justify-content: space-between;
+  gap: 65px;
+  padding: 45px 27px 30px 27px;
+}
+
+.containerAdmin {
+  color: black;
+  margin: auto;
+  justify-content: space-between;
+  gap: 65px;
+  padding: 45px 27px 30px 27px;
+}
+
+.containerPerfilEdit {
+  background-color: white;
+  color: black;
+  width: 100%;
+  margin: auto;
+  justify-content: space-between;
+  gap: 65px;
+  padding: 45px 27px 30px 27px;
+}
+
+.containerPerfilView {
+  text-align: center;
+  color: black;
+  width: 100%;
+  margin: auto;
+  /*justify-content: space-between;*/
+  gap: 65px;
+  padding: 45px 27px 30px 27px;
+}
+
+.containerQrCodeWhatsapp {
+  text-align: center;
+  color: black;
+  width: 100%;
+  margin: auto;
+}
+
+.table {
+  background-color: white;
+}
+
+.divReserv {
+  display: grid;
+  flex-direction: column;
+  align-items: left;
+  align-content: left;
+  justify-content: left;
+  width: 100%;
+  height: 15vh;
+}
+
+/* Ajuste o tamanho do modal */
+.custom-modal .modal-dialog {
+  max-width: 95%;
+}
+
+/* Ajuste a margem do modal para centralizá-lo */
+.custom-modal .modal-content {
+  margin: 0 auto;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.edit-profile-image {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  overflow: hidden; /* Esconde a borda extra */
+}
+
+.edit-profile-image img {
+  border-radius: 50%;
+  margin: auto;
+  transition: filter 0.3s;
+  display: block; /* Impede a adição de espaços extras ao redor da imagem */
+}
+
+.edit-profile-image:hover img {
+  filter: brightness(0.8); /* Escurece a imagem ao passar o mouse */
+}
+
+.edit-profile-overlay {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  font-weight: bold;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.1);
+  color: black;
+  padding: 5px 10px;
+  font-size: 14px;
+  opacity: 0; /* Começa invisível */
+  transition: opacity 0.3s;
+  pointer-events: none; /* Não interfere com cliques/hovers */
+}
+
+.edit-profile-image:hover .edit-profile-overlay {
+  opacity: 1; /* Mostra ao passar o mouse */
+}
+
+.navbar-text-spacing {
+  margin-right: 30px;
+}
+
+.meu-navbar-brand {
+  font-size: 14px; /* Ajuste o tamanho da fonte conforme necessário */
+  padding: 0; /* Ajuste o padding conforme necessário */
+}
+
+.table td.fit,
+.table th.fit {
+  white-space: nowrap;
+  width: 1%;
+}
+
+td,
+tr {
+  text-align: center;
+}
+
+.custom-modal-veiculo {
+  width: 80% !important; /* Ajuste o valor conforme necessário */
+  height: 80% !important; /* Ajuste o valor conforme necessário */
+  max-width: none !important; /* Remove o limite máximo de largura */
+}
+
+.custom-modal-leilao {
+  width: 60% !important; /* Ajuste o valor conforme necessário */
+  height: 60% !important; /* Ajuste o valor conforme necessário */
+  max-width: none !important; /* Remove o limite máximo de largura */
+}
+
+#centralized-text {
+  text-align: center;
+}
+
+.containerCard {
+  color: black;
+  width: 80%;
+  margin: auto;
+  justify-content: space-between;
+  gap: 65px;
+  min-height: 100vh;
+  padding: 45px 27px 30px 27px;
+  overflow: auto; /* Adicionado para permitir rolagem dentro do container */
+}
+
+.containerCard p {
+  font-size: 1.1rem;
+}
+
+.custom-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.custom-input {
+  width: 100px;
+  margin: 0 auto;
+}
+
+.titulo-ordenavel {
+  cursor: pointer;
+}
+
+.titulo-ordenavel:hover {
+  cursor: pointer;
+}
+
+.clickable-icon {
+  cursor: pointer;
+}
